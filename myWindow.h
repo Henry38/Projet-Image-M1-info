@@ -18,8 +18,8 @@ class myWindow : public QMainWindow {
     Q_OBJECT
 public:
     // Methodes
-    myWindow(QWidget *parent = 0);
-    myWindow(QString url, QWidget *parent = 0);
+    myWindow();
+    myWindow(QString url);
     ~myWindow();
 
     bool openFilename();

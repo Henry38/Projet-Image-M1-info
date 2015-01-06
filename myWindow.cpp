@@ -1,6 +1,6 @@
 #include "myWindow.h"
 
-myWindow::myWindow(QWidget *parent) : QMainWindow(parent)
+myWindow::myWindow() : QMainWindow(0)
 {
     img = new QImage();
 
@@ -13,7 +13,7 @@ myWindow::myWindow(QWidget *parent) : QMainWindow(parent)
 
 }
 
-myWindow::myWindow(QString url, QWidget *parent) : myWindow(parent)
+myWindow::myWindow(QString url) : myWindow(0)
 {
     open(url);
     repaint();
