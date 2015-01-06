@@ -8,9 +8,14 @@
 #include <QString>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QObject>
+#include <QtWidgets>
+#include <iostream>
+using namespace std;
 
 class myWindow : public QMainWindow {
 
+    Q_OBJECT
 public:
     // Methodes
     myWindow(QWidget *parent = 0);
@@ -19,6 +24,24 @@ public:
 
     bool openFilename();
     bool open(QString url);
+    void initMenu();
+
+public slots:
+    bool ouvrir();
+    bool sauvegarder();
+    bool quitter();
+    bool histo();
+    bool gris();
+    bool flouter();
+    bool fusionner();
+    bool redimensionner();
+    bool filtre();
+    bool contours();
+    bool redimIntell();
+    bool grabCut();
+    bool rogner();
+    bool pipette();
+    bool selection();
 
 private:
     // Methodes
