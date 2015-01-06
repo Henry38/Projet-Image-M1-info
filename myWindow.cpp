@@ -1,7 +1,7 @@
-
 #include "myWindow.h"
 
-myWindow::myWindow(QWidget *parent) : QMainWindow(parent) {
+myWindow::myWindow() : QMainWindow(0)
+{
     img = new QImage();
 
     initMenu();
@@ -13,19 +13,23 @@ myWindow::myWindow(QWidget *parent) : QMainWindow(parent) {
 
 }
 
-myWindow::myWindow(QString url, QWidget *parent) : myWindow(parent) {
+myWindow::myWindow(QString url) : myWindow()
+{
     open(url);
     repaint();
 }
 
-myWindow::~myWindow() {
+myWindow::~myWindow()
+{
     delete img;
 }
 
-bool myWindow::openFilename() {
+bool myWindow::openFilename()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         "Ouvrir une image", QDir::currentPath() + "/../Test", "Image Files (*.png *.jpg)");
-    if (filename != "") {
+    if (filename != "")
+    {
         return open(filename);
     }
     return false;
@@ -49,23 +53,29 @@ bool myWindow::save(QString url){
     return img->save(url,0,-1);
 }
 
-bool myWindow::open(QString url) {
-    if (img->load(url)) {
+
+bool myWindow::open(QString url)
+{
+    if (img->load(url))
+    {
         resize(img->width(), img->height());
         return true;
     }
     return false;
 }
 
-void myWindow::paintEvent(QPaintEvent *) {
+void myWindow::paintEvent(QPaintEvent *)
+{
     QPainter painter(this);
 
     int x = 0;
     int y = 0;
-    if (width() > img->width()) {
+    if (width() > img->width())
+    {
         x = (width() - img->width()) / 2;
     }
-    if (height() > img->height()) {
+    if (height() > img->height())
+    {
         y = (height() - img->height()) / 2;
     }
 
@@ -73,7 +83,8 @@ void myWindow::paintEvent(QPaintEvent *) {
     painter.end();
 }
 
-void myWindow::initMenu(){
+void myWindow::initMenu()
+{
     QMenu *menuFichier = menuBar()->addMenu("&Fichier");
 
     QAction *actionOuvrir = new QAction("&Ouvrir",this);
@@ -143,12 +154,13 @@ bool myWindow::ouvrir()
     return true;
 }
 
-bool myWindow::sauvegarder(){
+bool myWindow::sauvegarder()
+{
     return true;
 }
 
-
-bool myWindow::sauvegarderSous(){
+bool myWindow::sauvegarderSous()
+{
     saveAsFilename();
     return true;
 }
@@ -159,33 +171,65 @@ void myWindow::quitter(){
 }
 
 /*affiche/edite l'histogramme*/
-bool myWindow::histo(){
+bool myWindow::histo()
+{
     return true;
 }
 
 /*passe l'image en niveau de gris*/
-bool myWindow::gris(){
+bool myWindow::gris()
+{
     return true;
 }
 
 /*floute l'image*/
-bool myWindow::flouter(){ return true;}
+bool myWindow::flouter()
+{
+    return true;
+}
 
 /*permet de selectionner 2 images et de les fusionner*/
-bool myWindow::fusionner(){return true;}
+bool myWindow::fusionner()
+{
+    return true;
+}
 
-bool myWindow::redimensionner(){return true;}
+bool myWindow::redimensionner()
+{
+    return true;
+}
 
-bool myWindow::filtre(){return true;}
+bool myWindow::filtre()
+{
+    return true;
+}
 
-bool myWindow::contours(){return true;}
+bool myWindow::contours()
+{
+    return true;
+}
 
-bool myWindow::redimIntell(){return true;}
+bool myWindow::redimIntell()
+{
+    return true;
+}
 
-bool myWindow::grabCut(){return true;}
+bool myWindow::grabCut()
+{
+    return true;
+}
 
-bool myWindow::rogner(){return true;}
+bool myWindow::rogner()
+{
+    return true;
+}
 
-bool myWindow::pipette(){return true;}
+bool myWindow::pipette()
+{
+    return true;
+}
 
-bool myWindow::selection(){return true;}
+bool myWindow::selection()
+{
+    return true;
+}
