@@ -13,7 +13,7 @@ myWindow::myWindow() : QMainWindow(0)
 
 }
 
-myWindow::myWindow(QString url) : myWindow(0)
+myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
     repaint();
