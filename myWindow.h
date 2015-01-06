@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QtWidgets>
 #include <iostream>
+#include <QApplication>
 using namespace std;
 
 class myWindow : public QMainWindow {
@@ -22,14 +23,17 @@ public:
     myWindow(QString url, QWidget *parent = 0);
     ~myWindow();
 
+    bool saveAsFilename();
     bool openFilename();
     bool open(QString url);
+    bool save(QString url);
     void initMenu();
 
 public slots:
     bool ouvrir();
     bool sauvegarder();
-    bool quitter();
+    bool sauvegarderSous();
+    void quitter();
     bool histo();
     bool gris();
     bool flouter();

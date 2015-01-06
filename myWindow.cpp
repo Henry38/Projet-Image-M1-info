@@ -31,6 +31,24 @@ bool myWindow::openFilename() {
     return false;
 }
 
+/*Sauvegarder sous*/
+bool myWindow::saveAsFilename(){
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"),
+                               "/home/untitled.png",
+                               tr("Images (*.png *.xpm *.jpg)"));
+
+    if (filename != "") {
+        return save(filename);
+    }
+    return false;
+}
+
+bool myWindow::save(QString url){
+
+    return img->save(url,0,-1);
+}
+
 bool myWindow::open(QString url) {
     if (img->load(url)) {
         resize(img->width(), img->height());
@@ -60,9 +78,11 @@ void myWindow::initMenu(){
 
     QAction *actionOuvrir = new QAction("&Ouvrir",this);
     QAction *actionSauvegarder = new QAction("&Sauvegarder",this);
+    QAction *actionSauvegarderSous = new QAction("&Sauvegarder sous...",this);
     QAction *actionQuitter = new QAction("&Quitter", this);
     menuFichier->addAction(actionOuvrir);
     menuFichier->addAction(actionSauvegarder);
+    menuFichier->addAction(actionSauvegarderSous);
     menuFichier->addAction(actionQuitter);
 
     QMenu *menuEdition = menuBar()->addMenu("&Edition");
@@ -99,6 +119,7 @@ void myWindow::initMenu(){
 
     QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(ouvrir()));
     QObject::connect(actionSauvegarder,SIGNAL(triggered()),this,SLOT(sauvegarder()));
+    QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(sauvegarderSous()));
     QObject::connect(actionQuitter,SIGNAL(triggered()),this,SLOT(quitter()));
 
     QObject::connect(actionHistogramme,SIGNAL(triggered()),this,SLOT(histo()));
@@ -119,17 +140,22 @@ void myWindow::initMenu(){
 bool myWindow::ouvrir()
 {
     openFilename();
-    cout<<"Hello World"<<" I just went down a line with the following two characters\n"<<endl;
     return true;
 }
+
 bool myWindow::sauvegarder(){
     return true;
 }
 
-bool myWindow::quitter(){
-    //utiliser QDialog
-    //demander si on veut quitter sans sauvegarder ? puis,selon l'action,sauvegarder et quitter ou quitter
+
+bool myWindow::sauvegarderSous(){
+    saveAsFilename();
     return true;
+}
+
+void myWindow::quitter(){
+    /*êtes vous sur ?*/
+    qApp->quit();
 }
 
 /*affiche/edite l'histogramme*/
