@@ -27,7 +27,7 @@ myWindow::~myWindow()
 bool myWindow::openFilename()
 {
     QString filename = QFileDialog::getOpenFileName(this,
-        "Ouvrir une image", QDir::currentPath() + "/../Test", "Image Files (*.png *.jpg)");
+        "Ouvrir une image", QDir::currentPath() + "/../Projet-Image-M1-info/ressources", "Image Files (*.png *.jpg)");
     if (filename != "")
     {
         return open(filename);
@@ -38,9 +38,9 @@ bool myWindow::openFilename()
 /*Sauvegarder sous*/
 bool myWindow::saveAsFilename(){
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"),
-                               "/home/untitled.png",
-                               tr("Images (*.png *.xpm *.jpg)"));
+    QString filename = QFileDialog::getSaveFileName(this, "Save File",
+                               "/../Projet-Image-M1-info/ressources/untitled.png",
+                               "Images (*.png *.xpm *.jpg)");
 
     if (filename != "") {
         return save(filename);
@@ -150,8 +150,7 @@ void myWindow::initMenu()
 
 bool myWindow::ouvrir()
 {
-    openFilename();
-    return true;
+    return openFilename();
 }
 
 bool myWindow::sauvegarder()
@@ -161,8 +160,7 @@ bool myWindow::sauvegarder()
 
 bool myWindow::sauvegarderSous()
 {
-    saveAsFilename();
-    return true;
+    return saveAsFilename();
 }
 
 void myWindow::quitter(){
