@@ -171,19 +171,20 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-    QVector<QRgb> mat = img->colorTable();
-    cout << "hauteur " << img->height() << endl;
-    cout << "largeur " << img->width() << endl;
-    if(mat.isEmpty()){
-        cout << "La matrice est vide! Aie !" << endl;
-    }else{
-        cout << "La matrice est de taille : " << mat.size() << endl;
+
+    QRgb pixel;
+    int i,j,h = img->height(), w = img->width(),tmp;
+    for(i=0; i<w; i++)
+    {
+        for(j = 0; j<h; j++)
+        {
+            pixel = img->pixel(i,j);
+            tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+            pixel = qRgb(tmp,tmp,tmp);
+            img->setPixel(i,j,pixel);
+        }
     }
-    /*
-    for (int i = 0; i < mat.size(); ++i)  {
-            cout << mat.at(i) << "à la position "<< i << endl;
-    }
-    */
+    repaint();
     return true;
 }
 
