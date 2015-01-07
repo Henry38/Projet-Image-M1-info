@@ -30,6 +30,7 @@ public:
     void initMenu();
 
 public slots:
+    // Slot du menu
     bool ouvrir();
     bool sauvegarder();
     bool sauvegarderSous();
@@ -46,6 +47,9 @@ public slots:
     bool rogner();
     bool pipette();
     bool selection();
+
+    // Slot des fonctions
+    void applyBlur(int n);
 
 private:
     // Methodes

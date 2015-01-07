@@ -1,7 +1,7 @@
 
 #include "BlurDialog.h"
 
-BlurDialog::BlurDialog(myWindow mWin, QImage &img) : QDialog(0) {
+BlurDialog::BlurDialog(const myWindow *mWin, QImage *img) : QDialog(0) {
     setFixedSize(300, 300);
 
     viewer = new Viewer(10, 10, 200, 200, img, this);
@@ -28,8 +28,4 @@ BlurDialog::~BlurDialog() {
     delete text;
     delete buttonBox;
     delete spinBox;
-}
-
-void BlurDialog::setResult(int i) {
-
 }

@@ -1,4 +1,5 @@
 #include "myWindow.h"
+#include "BlurDialog.h"
 
 myWindow::myWindow() : QMainWindow(0)
 {
@@ -183,6 +184,9 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
+    BlurDialog *blurDiag = new BlurDialog(this, img);
+    blurDiag->exec();
+
     return true;
 }
 
@@ -230,4 +234,8 @@ bool myWindow::pipette()
 bool myWindow::selection()
 {
     return true;
+}
+
+void myWindow::applyBlur() {
+    cout << "j'applique du flou !" << endl;
 }

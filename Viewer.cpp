@@ -1,12 +1,12 @@
 
 #include "Viewer.h"
 
-Viewer::Viewer(int x, int y, int width, int height, QImage &img, QWidget *parent = 0) : QWidget(parent) {
+Viewer::Viewer(int x, int y, int width, int height, QImage *img, QWidget *parent = 0) : QWidget(parent) {
     move(x, y);
     setFixedSize(width, height);
 
     m_label = new QLabel();
-    m_label->setPixmap(QPixmap::fromImage(img));
+    m_label->setPixmap(QPixmap::fromImage(*img));
 
     m_scrollArea = new QScrollArea(this);
     m_scrollArea->move(0, 0);

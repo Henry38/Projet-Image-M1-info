@@ -1,6 +1,7 @@
 #ifndef BLURDIALOG_H
 #define BLURDIALOG_H
 
+#include <QObject>
 #include <QDialog>
 #include <QImage>
 #include <QLabel>
@@ -9,11 +10,12 @@
 #include "Viewer.h"
 #include "myWindow.h"
 
-class BlurDialog : public QDialog {
-    Q_OBJECT
 
+class BlurDialog : public QDialog {
+
+    Q_OBJECT
 public:
-    BlurDialog(QImage &img);
+    BlurDialog(const myWindow*, QImage*);
     ~BlurDialog();
 
 private:
