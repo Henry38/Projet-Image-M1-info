@@ -11,6 +11,7 @@ class Viewer : public QWidget {
 public:
     Viewer(int x, int y, int width, int height, QImage *img, QWidget *parent);
     ~Viewer();
+    void setImage(QImage*);
 
 private:
     QLabel *m_label;

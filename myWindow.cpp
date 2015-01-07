@@ -236,6 +236,6 @@ bool myWindow::selection()
     return true;
 }
 
-void myWindow::applyBlur() {
-    cout << "j'applique du flou !" << endl;
+void myWindow::applyBlur(int n) {
+    cout << "j'applique du flou ! " << n << endl;
 }

@@ -15,7 +15,7 @@ class BlurDialog : public QDialog {
 
     Q_OBJECT
 public:
-    BlurDialog(const myWindow*, QImage*);
+    BlurDialog(myWindow*, QImage*);
     ~BlurDialog();
 
 private:
@@ -23,7 +23,12 @@ private:
     QLabel *text;
     QDialogButtonBox *buttonBox;
     QSpinBox *spinBox;
+    myWindow *mWin;
+    QImage *apercu;
 
+private slots:
+    void repaintViewer(int);
+    void applyBlur();
 };
 
 #endif // BLURDIALOG_H
