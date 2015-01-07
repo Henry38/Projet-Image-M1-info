@@ -12,6 +12,9 @@
 #include <QtWidgets>
 #include <iostream>
 #include <QApplication>
+#include <QPoint>
+#include <QMouseEvent>
+#include <QMessageBox>
 using namespace std;
 
 class myWindow : public QMainWindow {
@@ -23,16 +26,16 @@ public:
     myWindow(QString url);
     ~myWindow();
 
-    bool saveAsFilename();
-    bool openFilename();
     bool open(QString url);
     bool save(QString url);
+    void mouseReleaseEvent(QMouseEvent*);
     void initMenu();
+    bool estDansImage(int,int);
 
 public slots:
-    bool ouvrir();
+    bool openFilename();
+    bool saveAsFilename();
     bool sauvegarder();
-    bool sauvegarderSous();
     void quitter();
     bool histo();
     bool gris();

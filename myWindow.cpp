@@ -11,6 +11,8 @@ myWindow::myWindow() : QMainWindow(0)
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
     resize(xScreen / 2, yScreen / 2);
 
+    QWidget::setMouseTracking(true);
+
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -128,9 +130,9 @@ void myWindow::initMenu()
     menuOutils->addAction(actionSelection);
 
 
-    QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(ouvrir()));
+    QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(openFilename()));
     QObject::connect(actionSauvegarder,SIGNAL(triggered()),this,SLOT(sauvegarder()));
-    QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(sauvegarderSous()));
+    QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(saveAsFilename()));
     QObject::connect(actionQuitter,SIGNAL(triggered()),this,SLOT(quitter()));
 
     QObject::connect(actionHistogramme,SIGNAL(triggered()),this,SLOT(histo()));
@@ -148,20 +150,12 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
-bool myWindow::ouvrir()
-{
-    return openFilename();
-}
 
 bool myWindow::sauvegarder()
 {
     return true;
 }
 
-bool myWindow::sauvegarderSous()
-{
-    return saveAsFilename();
-}
 
 void myWindow::quitter(){
     /*êtes vous sur ?*/
@@ -177,6 +171,19 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
+    QVector<QRgb> mat = img->colorTable();
+    cout << "hauteur " << img->height() << endl;
+    cout << "largeur " << img->width() << endl;
+    if(mat.isEmpty()){
+        cout << "La matrice est vide! Aie !" << endl;
+    }else{
+        cout << "La matrice est de taille : " << mat.size() << endl;
+    }
+    /*
+    for (int i = 0; i < mat.size(); ++i)  {
+            cout << mat.at(i) << "à la position "<< i << endl;
+    }
+    */
     return true;
 }
 
@@ -224,10 +231,47 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
+
     return true;
 }
 
 bool myWindow::selection()
 {
+
     return true;
+}
+
+void myWindow::mouseReleaseEvent(QMouseEvent * e){
+    //QMessageBox* msgBox;
+    if(e->button() == Qt::LeftButton)
+    {
+        QPoint p =  e->pos();
+        QPoint pF = e->pos();
+       /* msgBox = new QMessageBox();
+        msgBox->setWindowTitle("Hello");
+        msgBox->setText("You Clicked Left Mouse Button ");*/
+        QRect rect = img->rect();
+        QPoint coinHG = rect.topLeft();
+        QPoint coinBD = rect.bottomRight();
+        int bordHaut = coinHG.y();
+        int bordBas = coinBD.y();
+        int bordGauche = coinHG.x();
+        int bordDroit = coinBD.x();
+        if(p.x()>= bordGauche && p.x()<= bordDroit && p.y()>= bordHaut
+                && p.y() <= bordBas
+         ){
+
+            cout << "Coordonnées : (" << p.x() << "," << p.y() << ")"<< endl;
+        }else{
+            cout << "HORS LIMITE !" << endl;
+        }
+
+
+       // msgBox->show();
+
+    }
+}
+
+bool myWindow::estDansImage(int x, int y){
+
 }
