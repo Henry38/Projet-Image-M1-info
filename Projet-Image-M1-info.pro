@@ -1,10 +1,12 @@
 
 SOURCES += \
     main.cpp \
-    myWindow.cpp
+    myWindow.cpp \
+    Viewer.cpp
 
 HEADERS += \
-    myWindow.h
+    myWindow.h \
+    Viewer.h
 
 QT += widgets
 
