@@ -2,11 +2,13 @@
 SOURCES += \
     main.cpp \
     myWindow.cpp \
-    Viewer.cpp
+    Viewer.cpp \
+    BlurDialog.cpp
 
 HEADERS += \
     myWindow.h \
-    Viewer.h
+    Viewer.h \
+    BlurDialog.h
 
 QT += widgets
 
