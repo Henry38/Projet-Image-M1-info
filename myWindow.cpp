@@ -178,6 +178,19 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
+    QRgb pixel;
+    int i,j,h = img->height(), w = img->width(),tmp;
+    for(i=0; i<w; i++)
+    {
+        for(j = 0; j<h; j++)
+        {
+            pixel = img->pixel(i,j);
+            tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+            pixel = qRgb(tmp,tmp,tmp);
+            img->setPixel(i,j,pixel);
+        }
+    }
+    repaint();
     return true;
 }
 
