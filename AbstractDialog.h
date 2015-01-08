@@ -5,6 +5,7 @@
 #include <QtCore>
 #include <QDialog>
 #include <QScrollArea>
+#include <QLabel>
 
 namespace Ui {
     class AbstractDialog;
@@ -17,7 +18,11 @@ class AbstractDialog : public QDialog {
 public:
     AbstractDialog();
     ~AbstractDialog();
-    QScrollArea* getViewer();
+    void display(QImage*);
+    //QScrollArea* getViewer();
+
+private:
+    QLabel *label;
 
 public slots:
     virtual void updateViewer() = 0;

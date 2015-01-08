@@ -1,3 +1,4 @@
+
 #include "BlurDialog.h"
 
 BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
@@ -7,8 +8,6 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     text = new QLabel(this);
     text->move(30, 224);
     text->setText("Flou : ");
-
-    label = new QLabel();
 
     spinBox = new QSpinBox(this);
     spinBox->move(80, 220);
@@ -21,7 +20,6 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
 
 BlurDialog::~BlurDialog() {
     delete text;
-    delete label;
     delete spinBox;
     delete apercu;
 }
@@ -33,8 +31,10 @@ void BlurDialog::updateViewer() {
     c.redimentionnerMatrix(spinBox->value()*2 +1);
     c.convolution(apercu);
 
-    label->setPixmap(QPixmap::fromImage(*apercu));
-    getViewer()->setWidget(label);
+    display(apercu);
+
+    /*label->setPixmap(QPixmap::fromImage(*apercu));
+    getViewer()->setWidget(label);*/
     ok_clicked = true;
 }
 

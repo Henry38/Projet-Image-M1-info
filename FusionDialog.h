@@ -2,22 +2,18 @@
 #define FUSIONDIALOG_H
 
 /*#include <QDialog>
-#include <QPushButton>
-#include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QImage>*/
 
-#include <QDialog>
-#include <QLabel>
-#include <QtGui>
-#include <QtCore>
-#include "Viewer.h"
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QMessageBox>
 
-namespace Ui {
-    class FusionDialog;
-}
+#include "AbstractDialog.h"
 
-class FusionDialog : public QDialog {
+
+class FusionDialog : public AbstractDialog {
 
     Q_OBJECT
 
@@ -26,14 +22,14 @@ public:
     ~FusionDialog();
 
 private:
-    Ui::FusionDialog *ui;
-    QLabel *m_label;
-    QImage *img1, *img2;
-    /*Viewer *viewer1;
-    QPushButton *open1, *open2;
-    QLineEdit *path1, *path2;
-    QDialogButtonBox *buttonBox;
-    QImage *imgSource;*/
+    QImage *imgSource, *apercu;
+    QLineEdit *textBrowser;
+    QPushButton *openButton;
+    bool ok_clicked;
+
+public slots:
+    void updateViewer();
+    void acceptDialog();
 
 private slots:
     void openFilename();

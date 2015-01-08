@@ -9,9 +9,6 @@
 #include "AbstractDialog.h"
 #include "Convolution.h"
 
-namespace Ui {
-    class AbstractDialog;
-}
 
 class BlurDialog : public AbstractDialog {
 
@@ -22,7 +19,7 @@ public:
     ~BlurDialog();
 
 private:
-    QLabel *text, *label;
+    QLabel *text;
     QSpinBox *spinBox;
     QImage *imgSource, *apercu;
     bool ok_clicked;

@@ -1,27 +1,27 @@
 
-#include "myWindow.h"
 #include "FusionDialog.h"
-#include "ui_test.h"
 
-FusionDialog::FusionDialog(QImage *img) : QDialog(0), ui(new Ui::FusionDialog) {
-    ui->setupUi(this);
+FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
+    imgSource = img;
+    apercu = NULL;//new QImage(*imgSource);
 
-    m_label = new QLabel();
-    m_label->setPixmap(QPixmap::fromImage(*img));
-    ui->scrollArea->setWidget(m_label);
+    textBrowser = new QLineEdit(this);
+    textBrowser->move(20, 220);
+    textBrowser->resize(200, 30);
 
-    QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openFilename()));
+    openButton = new QPushButton("Ouvrir", this);
+    openButton->move(220, 220);
+    openButton->resize(120, 30);
+
+    QObject::connect(openButton, SIGNAL(clicked()), this, SLOT(openFilename()));
+
+    updateViewer();
 }
 
 FusionDialog::~FusionDialog() {
-    delete ui;
-    delete m_label;
-    delete img1, img2;
-}
-
-QImage calculFusion(QImage img1, QImage img2) {
-
-    return QImage();
+    delete textBrowser;
+    delete openButton;
+    delete apercu;
 }
 
 void FusionDialog::openFilename()
@@ -30,14 +30,35 @@ void FusionDialog::openFilename()
         "Ouvrir une image", QDir::currentPath() + "/../Projet-Image-M1-info/ressources", "Image Files (*.png *.jpg)");
     if (filename != "")
     {
-        ui->textBrowser->setText(filename);
-        img2->load(filename);
-
-        m_label->setPixmap(QPixmap::fromImage(calculFusion(*img1, *img2)));
-
-        /*QImage *tmp = new QImage(filename);
-        m_label2->setPixmap(QPixmap::fromImage(*tmp));
-        ui->scrollArea->setWidget(m_label2);
-        ui->scrollArea->repaint();*/
+        textBrowser->setText(filename);
     }
+}
+
+void FusionDialog::updateViewer() {
+    delete apercu;
+    apercu = new QImage(*imgSource);
+    if (textBrowser->text() == "") {
+        display(apercu);
+    } else {
+        QImage tmp;
+        if (tmp.load(textBrowser->text())) {
+            // Fusionner tmp avec apercu
+
+            display(apercu);
+            ok_clicked = true;
+        } else {
+            QMessageBox messageBox(this);
+            messageBox.setText("Url fausse !");
+            messageBox.addButton("Ok", QMessageBox::AcceptRole);
+            messageBox.exec();
+            ok_clicked = false;
+        }
+    }
+}
+
+void FusionDialog::acceptDialog() {
+    if (!ok_clicked) {
+        updateViewer();
+    }
+    imgSource->swap(*apercu);
 }

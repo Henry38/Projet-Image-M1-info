@@ -6,7 +6,8 @@ SOURCES += \
     BlurDialog.cpp \
     Convolution.cpp \
     Matrix.cpp \
-    AbstractDialog.cpp
+    AbstractDialog.cpp \
+    FusionDialog.cpp
 
 HEADERS += \
     myWindow.h \
@@ -14,7 +15,8 @@ HEADERS += \
     BlurDialog.h \
     Convolution.h \
     Matrix.h \
-    AbstractDialog.h
+    AbstractDialog.h \
+    FusionDialog.h
 
 QT += widgets
 
