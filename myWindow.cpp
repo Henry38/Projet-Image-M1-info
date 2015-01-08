@@ -3,6 +3,9 @@
 myWindow::myWindow() : QMainWindow(0)
 {
     img = new QImage();
+    pipetteOn = false;
+    selectOn = false;
+
 
     initMenu();
     QDesktopWidget *desktop = new QDesktopWidget;
@@ -98,7 +101,7 @@ void myWindow::initMenu()
     menuFichier->addAction(actionSauvegarderSous);
     menuFichier->addAction(actionQuitter);
 
-    QMenu *menuEdition = menuBar()->addMenu("&Edition");
+    QMenu *menuEdition =  menuBar()->addMenu("&Edition");
 
     QAction *actionHistogramme = new QAction("&Histogramme",this);
     QAction *actionNiveauDeGris = new QAction("&NiveauDeGris",this);
@@ -121,14 +124,16 @@ void myWindow::initMenu()
     menuEdition->addAction(actionGrabCut);
     menuEdition->addAction(actionRogner);
 
-    QMenu *menuOutils = menuBar()->addMenu("&Outils");
+    QMenu *menuOutils =  menuBar()->addMenu("&Outils");
 
     QAction *actionPipette = new QAction("&Pipette",this);
     QAction *actionSelection = new QAction("&Selection",this);
 
     menuOutils->addAction(actionPipette);
     menuOutils->addAction(actionSelection);
-
+    //this->setMenuBar(topLevelWidget());
+    menuBar()->addAction(menuBar()->addSeparator());
+   // menuBar()->setNativeMenuBar(true);
 
     QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(openFilename()));
     QObject::connect(actionSauvegarder,SIGNAL(triggered()),this,SLOT(sauvegarder()));
@@ -232,47 +237,60 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
-
+    pipetteOn = true;
     return true;
 }
 
 bool myWindow::selection()
 {
-
+    selectOn = true;
     return true;
 }
 
 void myWindow::mouseReleaseEvent(QMouseEvent * e){
-    //QMessageBox* msgBox;
     if(e->button() == Qt::LeftButton)
     {
         QPoint p =  e->pos();
-        QPoint pF = e->pos();
-       /* msgBox = new QMessageBox();
-        msgBox->setWindowTitle("Hello");
-        msgBox->setText("You Clicked Left Mouse Button ");*/
-        QRect rect = img->rect();
-        QPoint coinHG = rect.topLeft();
-        QPoint coinBD = rect.bottomRight();
-        int bordHaut = coinHG.y();
-        int bordBas = coinBD.y();
-        int bordGauche = coinHG.x();
-        int bordDroit = coinBD.x();
-        if(p.x()>= bordGauche && p.x()<= bordDroit && p.y()>= bordHaut
-                && p.y() <= bordBas
-         ){
 
-            cout << "Coordonnées : (" << p.x() << "," << p.y() << ")"<< endl;
-        }else{
-            cout << "HORS LIMITE !" << endl;
+        if(pipetteOn){
+
+           pipetteOn = false;
+        }
+        if(selectOn){
+
+            selectOn = false;
         }
 
 
-       // msgBox->show();
+
+        cout << "Coordonnées : (" << p.x() << "," << p.y() << ")"<< endl;
+
+        rubberBand->hide();
+        selectOn = false;
 
     }
 }
 
-bool myWindow::estDansImage(int x, int y){
+void myWindow::mousePressEvent(QMouseEvent *e)
+{
+    selectOn = true;
+     origin = e->pos();
+     cout << "Coordonnées : (" << origin.x() << "," << origin.y() << ")"<< endl;
+           rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+        rubberBand->setGeometry(QRect(origin, QSize()));
+        rubberBand->show();
+}
 
+void myWindow::mouseMoveEvent(QMouseEvent *e)
+{
+    if(selectOn){
+        rubberBand->setGeometry(QRect(origin, e->pos()).normalized());
+        rubberBand->show();
+    }
+   // selectOn = false;
+}
+
+
+bool myWindow::estDansImage(int x, int y){
+    return false;
 }

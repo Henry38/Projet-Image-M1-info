@@ -15,6 +15,7 @@
 #include <QPoint>
 #include <QMouseEvent>
 #include <QMessageBox>
+#include <QRubberBand>
 using namespace std;
 
 class myWindow : public QMainWindow {
@@ -29,6 +30,8 @@ public:
     bool open(QString url);
     bool save(QString url);
     void mouseReleaseEvent(QMouseEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
     void initMenu();
     bool estDansImage(int,int);
 
@@ -55,6 +58,9 @@ private:
     void paintEvent(QPaintEvent *);
     // Attribut
     QImage *img;
+    bool pipetteOn, selectOn;
+    QRubberBand *rubberBand;
+    QPoint origin;
 
 };
 
