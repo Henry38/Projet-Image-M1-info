@@ -199,7 +199,7 @@ bool myWindow::flouter()
     BlurDialog *blurDiag = new BlurDialog(img);
     if (blurDiag->exec() == QDialog::Accepted)
     {
-        // Rafraichir l'image, le flou à déjà été calculé
+        repaint();
         return true;
     }
     return false;
