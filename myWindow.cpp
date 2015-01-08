@@ -54,7 +54,6 @@ bool myWindow::save(QString url){
     return img->save(url,0,-1);
 }
 
-
 bool myWindow::open(QString url)
 {
     if (img->load(url))
@@ -129,9 +128,9 @@ void myWindow::initMenu()
     menuOutils->addAction(actionSelection);
 
 
-    QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(ouvrir()));
+    QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(openFilename()));
     QObject::connect(actionSauvegarder,SIGNAL(triggered()),this,SLOT(sauvegarder()));
-    QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(sauvegarderSous()));
+    QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(saveAsFilename()));
     QObject::connect(actionQuitter,SIGNAL(triggered()),this,SLOT(quitter()));
 
     QObject::connect(actionHistogramme,SIGNAL(triggered()),this,SLOT(histo()));
@@ -149,20 +148,20 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
-bool myWindow::ouvrir()
+/*bool myWindow::ouvrir()
 {
     return openFilename();
-}
+}*/
 
 bool myWindow::sauvegarder()
 {
     return true;
 }
 
-bool myWindow::sauvegarderSous()
+/*bool myWindow::sauvegarderSous()
 {
     return saveAsFilename();
-}
+}*/
 
 void myWindow::quitter(){
     /*êtes vous sur ?*/
@@ -197,10 +196,13 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
-    BlurDialog *blurDiag = new BlurDialog(this, img);
-    blurDiag->exec();
-
-    return true;
+    BlurDialog *blurDiag = new BlurDialog(img);
+    if (blurDiag->exec() == QDialog::Accepted)
+    {
+        // Rafraichir l'image, le flou à déjà été calculé
+        return true;
+    }
+    return false;
 }
 
 /*permet de selectionner 2 images et de les fusionner*/
@@ -247,8 +249,4 @@ bool myWindow::pipette()
 bool myWindow::selection()
 {
     return true;
-}
-
-void myWindow::applyBlur(int n) {
-    cout << "j'applique du flou ! " << n << endl;
 }
