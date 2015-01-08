@@ -3,8 +3,6 @@
 #include "myWindow.h"
 #include<iostream>
 
-#include <FusionDialog.h>
-
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
 
