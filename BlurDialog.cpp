@@ -12,7 +12,7 @@ BlurDialog::BlurDialog(QImage *img) : QDialog(0) {
     text->setText("Flou : ");
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
-    buttonBox->move(120, 270);
+    buttonBox->move(width()-180, height()-35);
 
     spinBox = new QSpinBox(this);
     spinBox->move(80, 220);

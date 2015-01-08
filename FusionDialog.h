@@ -1,0 +1,4 @@
+#ifndef FUSIONDIALOG_H
+#define FUSIONDIALOG_H
+
+#endif // FUSIONDIALOG_H

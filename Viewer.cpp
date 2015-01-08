@@ -21,7 +21,11 @@ Viewer::~Viewer() {
 }
 
 void Viewer::setImage(QImage *img) {
-    m_label->setPixmap(QPixmap::fromImage(*img));
+    if (img != NULL) {
+        m_label->setPixmap(QPixmap::fromImage(*img));
+    } else {
+        m_label->clear();
+    }
     m_scrollArea->setWidget(m_label);
     repaint();
 }
