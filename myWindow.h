@@ -23,17 +23,19 @@ public:
     myWindow(QString url);
     ~myWindow();
 
-    bool saveAsFilename();
-    bool openFilename();
+    //bool saveAsFilename();
+    //bool openFilename();
     bool open(QString url);
     bool save(QString url);
     void initMenu();
 
 public slots:
     // Slot du menu
-    bool ouvrir();
+    //bool ouvrir();
+    bool openFilename();
     bool sauvegarder();
-    bool sauvegarderSous();
+    //bool sauvegarderSous();
+    bool saveAsFilename();
     void quitter();
     bool histo();
     bool gris();
@@ -47,9 +49,6 @@ public slots:
     bool rogner();
     bool pipette();
     bool selection();
-
-    // Slot des fonctions
-    void applyBlur(int n);
 
 private:
     // Methodes
