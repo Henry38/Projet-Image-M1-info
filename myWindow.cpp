@@ -197,10 +197,13 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
-    BlurDialog *blurDiag = new BlurDialog(this, img);
-    blurDiag->exec();
-
-    return true;
+    BlurDialog *blurDiag = new BlurDialog(img);
+    if (blurDiag->exec() == QDialog::Accepted)
+    {
+        // Rafraichir l'image
+        return true;
+    }
+    return false;
 }
 
 /*permet de selectionner 2 images et de les fusionner*/

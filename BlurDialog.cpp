@@ -1,9 +1,10 @@
 
 #include "BlurDialog.h"
 
-BlurDialog::BlurDialog(myWindow *mWin, QImage *img) : QDialog(0) {
+BlurDialog::BlurDialog(QImage *img) : QDialog(0) {
     setFixedSize(300, 300);
-    this->mWin = mWin;
+    //this->mWin = mWin;
+    this->img = img;
 
     apercu = new QImage(*img);
     viewer = new Viewer(10, 10, 200, 200, apercu, this);
@@ -41,5 +42,5 @@ void BlurDialog::repaintViewer(int n) {
 }
 
 void BlurDialog::applyBlur() {
-    // Appliquer le flou sur img !
+    // Appliquer le flou sur mWin->img !
 }
