@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QLabel>
 #include <QSpinBox>
+#include <QPushButton>
 #include <QDialogButtonBox>
 #include "Viewer.h"
 #include "myWindow.h"
@@ -23,11 +24,11 @@ private:
     QLabel *text;
     QDialogButtonBox *buttonBox;
     QSpinBox *spinBox;
-    //myWindow *mWin;
-    QImage *apercu, *img;
+    QPushButton *buttonUpdate;
+    QImage *apercu, *imgSource;
 
 private slots:
-    void repaintViewer(int);
+    void updateViewer();
     void applyBlur();
 };
 
