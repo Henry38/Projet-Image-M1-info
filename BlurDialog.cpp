@@ -1,4 +1,4 @@
-
+#include "Convolution.h"
 #include "BlurDialog.h"
 
 BlurDialog::BlurDialog(QImage *img) : QDialog(0) {
@@ -17,7 +17,7 @@ BlurDialog::BlurDialog(QImage *img) : QDialog(0) {
     spinBox = new QSpinBox(this);
     spinBox->move(80, 220);
     spinBox->setMinimum(0);
-    spinBox->setMaximum(9999);
+    spinBox->setMaximum(99);
 
     buttonUpdate = new QPushButton("Mise à jour", this);
     buttonUpdate->move(160, 221);
@@ -38,13 +38,15 @@ BlurDialog::~BlurDialog() {
 }
 
 void BlurDialog::updateViewer() {
-    // Appliquer le flou sur apercu !
-    //apercu->load("../Projet-Image-M1-info/ressources/test.png");
+    delete apercu;
+    apercu = new QImage(*imgSource);
+    Convolution c;
+    c.redimentionnerMatrix(spinBox->value()*2 +1);
+    c.convolution(apercu);
 
     viewer->setImage(apercu);
 }
 
 void BlurDialog::applyBlur() {
-    // Appliquer le flou sur imgSource !
-
+    imgSource->swap(*apercu);
 }

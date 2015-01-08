@@ -12,10 +12,5 @@ int main(int argc, char **argv) {
     //myWindow fen;
     fen.show();
 
-    /*QImage *img = new QImage();
-    img->load("../Projet-Image-M1-info/ressources/test.png");
-    FusionDialog fen(img);
-    fen.exec();*/
-
     return app.exec();
 }
