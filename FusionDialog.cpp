@@ -6,11 +6,11 @@ FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     apercu = NULL;//new QImage(*imgSource);
 
     textBrowser = new QLineEdit(this);
-    textBrowser->move(20, 220);
-    textBrowser->resize(200, 30);
+    textBrowser->move(20, 291);
+    textBrowser->resize(260, 30);
 
     openButton = new QPushButton("Ouvrir", this);
-    openButton->move(220, 220);
+    openButton->move(280, 291);
     openButton->resize(120, 30);
 
     QObject::connect(openButton, SIGNAL(clicked()), this, SLOT(openFilename()));

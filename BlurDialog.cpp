@@ -6,11 +6,11 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     apercu = NULL;//new QImage(*imgSource);
 
     text = new QLabel(this);
-    text->move(30, 224);
+    text->move(30, 295);
     text->setText("Flou : ");
 
     spinBox = new QSpinBox(this);
-    spinBox->move(80, 220);
+    spinBox->move(80, 291);
     spinBox->setMinimum(0);
     spinBox->setMaximum(99);
 
