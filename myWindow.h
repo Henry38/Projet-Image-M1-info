@@ -16,8 +16,16 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QRubberBand>
+#include <QGraphicsScene>
+#include <QtGui>
+#include <QtCore>
+#include "MyGraphicsView.h"
+#include "MyGraphicsScene.h"
 using namespace std;
 
+namespace Ui {
+    class MainWindow;
+}
 class myWindow : public QMainWindow {
 
     Q_OBJECT
@@ -29,11 +37,8 @@ public:
 
     bool open(QString url);
     bool save(QString url);
-    void mouseReleaseEvent(QMouseEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
     void initMenu();
-    bool estDansImage(int,int);
+    bool estDansImage();
 
 public slots:
     bool openFilename();
@@ -61,6 +66,8 @@ private:
     bool pipetteOn, selectOn;
     QRubberBand *rubberBand;
     QPoint origin;
+    Ui::MainWindow *ui;
+    QGraphicsScene *scene;
 
 };
 

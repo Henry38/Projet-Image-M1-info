@@ -1,32 +1,40 @@
 #include "myWindow.h"
+#include "BlurDialog.h"
+#include "ui_myWindow.h"
+#include <QPixmap>
 
-myWindow::myWindow() : QMainWindow(0)
+myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
 {
+    /*QDesktopWidget *desktop = new QDesktopWidget;
+     int xScreen = desktop->screenGeometry().width();
+     int yScreen = desktop->screenGeometry().height();
+     move((xScreen - width()) / 2, (yScreen - height()) / 2);
+     resize(xScreen / 2, yScreen / 2);*/
+    ui->setupUi(this);
+    scene = new QGraphicsScene(this);
     img = new QImage();
     pipetteOn = false;
     selectOn = false;
 
-
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setMouseTracking(true);
+    ui->graphicsView->show();
     initMenu();
-    QDesktopWidget *desktop = new QDesktopWidget;
-    int xScreen = desktop->screenGeometry().width();
-    int yScreen = desktop->screenGeometry().height();
-    move((xScreen - width()) / 2, (yScreen - height()) / 2);
-    resize(xScreen / 2, yScreen / 2);
-
-    QWidget::setMouseTracking(true);
 
 }
 
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
-    repaint();
+    //repaint();
+
+
 }
 
 myWindow::~myWindow()
 {
     delete img;
+    delete ui;
 }
 
 bool myWindow::openFilename()
@@ -58,12 +66,16 @@ bool myWindow::save(QString url){
     return img->save(url,0,-1);
 }
 
-
 bool myWindow::open(QString url)
 {
     if (img->load(url))
     {
+
         resize(img->width(), img->height());
+        scene->clear();
+        scene->addPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setScene(scene);
+        ui->graphicsView->show();
         return true;
     }
     return false;
@@ -71,7 +83,7 @@ bool myWindow::open(QString url)
 
 void myWindow::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
+  /*  QPainter painter(this);
 
     int x = 0;
     int y = 0;
@@ -84,8 +96,8 @@ void myWindow::paintEvent(QPaintEvent *)
         y = (height() - img->height()) / 2;
     }
 
-    painter.drawImage(x, y, *img);
-    painter.end();
+    painter.drawImage(x,y, *img);
+    painter.end();*/
 }
 
 void myWindow::initMenu()
@@ -135,6 +147,7 @@ void myWindow::initMenu()
     menuBar()->addAction(menuBar()->addSeparator());
    // menuBar()->setNativeMenuBar(true);
 
+
     QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(openFilename()));
     QObject::connect(actionSauvegarder,SIGNAL(triggered()),this,SLOT(sauvegarder()));
     QObject::connect(actionSauvegarderSous,SIGNAL(triggered()),this,SLOT(saveAsFilename()));
@@ -156,10 +169,13 @@ void myWindow::initMenu()
 }
 
 
+
+
 bool myWindow::sauvegarder()
 {
     return true;
 }
+
 
 
 void myWindow::quitter(){
@@ -189,14 +205,24 @@ bool myWindow::gris()
             img->setPixel(i,j,pixel);
         }
     }
-    repaint();
+    //repaint();
+    scene->clear();
+    scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
     return true;
 }
 
 /*floute l'image*/
 bool myWindow::flouter()
 {
-    return true;
+    BlurDialog *blurDiag = new BlurDialog(img);
+    if (blurDiag->exec() == QDialog::Accepted)
+    {
+        // Rafraichir l'image, le flou à déjà été calculé
+        return true;
+    }
+    return false;
 }
 
 /*permet de selectionner 2 images et de les fusionner*/
@@ -230,9 +256,23 @@ bool myWindow::grabCut()
     return true;
 }
 
+/* rogne la selection de l'image*/
 bool myWindow::rogner()
 {
-    return true;
+    if(ui->graphicsView->getPret()){
+        /*FONCTION ROGNER FONCTIONNE PAS ! :(*/
+        QRect *rect = new QRect(ui->graphicsView->getHG(),ui->graphicsView->getBD());
+        //
+        *img = img->copy(*rect);
+        //*img = img->copy(10,10,100,100);
+        scene->clear();
+        scene->addPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setScene(scene);
+        ui->graphicsView->show();
+        return true;
+    }else{
+        return false;
+    }
 }
 
 bool myWindow::pipette()
@@ -247,50 +287,3 @@ bool myWindow::selection()
     return true;
 }
 
-void myWindow::mouseReleaseEvent(QMouseEvent * e){
-    if(e->button() == Qt::LeftButton)
-    {
-        QPoint p =  e->pos();
-
-        if(pipetteOn){
-
-           pipetteOn = false;
-        }
-        if(selectOn){
-
-            selectOn = false;
-        }
-
-
-
-        cout << "Coordonnées : (" << p.x() << "," << p.y() << ")"<< endl;
-
-        rubberBand->hide();
-        selectOn = false;
-
-    }
-}
-
-void myWindow::mousePressEvent(QMouseEvent *e)
-{
-    selectOn = true;
-     origin = e->pos();
-     cout << "Coordonnées : (" << origin.x() << "," << origin.y() << ")"<< endl;
-           rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
-        rubberBand->setGeometry(QRect(origin, QSize()));
-        rubberBand->show();
-}
-
-void myWindow::mouseMoveEvent(QMouseEvent *e)
-{
-    if(selectOn){
-        rubberBand->setGeometry(QRect(origin, e->pos()).normalized());
-        rubberBand->show();
-    }
-   // selectOn = false;
-}
-
-
-bool myWindow::estDansImage(int x, int y){
-    return false;
-}
