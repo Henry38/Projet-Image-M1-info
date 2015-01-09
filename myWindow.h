@@ -37,6 +37,7 @@ public:
     myWindow(QString url);
     ~myWindow();
 
+    void repeindre();
     bool open(QString url);
     bool save(QString url);
     void initMenu();
