@@ -9,6 +9,8 @@
 #include <QFileDialog>
 #include <QDesktopWidget>
 #include <QObject>
+#include "BlurDialog.h"
+#include "FusionDialog.h"
 #include <QtWidgets>
 #include <iostream>
 #include <QApplication>

@@ -1,5 +1,4 @@
 #include "myWindow.h"
-#include "BlurDialog.h"
 
 myWindow::myWindow() : QMainWindow(0)
 {
@@ -196,8 +195,8 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
-    BlurDialog *blurDiag = new BlurDialog(img);
-    if (blurDiag->exec() == QDialog::Accepted)
+    BlurDialog blurDiag(img);
+    if (blurDiag.exec() == QDialog::Accepted)
     {
         repaint();
         return true;
@@ -208,7 +207,13 @@ bool myWindow::flouter()
 /*permet de selectionner 2 images et de les fusionner*/
 bool myWindow::fusionner()
 {
-    return true;
+    FusionDialog fusionDialog(img);
+    if (fusionDialog.exec() == QDialog::Accepted)
+    {
+        repaint();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::redimensionner()
