@@ -52,7 +52,10 @@ void Convolution::convolution(QImage *image)
                     sommeB += qBlue(pixel)*m.get_element(k,l);
                 }
             }
-            imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR/sommeCoefficient,sommeG/sommeCoefficient,sommeB/sommeCoefficient));
+            if(sommeCoefficient > 0)
+                imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR/sommeCoefficient,sommeG/sommeCoefficient,sommeB/sommeCoefficient));
+            else
+                imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR/sommeCoefficient,sommeG/sommeCoefficient,sommeB/sommeCoefficient));
         }
     }
     image->swap(imageCopie);
