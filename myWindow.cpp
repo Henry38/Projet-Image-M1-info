@@ -26,7 +26,6 @@ myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
-    //repaint();
 
 
 }
@@ -35,6 +34,13 @@ myWindow::~myWindow()
 {
     delete img;
     delete ui;
+}
+
+void myWindow::repeindre(){
+    scene->clear();
+    scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
 }
 
 bool myWindow::openFilename()
@@ -72,10 +78,7 @@ bool myWindow::open(QString url)
     if (img->load(url))
     {
         resize(img->width(), img->height());
-        scene->clear();
-        scene->addPixmap(QPixmap::fromImage(*img));
-        ui->graphicsView->setScene(scene);
-        ui->graphicsView->show();
+        repeindre();
         return true;
     }
     return false;
@@ -202,11 +205,7 @@ bool myWindow::gris()
             img->setPixel(i,j,pixel);
         }
     }
-    //repaint();
-    scene->clear();
-    scene->addPixmap(QPixmap::fromImage(*img));
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->show();
+    repeindre();
     return true;
 }
 
@@ -216,7 +215,7 @@ bool myWindow::flouter()
     BlurDialog blurDiag(img);
     if (blurDiag.exec() == QDialog::Accepted)
     {
-        repaint();
+        repeindre();
         return true;
     }
     return false;
@@ -228,7 +227,7 @@ bool myWindow::fusionner()
     FusionDialog fusionDialog(img);
     if (fusionDialog.exec() == QDialog::Accepted)
     {
-        repaint();
+        repeindre();
         return true;
     }
     return false;
@@ -268,10 +267,7 @@ bool myWindow::rogner()
         //
         *img = img->copy(*rect);
         //*img = img->copy(10,10,100,100);
-        scene->clear();
-        scene->addPixmap(QPixmap::fromImage(*img));
-        ui->graphicsView->setScene(scene);
-        ui->graphicsView->show();
+        repeindre();
         return true;
     }else{
         return false;
