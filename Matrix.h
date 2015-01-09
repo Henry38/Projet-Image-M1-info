@@ -14,6 +14,7 @@ public:
     int sommeCoefficient();
     int get_element(int i, int j);
     int getSize();
+    void retourner();
 
 
 private:

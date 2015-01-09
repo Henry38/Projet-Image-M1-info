@@ -48,6 +48,29 @@ void Matrix::resize(int i)
     }
 }
 
+void Matrix::retourner()
+{
+    int tmp;
+    for(int i = 0; i < size/2;i++)
+    {
+        for(int j = 0; j< size;j++)
+        {
+            tmp = tab2D[i][j];
+            tab2D[i][j] = tab2D[size-i-1][j];
+            tab2D[size-i-1][j] = tmp;
+        }
+    }
+    for(int i = 0; i < size;i++)
+    {
+        for(int j = 0; j< size/2;j++)
+        {
+            tmp = tab2D[i][j];
+            tab2D[i][j] = tab2D[i][size-j-1];
+            tab2D[i][size-j-1] = tmp;
+        }
+    }
+}
+
 int Matrix::getSize()
 {
     return size;

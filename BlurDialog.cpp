@@ -3,7 +3,7 @@
 
 BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
-    apercu = NULL;//new QImage(*imgSource);
+    apercu = new QImage(*imgSource);
 
     text = new QLabel(this);
     text->move(30, 295);
@@ -14,7 +14,7 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     spinBox->setMinimum(0);
     spinBox->setMaximum(99);
 
-    updateViewer();
+    display(apercu);
     ok_clicked = false;
 }
 

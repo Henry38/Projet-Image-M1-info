@@ -10,7 +10,7 @@ Convolution::Convolution(int taille, int init)
 void Convolution::remplireMatrix(int val)
 {
     m.remplire(val);
-    sommeCoefficient = val*m.getSize()*m.getSize();
+    sommeCoefficient = m.sommeCoefficient();
 }
 
 void Convolution::modifierCaseMatrix(int i, int j, int val)
@@ -24,6 +24,11 @@ void Convolution::redimentionnerMatrix(int i, int val)
     remplireMatrix(val);
 }
 
+void Convolution::retournerMatrix()
+{
+    m.retourner();
+}
+
 void Convolution::convolution(QImage *image)
 {
     int sommeR;
@@ -34,7 +39,7 @@ void Convolution::convolution(QImage *image)
     int finI = image->width() - m.getSize();
     int finJ = image->height() - m.getSize();
     QImage imageCopie(*image);
-
+    retournerMatrix();
     for(int i = 0; i < finI; i++)
     {
         for(int j = 0; j<finJ; j++)
@@ -53,10 +58,25 @@ void Convolution::convolution(QImage *image)
                 }
             }
             if(sommeCoefficient > 0)
-                imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR/sommeCoefficient,sommeG/sommeCoefficient,sommeB/sommeCoefficient));
-            else
-                imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR/sommeCoefficient,sommeG/sommeCoefficient,sommeB/sommeCoefficient));
+            {
+                sommeR/=sommeCoefficient;
+                sommeG/=sommeCoefficient;
+                sommeB/=sommeCoefficient;
+            }
+            ajusterCouleur(&sommeR);
+            ajusterCouleur(&sommeG);
+            ajusterCouleur(&sommeB);
+            imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR,sommeG,sommeB));
         }
     }
     image->swap(imageCopie);
+    retournerMatrix();
+}
+
+void Convolution::ajusterCouleur(int *couleur)
+{
+    if(*couleur > 255)
+        *couleur = 255;
+    else if(*couleur < 0)
+        *couleur = 0;
 }

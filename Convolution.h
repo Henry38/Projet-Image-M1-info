@@ -13,11 +13,13 @@ public:
     void remplireMatrix(int val);
     void modifierCaseMatrix(int i, int j, int val);
     void convolution(QImage *image);
+    void retournerMatrix();
 
 
 private:
-     Matrix m;
-     int sommeCoefficient;
+    void ajusterCouleur(int *couleur);
+    Matrix m;
+    int sommeCoefficient;
 
 };
 
