@@ -2,34 +2,31 @@
 #define BLURDIALOG_H
 
 #include <QObject>
-#include <QDialog>
 #include <QImage>
 #include <QLabel>
 #include <QSpinBox>
-#include <QPushButton>
-#include <QDialogButtonBox>
-#include "Viewer.h"
-#include "myWindow.h"
+
+#include "AbstractDialog.h"
+#include "Convolution.h"
 
 
-class BlurDialog : public QDialog {
+class BlurDialog : public AbstractDialog {
 
     Q_OBJECT
+
 public:
     BlurDialog(QImage*);
     ~BlurDialog();
 
 private:
-    Viewer *viewer;
     QLabel *text;
-    QDialogButtonBox *buttonBox;
     QSpinBox *spinBox;
-    QPushButton *buttonUpdate;
-    QImage *apercu, *imgSource;
+    QImage *imgSource, *apercu;
+    bool ok_clicked;
 
-private slots:
+public slots:
     void updateViewer();
-    void applyBlur();
+    void acceptDialog();
 };
 
 #endif // BLURDIALOG_H

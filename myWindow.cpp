@@ -49,20 +49,21 @@ bool myWindow::openFilename()
 }
 
 /*Sauvegarder sous*/
-bool myWindow::saveAsFilename(){
-
+bool myWindow::saveAsFilename()
+{
     QString filename = QFileDialog::getSaveFileName(this, "Save File",
                                "/../Projet-Image-M1-info/ressources/untitled.png",
                                "Images (*.png *.xpm *.jpg)");
 
-    if (filename != "") {
+    if (filename != "")
+    {
         return save(filename);
     }
     return false;
 }
 
-bool myWindow::save(QString url){
-
+bool myWindow::save(QString url)
+{
     return img->save(url,0,-1);
 }
 
@@ -70,7 +71,6 @@ bool myWindow::open(QString url)
 {
     if (img->load(url))
     {
-
         resize(img->width(), img->height());
         scene->clear();
         scene->addPixmap(QPixmap::fromImage(*img));
@@ -169,13 +169,10 @@ void myWindow::initMenu()
 }
 
 
-
-
 bool myWindow::sauvegarder()
 {
     return true;
 }
-
 
 
 void myWindow::quitter(){
@@ -216,10 +213,10 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
-    BlurDialog *blurDiag = new BlurDialog(img);
-    if (blurDiag->exec() == QDialog::Accepted)
+    BlurDialog blurDiag(img);
+    if (blurDiag.exec() == QDialog::Accepted)
     {
-        // Rafraichir l'image, le flou à déjà été calculé
+        repaint();
         return true;
     }
     return false;
@@ -228,7 +225,13 @@ bool myWindow::flouter()
 /*permet de selectionner 2 images et de les fusionner*/
 bool myWindow::fusionner()
 {
-    return true;
+    FusionDialog fusionDialog(img);
+    if (fusionDialog.exec() == QDialog::Accepted)
+    {
+        repaint();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::redimensionner()

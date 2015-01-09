@@ -9,6 +9,8 @@
 #include <QFileDialog>
 #include <QDesktopWidget>
 #include <QObject>
+#include "BlurDialog.h"
+#include "FusionDialog.h"
 #include <QtWidgets>
 #include <iostream>
 #include <QApplication>
@@ -41,9 +43,12 @@ public:
     bool estDansImage();
 
 public slots:
+    // Slot du menu
+    //bool ouvrir();
     bool openFilename();
-    bool saveAsFilename();
     bool sauvegarder();
+    //bool sauvegarderSous();
+    bool saveAsFilename();
     void quitter();
     bool histo();
     bool gris();
