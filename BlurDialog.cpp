@@ -1,6 +1,7 @@
 
 #include "BlurDialog.h"
 
+
 BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
     apercu = new QImage(*imgSource);
@@ -24,7 +25,8 @@ BlurDialog::~BlurDialog() {
     delete apercu;
 }
 
-void BlurDialog::updateViewer() {
+void BlurDialog::updateViewer()
+{
     delete apercu;
     apercu = new QImage(*imgSource);
     Convolution c;

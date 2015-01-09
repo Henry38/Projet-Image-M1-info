@@ -10,5 +10,7 @@ int main(int argc, char **argv) {
     //myWindow fen;
     fen.show();
 
+
+
     return app.exec();
 }

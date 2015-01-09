@@ -20,7 +20,8 @@ Viewer::~Viewer() {
     delete m_scrollArea;
 }
 
-void Viewer::setImage(QImage *img) {
+void Viewer::setImage(QImage *img)
+{
     if (img != NULL) {
         m_label->setPixmap(QPixmap::fromImage(*img));
     } else {

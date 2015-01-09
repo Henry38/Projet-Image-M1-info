@@ -1,27 +1,40 @@
 #include "myWindow.h"
+#include "BlurDialog.h"
+#include "ui_myWindow.h"
+#include <QPixmap>
 
-myWindow::myWindow() : QMainWindow(0)
+myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
 {
+    /*QDesktopWidget *desktop = new QDesktopWidget;
+     int xScreen = desktop->screenGeometry().width();
+     int yScreen = desktop->screenGeometry().height();
+     move((xScreen - width()) / 2, (yScreen - height()) / 2);
+     resize(xScreen / 2, yScreen / 2);*/
+    ui->setupUi(this);
+    scene = new QGraphicsScene(this);
     img = new QImage();
+    pipetteOn = false;
+    selectOn = false;
 
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setMouseTracking(true);
+    ui->graphicsView->show();
     initMenu();
-    QDesktopWidget *desktop = new QDesktopWidget;
-    int xScreen = desktop->screenGeometry().width();
-    int yScreen = desktop->screenGeometry().height();
-    move((xScreen - width()) / 2, (yScreen - height()) / 2);
-    resize(xScreen / 2, yScreen / 2);
 
 }
 
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
-    repaint();
+    //repaint();
+
+
 }
 
 myWindow::~myWindow()
 {
     delete img;
+    delete ui;
 }
 
 bool myWindow::openFilename()
@@ -58,7 +71,11 @@ bool myWindow::open(QString url)
 {
     if (img->load(url))
     {
-        resize(img->width()+160, img->height()+160);
+        resize(img->width(), img->height());
+        scene->clear();
+        scene->addPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setScene(scene);
+        ui->graphicsView->show();
         return true;
     }
     return false;
@@ -66,7 +83,7 @@ bool myWindow::open(QString url)
 
 void myWindow::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
+  /*  QPainter painter(this);
 
     int x = 0;
     int y = 0;
@@ -79,8 +96,8 @@ void myWindow::paintEvent(QPaintEvent *)
         y = (height() - img->height()) / 2;
     }
 
-    painter.drawImage(x, y, *img);
-    painter.end();
+    painter.drawImage(x,y, *img);
+    painter.end();*/
 }
 
 void myWindow::initMenu()
@@ -96,7 +113,7 @@ void myWindow::initMenu()
     menuFichier->addAction(actionSauvegarderSous);
     menuFichier->addAction(actionQuitter);
 
-    QMenu *menuEdition = menuBar()->addMenu("&Edition");
+    QMenu *menuEdition =  menuBar()->addMenu("&Edition");
 
     QAction *actionHistogramme = new QAction("&Histogramme",this);
     QAction *actionNiveauDeGris = new QAction("&NiveauDeGris",this);
@@ -119,13 +136,16 @@ void myWindow::initMenu()
     menuEdition->addAction(actionGrabCut);
     menuEdition->addAction(actionRogner);
 
-    QMenu *menuOutils = menuBar()->addMenu("&Outils");
+    QMenu *menuOutils =  menuBar()->addMenu("&Outils");
 
     QAction *actionPipette = new QAction("&Pipette",this);
     QAction *actionSelection = new QAction("&Selection",this);
 
     menuOutils->addAction(actionPipette);
     menuOutils->addAction(actionSelection);
+    //this->setMenuBar(topLevelWidget());
+    menuBar()->addAction(menuBar()->addSeparator());
+   // menuBar()->setNativeMenuBar(true);
 
 
     QObject::connect(actionOuvrir,SIGNAL(triggered()),this,SLOT(openFilename()));
@@ -148,10 +168,12 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
+
 bool myWindow::sauvegarder()
 {
     return true;
 }
+
 
 void myWindow::quitter(){
     /*êtes vous sur ?*/
@@ -167,6 +189,7 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
+
     QRgb pixel;
     int i,j,h = img->height(), w = img->width(),tmp;
     for(i=0; i<w; i++)
@@ -179,7 +202,11 @@ bool myWindow::gris()
             img->setPixel(i,j,pixel);
         }
     }
-    repaint();
+    //repaint();
+    scene->clear();
+    scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
     return true;
 }
 
@@ -232,17 +259,34 @@ bool myWindow::grabCut()
     return true;
 }
 
+/* rogne la selection de l'image*/
 bool myWindow::rogner()
 {
-    return true;
+    if(ui->graphicsView->getPret()){
+        /*FONCTION ROGNER FONCTIONNE PAS ! :(*/
+        QRect *rect = new QRect(ui->graphicsView->getHG(),ui->graphicsView->getBD());
+        //
+        *img = img->copy(*rect);
+        //*img = img->copy(10,10,100,100);
+        scene->clear();
+        scene->addPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setScene(scene);
+        ui->graphicsView->show();
+        return true;
+    }else{
+        return false;
+    }
 }
 
 bool myWindow::pipette()
 {
+    pipetteOn = true;
     return true;
 }
 
 bool myWindow::selection()
 {
+    selectOn = true;
     return true;
 }
+
