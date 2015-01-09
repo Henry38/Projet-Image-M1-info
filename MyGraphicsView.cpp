@@ -26,23 +26,16 @@ bool MyGraphicsView::getPret(){
 void MyGraphicsView::setPret(bool b){
     pret = b;
 }
-/*A FAIRE*/
-/*
-QPoint getSelectionBD(){
-    return getBD;
-}
 
-QPoint getSelectionHG(){
-    return HG;
-}
-*/
 QPoint MyGraphicsView::getHG(){
 
-    return HG;
+    QPoint *newHG = new QPoint(qMin(HG.x(),BD.x()),qMin(HG.y(),BD.y()));
+    return *newHG;
 }
 
 QPoint MyGraphicsView::getBD(){
-    return BD;
+    QPoint *newBD = new QPoint(qMax(HG.x(),BD.x()),qMax(HG.y(),BD.y()));
+    return *newBD;
 }
 
 void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
@@ -61,7 +54,6 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
 
 void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 {
-
     rubberBand->hide();
 
     pret = false;
@@ -78,4 +70,5 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
         rubberBand->setGeometry(QRect(HG, e->pos()).normalized());
         rubberBand->show();
     }
+
 }
