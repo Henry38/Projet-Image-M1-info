@@ -40,6 +40,7 @@ void myWindow::repeindre()
 {
     scene->clear();
     //QGraphicsPixmapItem* item = scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
     //item->setOffset(img->width()/2, img->height()/2);
     //item->setPos(ui->graphicsView->width()/2, ui->graphicsView->height()/2);
@@ -318,7 +319,7 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
-    pipetteOn = true;
+   ui->graphicsView->setModePipette(!ui->graphicsView->getModePipette());
 
     return true;
 }
