@@ -36,20 +36,21 @@ bool myWindow::openFilename()
 }
 
 /*Sauvegarder sous*/
-bool myWindow::saveAsFilename(){
-
+bool myWindow::saveAsFilename()
+{
     QString filename = QFileDialog::getSaveFileName(this, "Save File",
                                "/../Projet-Image-M1-info/ressources/untitled.png",
                                "Images (*.png *.xpm *.jpg)");
 
-    if (filename != "") {
+    if (filename != "")
+    {
         return save(filename);
     }
     return false;
 }
 
-bool myWindow::save(QString url){
-
+bool myWindow::save(QString url)
+{
     return img->save(url,0,-1);
 }
 
@@ -57,7 +58,7 @@ bool myWindow::open(QString url)
 {
     if (img->load(url))
     {
-        resize(img->width(), img->height());
+        resize(img->width()+160, img->height()+160);
         return true;
     }
     return false;
@@ -147,20 +148,10 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
-/*bool myWindow::ouvrir()
-{
-    return openFilename();
-}*/
-
 bool myWindow::sauvegarder()
 {
     return true;
 }
-
-/*bool myWindow::sauvegarderSous()
-{
-    return saveAsFilename();
-}*/
 
 void myWindow::quitter(){
     /*êtes vous sur ?*/
