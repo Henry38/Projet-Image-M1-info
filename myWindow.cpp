@@ -39,10 +39,14 @@ myWindow::~myWindow()
 void myWindow::repeindre()
 {
     scene->clear();
-    //scene->setBackgroundBrush(Qt::red);
+    //QGraphicsPixmapItem* item = scene->addPixmap(QPixmap::fromImage(*img));
+    ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
+    //item->setOffset(img->width()/2, img->height()/2);
+    //item->setPos(ui->graphicsView->width()/2, ui->graphicsView->height()/2);
+    scene->setSceneRect(0,0,img->width(),img->height());
     ui->graphicsView->setScene(scene);
-    ui->graphicsView->show();
+    //ui->graphicsView->show();
 }
 
 bool myWindow::openFilename()
@@ -89,7 +93,7 @@ bool myWindow::open(QString url)
 
 void myWindow::paintEvent(QPaintEvent *)
 {
-  /*  QPainter painter(this);
+    /*QPainter painter(this);
 
     int x = 0;
     int y = 0;
@@ -104,6 +108,8 @@ void myWindow::paintEvent(QPaintEvent *)
 
     painter.drawImage(x,y, *img);
     painter.end();*/
+
+    repeindre();
 }
 
 void myWindow::initMenu()
@@ -265,11 +271,46 @@ bool myWindow::grabCut()
 bool myWindow::rogner()
 {
     if(ui->graphicsView->getPret()){
-        /*FONCTION ROGNER FONCTIONNE PAS ! :(*/
-        QRect *rect = new QRect(ui->graphicsView->getHG(),ui->graphicsView->getBD());
-        //
+
+        QPoint HG = ui->graphicsView->getHG();
+        QPoint BD = ui->graphicsView->getBD();
+        QPoint *bonHG = new QPoint( HG.x() -ui->graphicsView->width()/2 + img->width()/2 ,HG.y()-ui->graphicsView->height()/2 +img->height()/2 );
+        QPoint *bonBD = new QPoint(BD.x() -ui->graphicsView->width()/2 + img->width()/2 ,BD.y() -ui->graphicsView->height()/2 +img->height()/2 );
+        /*Si selection dépasse de l'image*/
+        if(bonBD->x()<0){
+            bonBD->setX(0);
+        }
+        if(bonHG->x()<0){
+            bonHG->setX(0);
+        }
+        if(bonBD->y()<0){
+            bonBD->setY(0);
+        }
+        if(bonHG->y()<0){
+            bonHG->setY(0);
+        }
+
+        if(bonBD->x() > img->width()){
+          /*on recadre à la limite*/
+            bonBD->setX(img->width());
+        }
+
+        if(bonBD->y() > img->width()){
+          /*on recadre à la limite*/
+            bonBD->setY(img->width());
+        }
+
+        if(bonHG->x() > img->width()){
+          /*on recadre à la limite*/
+            bonHG->setX(img->width());
+        }
+
+        if(bonHG->y() > img->width()){
+          /*on recadre à la limite*/
+            bonHG->setY(img->width());
+        }
+        QRect *rect = new QRect(*bonHG,*bonBD);
         *img = img->copy(*rect);
-        //*img = img->copy(10,10,100,100);
         repeindre();
         return true;
     }else{
@@ -279,7 +320,8 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
-    pipetteOn = true;
+   ui->graphicsView->setModePipette(!ui->graphicsView->getModePipette());
+
     return true;
 }
 

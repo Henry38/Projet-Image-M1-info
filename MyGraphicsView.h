@@ -24,14 +24,20 @@ public slots:
     void mouseMoveEvent (QMouseEvent *move);
     bool getPret();
     void setPret(bool);
+    bool getModePipette();
+    void setModePipette(bool);
+    QImage* getImage();
+    void setImage(QImage*);
     QPoint getHG();
     QPoint getBD();
+    bool estDansImage(QPoint*);
 
 private:
        QRubberBand *rubberBand;
-       bool selectOn ,pret;
+       bool selectOn ,pret,pipetteOn;
        QPoint HG, BD;
        QGraphicsScene *scene;
+       QImage *image;
 };
 #endif // MYGRAPHICSVIEW_H
 
