@@ -5,14 +5,16 @@
 
 myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
 {
-    /*QDesktopWidget *desktop = new QDesktopWidget;
-     int xScreen = desktop->screenGeometry().width();
-     int yScreen = desktop->screenGeometry().height();
-     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-     resize(xScreen / 2, yScreen / 2);*/
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     img = new QImage();
+
+    QDesktopWidget *desktop = new QDesktopWidget;
+    int xScreen = desktop->screenGeometry().width();
+    int yScreen = desktop->screenGeometry().height();
+    move((xScreen - width()) / 2, (yScreen - height()) / 2);
+    resize(xScreen / 2, yScreen / 2);
+
     pipetteOn = false;
     selectOn = false;
 
@@ -20,14 +22,12 @@ myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
     ui->graphicsView->setMouseTracking(true);
     ui->graphicsView->show();
     initMenu();
-
+    repeindre();
 }
 
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
-
-
 }
 
 myWindow::~myWindow()
@@ -36,8 +36,10 @@ myWindow::~myWindow()
     delete ui;
 }
 
-void myWindow::repeindre(){
+void myWindow::repeindre()
+{
     scene->clear();
+    //scene->setBackgroundBrush(Qt::red);
     scene->addPixmap(QPixmap::fromImage(*img));
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
@@ -77,6 +79,7 @@ bool myWindow::open(QString url)
 {
     if (img->load(url))
     {
+        //std::cout << img->format() << std::endl;
         resize(img->width(), img->height());
         repeindre();
         return true;

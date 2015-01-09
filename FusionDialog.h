@@ -9,6 +9,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QSlider>
+#include <QLabel>
 
 #include "AbstractDialog.h"
 
@@ -22,17 +24,22 @@ public:
     ~FusionDialog();
 
 private:
-    QImage *imgSource, *apercu;
+    QImage *imgSource, *imgOpen, *apercu;
     QLineEdit *textBrowser;
     QPushButton *openButton;
+    QSlider *slider;
+    QLabel *label;
     bool ok_clicked;
+    int img_x, img_y;
 
 public slots:
     void updateViewer();
     void acceptDialog();
+    void calculFusion(QImage*);
 
 private slots:
     void openFilename();
+    void writeOpacity(int);
 
 };
 
