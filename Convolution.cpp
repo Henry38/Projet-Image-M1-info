@@ -29,7 +29,7 @@ void Convolution::retournerMatrix()
     m.retourner();
 }
 
-void Convolution::convolution(QImage *image)
+/*void Convolution::convolution(QImage *image)
 {
     int sommeR;
     int sommeG;
@@ -67,6 +67,56 @@ void Convolution::convolution(QImage *image)
             ajusterCouleur(&sommeG);
             ajusterCouleur(&sommeB);
             imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR,sommeG,sommeB));
+        }
+    }
+    image->swap(imageCopie);
+    retournerMatrix();
+}*/
+#include<iostream>
+void Convolution::convolution(QImage *image)
+{
+    int sommeR;
+    int sommeG;
+    int sommeB;
+    int nbPixel;
+    QRgb pixel;
+    int decalage = m.getSize()/2;
+    //int finI = image->width();
+    //int finJ = image->height() - m.getSize();
+    QImage imageCopie(*image);
+    /*std::cout << imageCopie.width() << std::endl;
+    std::cout << imageCopie.height() << std::endl;
+    std::cout << qBlue(imageCopie.pixel(20, 200)) << std::endl;
+    std::cout << qBlue(imageCopie.pixel(200, 20)) << std::endl;*/
+    retournerMatrix();
+    for(int x = 0; x < image->width(); x++)
+    {
+        for(int y = 0; y < image->height(); y++)
+        {
+            sommeR = 0;
+            sommeG = 0;
+            sommeB = 0;
+            nbPixel = 0;
+            for(int i = -decalage; i <= decalage; i++)
+            {
+                for(int j = -decalage; j <= decalage; j++)
+                {
+                    if (x+j >= 0 && x+j < image->width() && y+i >= 0 && y+i < image->height()) {
+                        pixel = image->pixel(x+j,y+i);
+                        sommeR += qRed(pixel)*m.get_element(i+decalage,j+decalage);
+                        sommeG += qGreen(pixel)*m.get_element(i+decalage,j+decalage);
+                        sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
+                        nbPixel++;
+                    }
+                }
+            }
+            sommeR/=nbPixel;
+            sommeG/=nbPixel;
+            sommeB/=nbPixel;
+            ajusterCouleur(&sommeR);
+            ajusterCouleur(&sommeG);
+            ajusterCouleur(&sommeB);
+            imageCopie.setPixel(x, y, qRgb(sommeR,sommeG,sommeB));
         }
     }
     image->swap(imageCopie);

@@ -29,14 +29,12 @@ void BlurDialog::updateViewer()
 {
     delete apercu;
     apercu = new QImage(*imgSource);
+    //*apercu = apercu->copy(imgSource->rect());
     Convolution c;
     c.redimentionnerMatrix(spinBox->value()*2 +1);
     c.convolution(apercu);
 
     display(apercu);
-
-    /*label->setPixmap(QPixmap::fromImage(*apercu));
-    getViewer()->setWidget(label);*/
     ok_clicked = true;
 }
 
