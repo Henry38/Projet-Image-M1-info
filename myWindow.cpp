@@ -7,6 +7,7 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     img = new QImage();
+    filename = "";
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
@@ -45,6 +46,7 @@ void myWindow::repeindre()
     //ui->graphicsView->show();
 }
 
+/* Ouvrir */
 bool myWindow::openFilename()
 {
     QString filename = QFileDialog::getOpenFileName(this,
@@ -56,13 +58,23 @@ bool myWindow::openFilename()
     return false;
 }
 
-/*Sauvegarder sous*/
+bool myWindow::open(QString url)
+{
+    if (img->load(url))
+    {
+        filename = url;
+        repeindre();
+        return true;
+    }
+    return false;
+}
+
+/* Sauvegarder sous*/
 bool myWindow::saveAsFilename()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save File",
                                "/../Projet-Image-M1-info/ressources/untitled.png",
                                "Images (*.png *.xpm *.jpg)");
-
     if (filename != "")
     {
         return save(filename);
@@ -72,17 +84,7 @@ bool myWindow::saveAsFilename()
 
 bool myWindow::save(QString url)
 {
-    return img->save(url,0,-1);
-}
-
-bool myWindow::open(QString url)
-{
-    if (img->load(url))
-    {
-        repeindre();
-        return true;
-    }
-    return false;
+    return img->save(url, 0, -1);
 }
 
 void myWindow::paintEvent(QPaintEvent *)
@@ -174,12 +176,12 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
-
+/* Sauvegarder */
 bool myWindow::sauvegarder()
 {
+    save(filename);
     return true;
 }
-
 
 void myWindow::quitter(){
     /*êtes vous sur ?*/
@@ -195,17 +197,18 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-
     QRgb pixel;
-    int i,j,h = img->height(), w = img->width(),tmp;
-    for(i=0; i<w; i++)
+    int i, j, tmp;
+    int h = img->height();
+    int w = img->width();
+    for(i = 0; i < w; i++)
     {
-        for(j = 0; j<h; j++)
+        for(j = 0; j < h; j++)
         {
-            pixel = img->pixel(i,j);
+            pixel = img->pixel(i, j);
             tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
-            pixel = qRgb(tmp,tmp,tmp);
-            img->setPixel(i,j,pixel);
+            pixel = qRgba(tmp, tmp, tmp, qAlpha(pixel));
+            img->setPixel(i, j, pixel);
         }
     }
     repeindre();
