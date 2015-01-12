@@ -41,6 +41,7 @@ public:
     bool open(QString url);
     bool save(QString url);
     void initMenu();
+    void initBarreOutils();
     bool estDansImage();
 
 public slots:
@@ -69,11 +70,11 @@ private:
     void paintEvent(QPaintEvent *);
     // Attribut
     QImage *img;
-    bool pipetteOn, selectOn;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
+    QString filename;
 
 };
 

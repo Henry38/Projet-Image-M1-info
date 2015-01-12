@@ -25,8 +25,8 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>781</width>
-        <height>551</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -47,6 +47,9 @@
       <property name="interactive">
        <bool>true</bool>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </item>
    </layout>
@@ -62,12 +65,61 @@
     </rect>
    </property>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSelection"/>
+   <addaction name="actionPipette"/>
+  </widget>
+  <action name="actionSelection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/selection.png</normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>selection</string>
+   </property>
+   <property name="toolTip">
+    <string>selection</string>
+   </property>
+  </action>
+  <action name="actionPipette">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/pipette.png</normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/pipette.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pipette</string>
+   </property>
+   <property name="toolTip">
+    <string>Pipette</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>MyGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>mygraphicsview.h</header>
+   <header>MyGraphicsView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

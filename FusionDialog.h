@@ -1,14 +1,9 @@
 #ifndef FUSIONDIALOG_H
 #define FUSIONDIALOG_H
 
-/*#include <QDialog>
-#include <QDialogButtonBox>
-#include <QImage>*/
-
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QMessageBox>
 #include <QSlider>
 #include <QLabel>
 
@@ -22,6 +17,7 @@ class FusionDialog : public AbstractDialog {
 public:
     FusionDialog(QImage*);
     ~FusionDialog();
+    bool matchImage(int, int);
 
 private:
     QImage *imgSource, *imgOpen, *apercu;
@@ -29,13 +25,11 @@ private:
     QPushButton *openButton;
     QSlider *slider;
     QLabel *label;
-    bool ok_clicked;
-    int img_x, img_y;
+    int imgOpen_x, imgOpen_y;
 
 public slots:
     void updateViewer();
     void acceptDialog();
-    void calculFusion(QImage*);
 
 private slots:
     void openFilename();

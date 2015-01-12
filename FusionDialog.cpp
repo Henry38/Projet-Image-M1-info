@@ -4,7 +4,7 @@
 FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
     imgOpen = new QImage(img->width(), img->height(), QImage::Format_ARGB32);
-    apercu = new QImage(*imgSource);
+    apercu = new QImage(img->width(), img->height(), QImage::Format_ARGB32);
 
     textBrowser = new QLineEdit(this);
     textBrowser->move(20, 291);
@@ -19,7 +19,7 @@ FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     slider->move(20, 320);
     slider->resize(120, 30);
     slider->setMaximum(255);
-    slider->setSliderPosition(slider->maximum());
+    slider->setSliderPosition(slider->minimum());
 
     label = new QLabel(this);
     label->move(160, 325);
@@ -29,16 +29,54 @@ FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     QObject::connect(slider, SIGNAL(valueChanged(int)), this, SLOT(writeOpacity(int)));
 
     writeOpacity(slider->value());
-    display(apercu);
+    updateViewer();
 }
 
 FusionDialog::~FusionDialog() {
-    delete textBrowser;
-    delete openButton;
     delete imgOpen;
     delete apercu;
+    delete textBrowser;
+    delete openButton;
     delete slider;
     delete label;
+}
+
+void FusionDialog::updateViewer()
+{
+    double q;
+    if (textBrowser->text() != "") {
+        q = ((float) slider->value()) / ((float) slider->maximum());
+    } else {
+        q = 0.0;
+    }
+    //double alpha;
+    QRgb pixelSource, pixelOpen, color;
+    for (int i = 0; i < imgSource->width(); i++)
+    {
+        for (int j = 0; j < imgSource->height(); j++)
+        {
+            pixelSource = imgSource->pixel(i, j);
+            if (matchImage(i, j)) {
+                pixelOpen = imgOpen->pixel(i-imgOpen_x, j-imgOpen_y);
+            } else {
+                pixelOpen = qRgba(0, 0, 0, 0);
+            }
+            //alpha = ((float) qAlpha(pixelOpen)) / 255.0;
+            color = qRgba((1-q)*qRed(pixelSource) + q*qRed(pixelOpen),
+                          (1-q)*qGreen(pixelSource) + q*qGreen(pixelOpen),
+                          (1-q)*qBlue(pixelSource) + q*qBlue(pixelOpen),
+                          (1-q)*qAlpha(pixelSource) + q*qAlpha(pixelOpen));
+            apercu->setPixel(i, j, color);
+        }
+    }
+    display(apercu);
+}
+
+void FusionDialog::acceptDialog()
+{
+    if (textBrowser->text() != "") {
+        imgSource->swap(*apercu);
+    }
 }
 
 void FusionDialog::openFilename()
@@ -48,13 +86,11 @@ void FusionDialog::openFilename()
     if (filename != "")
     {
         textBrowser->setText(filename);
-        /*if (imgOpen == NULL) {
-            imgOpen = new QImage(filename);
-        } else {
-            imgOpen->load(filename);
-        }*/
         imgOpen->load(filename);
-        //imgOpen->convertToFormat(QImage::Format_ARGB32);
+        // Ces deux variables servent a positionner
+        // l'imgOpen sur l'imgSource
+        imgOpen_x = 0;
+        imgOpen_y = 0;
         updateViewer();
     }
 }
@@ -64,57 +100,9 @@ void FusionDialog::writeOpacity(int value) {
     updateViewer();
 }
 
-void FusionDialog::updateViewer() {
-    //delete apercu;
-    calculFusion(imgOpen);
-    display(apercu);
-
-    /*if (textBrowser->text() == "") {
-        display(apercu);
-    } else {
-        QImage tmp;
-        if (tmp.load(textBrowser->text())) {
-            // Fusionner tmp avec apercu
-            //aperc
-            display(apercu);
-            ok_clicked = true;
-        } else {
-            QMessageBox messageBox(this);
-            messageBox.setText("Aucune image, vérifier l'url ! ");
-            messageBox.addButton("Ok", QMessageBox::AcceptRole);
-            messageBox.exec();
-            ok_clicked = false;
-        }
-    }*/
-}
-
-void FusionDialog::acceptDialog() {
-    if (!ok_clicked) {
-        updateViewer();
+bool FusionDialog::matchImage(int x, int y) {
+    if (textBrowser->text() == "") {
+        return false;
     }
-    imgSource->swap(*apercu);
-}
-
-/* Calcul la fusion entre l'imgSource et la QImage passee en parametre */
-void FusionDialog::calculFusion(QImage* img) {
-    if (!img->isNull()) {
-        double q = slider->value() / 255.0;
-        double alpha;
-        QRgb pixelSource, pixelOpen, color;
-
-        for (int i = 0; i < imgSource->width(); i++)
-        {
-            for (int j = 0; j < imgSource->height(); j++)
-            {
-                pixelSource = imgSource->pixel(i, j);
-                pixelOpen = img->pixel(i, j);
-                alpha = qAlpha(pixelOpen) / 255.0;
-                color = qRgba((1-q)*qRed(pixelSource) + q*qRed(pixelOpen),
-                              (1-q)*qGreen(pixelSource) + q*qGreen(pixelOpen),
-                              (1-q)*qBlue(pixelSource) + q*qBlue(pixelOpen),
-                              255);
-                apercu->setPixel(i, j, color);
-            }
-        }
-    }
+    return (x >= imgOpen_x && x < imgOpen_x+imgOpen->width() && y >= imgOpen_y && y < imgOpen_y+imgOpen->height());
 }
