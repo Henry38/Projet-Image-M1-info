@@ -74,6 +74,7 @@ private:
     QPoint origin;
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
+    QString filename;
 
 };
 

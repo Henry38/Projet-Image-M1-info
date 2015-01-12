@@ -19,7 +19,7 @@ FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     slider->move(20, 320);
     slider->resize(120, 30);
     slider->setMaximum(255);
-    slider->setSliderPosition(slider->maximum());
+    slider->setSliderPosition(slider->minimum());
 
     label = new QLabel(this);
     label->move(160, 325);
