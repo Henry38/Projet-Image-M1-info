@@ -38,6 +38,7 @@ private:
        QPoint HG, BD;
        QGraphicsScene *scene;
        QImage *image;
+
 };
 #endif // MYGRAPHICSVIEW_H
 

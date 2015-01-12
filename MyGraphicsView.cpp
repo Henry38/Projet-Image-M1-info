@@ -1,6 +1,6 @@
 #include "MyGraphicsView.h"
 #include "myWindow.h"
-
+#include <sstream>
 
 
 MyGraphicsView::MyGraphicsView(QWidget *parent) :
@@ -47,20 +47,20 @@ void MyGraphicsView::setImage(QImage* img){
 
 QPoint MyGraphicsView::getHG(){
 
-    QPoint *newHG = new QPoint(qMin(HG.x(),BD.x()),qMin(HG.y(),BD.y()));
-    return *newHG;
+    QPoint newHG(qMin(HG.x(),BD.x()),qMin(HG.y(),BD.y()));
+    return newHG;
 }
 
 QPoint MyGraphicsView::getBD(){
-    QPoint *newBD = new QPoint(qMax(HG.x(),BD.x()),qMax(HG.y(),BD.y()));
-    return *newBD;
+    QPoint newBD(qMax(HG.x(),BD.x()),qMax(HG.y(),BD.y()));
+    return newBD;
 }
 
 void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
     if(e->button() == Qt::LeftButton)
     {
-       BD =  e->pos();
-
+       BD =  mapToScene(e->pos()).toPoint();
+       HG = mapToScene(HG).toPoint();
         //cout << "Coordonnées : (" << BD.x() << "," << BD.y() << ")"<< endl;
         selectOn = false;
         pret = true;
@@ -81,12 +81,20 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 
     if(pipetteOn){
         /*recuperer position souris ; recuperer pixel qui correspond à l'image*/
-        QPoint *pix = new QPoint(e->pos().x() -width()/2 + image->width()/2 , e->pos().y() -height()/2 +image->height()/2 );
+        QPoint *pix = new QPoint(mapToScene(e->pos()).toPoint().x(), mapToScene(e->pos()).toPoint().y());
         if(estDansImage(pix)){
             QRgb pixel = image->pixel(*pix);
-            cout << "Couleur : alpha :"<< qAlpha(pixel) <<" R "<< qRed(pixel) <<" G "<< qGreen(pixel) <<" B " << qBlue(pixel)<< endl;
-            cout <<"Couleur : alpha :"<<" Y "<<" U "<<"V " <<endl;
+            stringstream ss;
+
+            ss << "Couleur : alpha :"<< qAlpha(pixel) <<" R "<< qRed(pixel) <<" G "<< qGreen(pixel) <<" B " << qBlue(pixel)<< endl;
+            ss <<"Couleur : alpha :"<<" Y "<<" U "<<"V " <<endl;
+
+            cout << ss.str();
+
+            myWindow *w = (myWindow*)this->window();
+            w->statusBar()->showMessage(ss.str().c_str());
         }
+        delete pix;
 
     }
 }
