@@ -3,26 +3,23 @@
 #include "ui_myWindow.h"
 #include <QPixmap>
 
-myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
+myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    scene = new QGraphicsScene(this);
     img = new QImage();
 
-    QDesktopWidget *desktop = new QDesktopWidget;
-    int xScreen = desktop->screenGeometry().width();
-    int yScreen = desktop->screenGeometry().height();
-    move((xScreen - width()) / 2, (yScreen - height()) / 2);
-    resize(xScreen / 2, yScreen / 2);
-
-    pipetteOn = false;
-    selectOn = false;
-
+    scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-    ui->graphicsView->setMouseTracking(true);
-    ui->graphicsView->show();
+    //ui->graphicsView->setMouseTracking(true);
+    //ui->graphicsView->show();
     initMenu();
-    repeindre();
+    //repeindre();
+
+    QDesktopWidget desktop;// = new QDesktopWidget;
+    int xScreen = desktop.screenGeometry().width();
+    int yScreen = desktop.screenGeometry().height();
+    resize(xScreen / 2, yScreen / 2);
+    move((xScreen - width()) / 2, (yScreen - height()) / 2);
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -42,10 +39,8 @@ void myWindow::repeindre()
     //QGraphicsPixmapItem* item = scene->addPixmap(QPixmap::fromImage(*img));
     ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
-    //item->setOffset(img->width()/2, img->height()/2);
-    //item->setPos(ui->graphicsView->width()/2, ui->graphicsView->height()/2);
     scene->setSceneRect(0,0,img->width(),img->height());
-    ui->graphicsView->setScene(scene);
+    //ui->graphicsView->setScene(scene);
     //ui->graphicsView->show();
 }
 
@@ -84,7 +79,7 @@ bool myWindow::open(QString url)
     if (img->load(url))
     {
         //std::cout << img->format() << std::endl;
-        resize(img->width(), img->height());
+
         repeindre();
         return true;
     }
@@ -109,7 +104,7 @@ void myWindow::paintEvent(QPaintEvent *)
     painter.drawImage(x,y, *img);
     painter.end();*/
 
-    repeindre();
+    //repeindre();
 }
 
 void myWindow::initMenu()
@@ -327,7 +322,6 @@ bool myWindow::pipette()
 
 bool myWindow::selection()
 {
-    selectOn = true;
     return true;
 }
 

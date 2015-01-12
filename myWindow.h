@@ -69,7 +69,6 @@ private:
     void paintEvent(QPaintEvent *);
     // Attribut
     QImage *img;
-    bool pipetteOn, selectOn;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;

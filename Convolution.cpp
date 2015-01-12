@@ -72,7 +72,7 @@ void Convolution::retournerMatrix()
     image->swap(imageCopie);
     retournerMatrix();
 }*/
-#include<iostream>
+
 void Convolution::convolution(QImage *image)
 {
     int sommeR;
@@ -84,10 +84,6 @@ void Convolution::convolution(QImage *image)
     //int finI = image->width();
     //int finJ = image->height() - m.getSize();
     QImage imageCopie(*image);
-    /*std::cout << imageCopie.width() << std::endl;
-    std::cout << imageCopie.height() << std::endl;
-    std::cout << qBlue(imageCopie.pixel(20, 200)) << std::endl;
-    std::cout << qBlue(imageCopie.pixel(200, 20)) << std::endl;*/
     retournerMatrix();
     for(int x = 0; x < image->width(); x++)
     {
@@ -106,13 +102,15 @@ void Convolution::convolution(QImage *image)
                         sommeR += qRed(pixel)*m.get_element(i+decalage,j+decalage);
                         sommeG += qGreen(pixel)*m.get_element(i+decalage,j+decalage);
                         sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
-                        nbPixel++;
+                        nbPixel += m.get_element(i+decalage,j+decalage);
                     }
                 }
             }
-            sommeR/=nbPixel;
-            sommeG/=nbPixel;
-            sommeB/=nbPixel;
+            if (nbPixel != 0) {
+                sommeR/=nbPixel;
+                sommeG/=nbPixel;
+                sommeB/=nbPixel;
+            }
             ajusterCouleur(&sommeR);
             ajusterCouleur(&sommeG);
             ajusterCouleur(&sommeB);
