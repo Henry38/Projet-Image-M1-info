@@ -42,6 +42,13 @@ void myWindow::repeindre()
     ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
     scene->setSceneRect(0,0,img->width(),img->height());
+
+    QPixmap pix;
+    pix.load("icones/Carre.png");
+    QGraphicsPixmapItem *itemPix = scene->addPixmap(pix);
+    itemPix->setPos(0, 0);
+    itemPix->setZValue(1);
+
     //ui->graphicsView->setScene(scene);
     //ui->graphicsView->show();
 }
@@ -85,27 +92,6 @@ bool myWindow::saveAsFilename()
 bool myWindow::save(QString url)
 {
     return img->save(url, 0, -1);
-}
-
-void myWindow::paintEvent(QPaintEvent *)
-{
-    /*QPainter painter(this);
-
-    int x = 0;
-    int y = 0;
-    if (width() > img->width())
-    {
-        x = (width() - img->width()) / 2;
-    }
-    if (height() > img->height())
-    {
-        y = (height() - img->height()) / 2;
-    }
-
-    painter.drawImage(x,y, *img);
-    painter.end();*/
-
-    //repeindre();
 }
 
 void myWindow::initMenu()
@@ -241,6 +227,14 @@ bool myWindow::fusionner()
 
 bool myWindow::redimensionner()
 {
+    QPixmap pix;
+    pix.load("icones/carre.png");
+    QGraphicsPixmapItem *itemPix = scene->addPixmap(pix);
+    itemPix->setPos(0, 0);
+    itemPix->setZValue(1);
+    //itemPix->set
+
+
     return true;
 }
 

@@ -22,7 +22,3 @@ void AbstractDialog::display(QImage *img) {
     label->setPixmap(QPixmap::fromImage(*img));
     ui->scrollArea->setWidget(label);
 }
-
-/*QScrollArea* AbstractDialog::getViewer() {
-    return ui->scrollArea;
-}*/

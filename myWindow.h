@@ -65,8 +65,6 @@ public slots:
     bool selection();
 
 private:
-    // Methodes
-    void paintEvent(QPaintEvent *);
     // Attribut
     QImage *img;
     QRubberBand *rubberBand;
