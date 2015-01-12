@@ -9,8 +9,7 @@ MyGraphicsView::MyGraphicsView(QWidget *parent) :
 
    rubberBand = new QRubberBand(QRubberBand::Rectangle,this );
    pret = false;
-   selectOn = false;
-   pipetteOn = false;
+   mode = 0;
 
 }
 
@@ -28,14 +27,69 @@ void MyGraphicsView::setPret(bool b){
     pret = b;
 }
 
-bool MyGraphicsView::getModePipette(){
-    return pipetteOn;
+int MyGraphicsView::getMode(){
+    return mode;
 }
 
-void MyGraphicsView::setModePipette(bool b){
-    pipetteOn = b;
+void MyGraphicsView::resetMode(){
+    mode = 0;
 }
 
+void MyGraphicsView::setModeSelection(){
+    if(mode==1){
+        mode = 0;
+    }else{
+        mode = 1;
+    }
+}
+
+void MyGraphicsView::setModePipette(){
+    if(mode==2){
+        mode = 0;
+    }else{
+        mode = 2;
+    }
+}
+
+void MyGraphicsView::setModeRedimension(){
+    if(mode==3){
+        mode = 0;
+    }else{
+        mode = 3;
+    }
+}
+
+void MyGraphicsView::setModeRedimIntell(){
+    if(mode==4){
+        mode = 0;
+    }else{
+        mode = 4;
+    }
+}
+
+bool MyGraphicsView::sansMode(){
+    return mode == 0;
+}
+
+bool MyGraphicsView::modeSelection(){
+    return mode == 1;
+}
+
+bool MyGraphicsView::modePipette(){
+    return mode == 2;
+}
+
+bool MyGraphicsView::modeRedimension(){
+    return mode == 3;
+}
+
+bool MyGraphicsView::modeRedimIntell(){
+    return mode == 4;
+}
+
+void MyGraphicsView::cacherSelect(){
+    rubberBand->hide();
+}
 
 QImage* MyGraphicsView::getImage(){
     return image;
@@ -62,7 +116,6 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
        BD =  mapToScene(e->pos()).toPoint();
        HG = mapToScene(HG).toPoint();
         //cout << "Coordonnées : (" << BD.x() << "," << BD.y() << ")"<< endl;
-        selectOn = false;
         pret = true;
 
     }
@@ -71,23 +124,23 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
 void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 {
     rubberBand->hide();
-
     pret = false;
-    selectOn = true;
     HG = e->pos();
     //cout << "Coordonnees : (" << HG.x() << "," << HG.y() << ")"<< endl;
     rubberBand->setGeometry(QRect(HG, QSize()));
     rubberBand->show();
 
-    if(pipetteOn){
+    if(modePipette()){
         /*recuperer position souris ; recuperer pixel qui correspond à l'image*/
         QPoint *pix = new QPoint(mapToScene(e->pos()).toPoint().x(), mapToScene(e->pos()).toPoint().y());
         if(estDansImage(pix)){
             QRgb pixel = image->pixel(*pix);
             stringstream ss;
-
-            ss << "Couleur : alpha :"<< qAlpha(pixel) <<" R "<< qRed(pixel) <<" G "<< qGreen(pixel) <<" B " << qBlue(pixel)<< endl;
-            ss <<"Couleur : alpha :"<<" Y "<<" U "<<"V " <<endl;
+            int Y = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+            int U = 0.492*(qBlue(pixel)-Y);
+            int V = 0.877*(qRed(pixel)-Y);
+            ss << "alpha :"<< qAlpha(pixel) <<" R :"<< qRed(pixel) <<" G :"<< qGreen(pixel) <<" B :" << qBlue(pixel)<< endl;
+            ss <<"|Y :"<<Y <<" U :"<<U<<" V :"<<V <<endl;
 
             cout << ss.str();
 
@@ -101,7 +154,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 
 void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
 {
-    if(selectOn){
+    if(modeSelection()){
         rubberBand->setGeometry(QRect(HG, e->pos()).normalized());
         rubberBand->show();
     }
@@ -111,5 +164,4 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
 bool MyGraphicsView::estDansImage(QPoint* p){
   return p->x()>=0 && p->y()>=0 && p->x()< image->width() && p->y() < image->height();
 }
-
 
