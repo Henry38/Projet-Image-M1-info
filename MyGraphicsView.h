@@ -24,8 +24,18 @@ public slots:
     void mouseMoveEvent (QMouseEvent *move);
     bool getPret();
     void setPret(bool);
-    bool getModePipette();
-    void setModePipette(bool);
+    int getMode();
+    void resetMode();
+    void setModeSelection();
+    void setModePipette();
+    void setModeRedimension();
+    void setModeRedimIntell();
+    bool sansMode();
+    bool modeSelection();
+    bool modePipette();
+    bool modeRedimension();
+    bool modeRedimIntell();
+    void cacherSelect();
     QImage* getImage();
     void setImage(QImage*);
     QPoint getHG();
@@ -34,7 +44,8 @@ public slots:
 
 private:
        QRubberBand *rubberBand;
-       bool selectOn ,pret,pipetteOn;
+       bool pret;
+       int mode;
        QPoint HG, BD;
        QGraphicsScene *scene;
        QImage *image;

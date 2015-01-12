@@ -41,6 +41,7 @@ public:
     bool open(QString url);
     bool save(QString url);
     void initMenu();
+    void initBarreOutils();
     bool estDansImage();
 
 public slots:

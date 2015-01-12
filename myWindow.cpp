@@ -14,7 +14,8 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     //ui->graphicsView->show();
     initMenu();
     //repeindre();
-
+    ui->toolBar->toolButtonStyle();
+    initBarreOutils();
     QDesktopWidget desktop;// = new QDesktopWidget;
     int xScreen = desktop.screenGeometry().width();
     int yScreen = desktop.screenGeometry().height();
@@ -174,6 +175,11 @@ void myWindow::initMenu()
     QObject::connect(actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
 }
 
+void myWindow::initBarreOutils()
+{
+    QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
+    QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
+}
 
 bool myWindow::sauvegarder()
 {
@@ -303,6 +309,7 @@ bool myWindow::rogner()
         }
         QRect rect(HG,BD);
         *img = img->copy(rect);
+        ui->graphicsView->cacherSelect();
         repeindre();
         return true;
     }else{
@@ -312,13 +319,13 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
-   ui->graphicsView->setModePipette(!ui->graphicsView->getModePipette());
-
+   ui->graphicsView->setModePipette();
     return true;
 }
 
 bool myWindow::selection()
 {
+    ui->graphicsView->setModeSelection();
     return true;
 }
 /*
