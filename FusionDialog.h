@@ -1,14 +1,11 @@
 #ifndef FUSIONDIALOG_H
 #define FUSIONDIALOG_H
 
-/*#include <QDialog>
-#include <QDialogButtonBox>
-#include <QImage>*/
-
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QMessageBox>
+#include <QSlider>
+#include <QLabel>
 
 #include "AbstractDialog.h"
 
@@ -20,12 +17,15 @@ class FusionDialog : public AbstractDialog {
 public:
     FusionDialog(QImage*);
     ~FusionDialog();
+    bool matchImage(int, int);
 
 private:
-    QImage *imgSource, *apercu;
+    QImage *imgSource, *imgOpen, *apercu;
     QLineEdit *textBrowser;
     QPushButton *openButton;
-    bool ok_clicked;
+    QSlider *slider;
+    QLabel *label;
+    int imgOpen_x, imgOpen_y;
 
 public slots:
     void updateViewer();
@@ -33,6 +33,7 @@ public slots:
 
 private slots:
     void openFilename();
+    void writeOpacity(int);
 
 };
 

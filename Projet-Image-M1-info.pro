@@ -9,7 +9,8 @@ SOURCES += \
     Convolution.cpp \
     Matrix.cpp \
     AbstractDialog.cpp \
-    FusionDialog.cpp
+    FusionDialog.cpp \
+    ResizeTool.cpp
 
 HEADERS += \
     myWindow.h \
@@ -20,7 +21,8 @@ HEADERS += \
     Convolution.h \
     Matrix.h \
     AbstractDialog.h \
-    FusionDialog.h
+    FusionDialog.h \
+    ResizeTool.h
 
 QT += widgets
 

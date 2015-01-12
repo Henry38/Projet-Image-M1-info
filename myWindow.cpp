@@ -3,32 +3,29 @@
 #include "ui_myWindow.h"
 #include <QPixmap>
 
-myWindow::myWindow() : QMainWindow(0),ui(new Ui::MainWindow)
+myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
-    /*QDesktopWidget *desktop = new QDesktopWidget;
-     int xScreen = desktop->screenGeometry().width();
-     int yScreen = desktop->screenGeometry().height();
-     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-     resize(xScreen / 2, yScreen / 2);*/
     ui->setupUi(this);
-    scene = new QGraphicsScene(this);
     img = new QImage();
-    pipetteOn = false;
-    selectOn = false;
 
+    scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-    ui->graphicsView->setMouseTracking(true);
-    ui->graphicsView->show();
+    //ui->graphicsView->setMouseTracking(true);
+    //ui->graphicsView->show();
     initMenu();
+    //repeindre();
 
+    QDesktopWidget desktop;// = new QDesktopWidget;
+    int xScreen = desktop.screenGeometry().width();
+    int yScreen = desktop.screenGeometry().height();
+    resize(xScreen / 2, yScreen / 2);
+    move((xScreen - width()) / 2, (yScreen - height()) / 2);
 
 }
 
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
-
-
 }
 
 myWindow::~myWindow()
@@ -106,7 +103,7 @@ void myWindow::paintEvent(QPaintEvent *)
     painter.drawImage(x,y, *img);
     painter.end();*/
 
-    repeindre();
+    //repeindre();
 }
 
 void myWindow::initMenu()
@@ -322,7 +319,6 @@ bool myWindow::pipette()
 
 bool myWindow::selection()
 {
-    selectOn = true;
     return true;
 }
 /*
