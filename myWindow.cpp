@@ -181,6 +181,7 @@ void myWindow::initBarreOutils()
 {
     QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
     QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
+
 }
 
 /* Sauvegarder */
@@ -324,12 +325,19 @@ bool myWindow::rogner()
 bool myWindow::pipette()
 {
    ui->graphicsView->setModePipette();
+   if(ui->actionSelection->isChecked()){
+       ui->actionSelection->setChecked(false);
+    }
+
     return true;
 }
 
 bool myWindow::selection()
 {
     ui->graphicsView->setModeSelection();
+    if(ui->actionPipette->isChecked()){
+        ui->actionPipette->setChecked(false);
+     }
     return true;
 }
 /*
