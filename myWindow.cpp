@@ -1,6 +1,7 @@
 #include "myWindow.h"
 #include "BlurDialog.h"
 #include "ui_myWindow.h"
+#include "Histogramme.h"
 #include <QPixmap>
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
@@ -198,6 +199,7 @@ void myWindow::quitter(){
 /*affiche/edite l'histogramme*/
 bool myWindow::histo()
 {
+    Histogramme h(ui->graphicsView);
     return true;
 }
 
