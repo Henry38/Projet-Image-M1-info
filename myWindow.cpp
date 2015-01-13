@@ -2,6 +2,7 @@
 #include "BlurDialog.h"
 #include "ui_myWindow.h"
 #include "Histogramme.h"
+#include "FiltreDialog.h"
 #include <QPixmap>
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
@@ -164,6 +165,7 @@ void myWindow::initBarreOutils()
 {
     QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
     QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
+
 }
 
 /* Sauvegarder */
@@ -242,11 +244,26 @@ bool myWindow::redimensionner()
 
 bool myWindow::filtre()
 {
-    return true;
+    FiltreDialog filtreDialog(img);
+    if (filtreDialog.exec() == QDialog::Accepted)
+    {
+        repeindre();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::contours()
 {
+    Convolution c;
+    c.redimentionnerMatrix(3,0);
+    c.modifierCaseMatrix(0,1,1);
+    c.modifierCaseMatrix(2,1,1);
+    c.modifierCaseMatrix(1,0,1);
+    c.modifierCaseMatrix(2,2,1);
+    c.modifierCaseMatrix(1,1,-4);
+    c.convolution(img);
+    repeindre();
     return true;
 }
 
@@ -313,12 +330,19 @@ bool myWindow::rogner()
 bool myWindow::pipette()
 {
    ui->graphicsView->setModePipette();
+   if(ui->actionSelection->isChecked()){
+       ui->actionSelection->setChecked(false);
+    }
+
     return true;
 }
 
 bool myWindow::selection()
 {
     ui->graphicsView->setModeSelection();
+    if(ui->actionPipette->isChecked()){
+        ui->actionPipette->setChecked(false);
+     }
     return true;
 }
 /*

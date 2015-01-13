@@ -31,7 +31,7 @@ void BlurDialog::updateViewer()
     apercu = new QImage(*imgSource);
     //*apercu = apercu->copy(imgSource->rect());
     Convolution c;
-    c.redimentionnerMatrix(spinBox->value()*2 +1);
+    c.redimensionnerMatrix(spinBox->value()*2 +1);
     c.convolution(apercu);
 
     display(apercu);

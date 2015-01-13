@@ -22,7 +22,9 @@ signals:
 public slots:
     void mouseReleaseEvent(QMouseEvent * e);
     void mousePressEvent(QMouseEvent * e);
-    void mouseMoveEvent(QMouseEvent *move);
+    void mouseMoveEvent (QMouseEvent *move);
+
+public:
     bool getPret();
     void setPret(bool);
     int getMode();
