@@ -2,6 +2,7 @@
 #include "BlurDialog.h"
 #include "ui_myWindow.h"
 #include "Histogramme.h"
+#include "FiltreDialog.h"
 #include <QPixmap>
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
@@ -256,7 +257,13 @@ bool myWindow::redimensionner()
 
 bool myWindow::filtre()
 {
-    return true;
+    FiltreDialog filtreDialog(img);
+    if (filtreDialog.exec() == QDialog::Accepted)
+    {
+        repeindre();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::contours()
