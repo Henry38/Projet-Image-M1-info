@@ -3,6 +3,7 @@
 
 #include "myWindow.h"
 #include <QGraphicsScene>
+#include <QPixmap>
 
 class Histogramme : QGraphicsScene
 {
@@ -10,15 +11,11 @@ class Histogramme : QGraphicsScene
 public:
     Histogramme(MyGraphicsView *m);
     ~Histogramme();
-
-
-
-public slots:
-    void updateViewer();
-    void acceptDialog();
+    void repeindre();
 
 private:
-
+    QGraphicsScene *scene;
+    QPixmap *pix;
 };
 
 #endif // HISTOGRAMME_H

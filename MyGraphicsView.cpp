@@ -7,7 +7,7 @@ MyGraphicsView::MyGraphicsView(QWidget *parent) :
     QGraphicsView(parent)
 {
 
-   rubberBand = new QRubberBand(QRubberBand::Rectangle,this );
+   rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
    pret = false;
    mode = 0;
 
@@ -110,7 +110,9 @@ QPoint MyGraphicsView::getBD(){
     return newBD;
 }
 
-void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
+void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e)
+{
+    QGraphicsView::mouseReleaseEvent(e);
     if(e->button() == Qt::LeftButton)
     {
        BD =  mapToScene(e->pos()).toPoint();
@@ -123,6 +125,7 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e){
 
 void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 {
+    QGraphicsView::mousePressEvent(e);
     rubberBand->hide();
     pret = false;
     HG = e->pos();
@@ -131,7 +134,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
     rubberBand->show();
 
     if(modePipette()){
-        /*recuperer position souris ; recuperer pixel qui correspond à l'image*/
+        /* recuperer position souris ; recuperer pixel qui correspond à l'image */
         QPoint *pix = new QPoint(mapToScene(e->pos()).toPoint().x(), mapToScene(e->pos()).toPoint().y());
         if(estDansImage(pix)){
             QRgb pixel = image->pixel(*pix);
@@ -154,6 +157,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 
 void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
 {
+    QGraphicsView::mouseMoveEvent(e);
     if(modeSelection()){
         rubberBand->setGeometry(QRect(HG, e->pos()).normalized());
         rubberBand->show();

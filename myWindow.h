@@ -23,6 +23,7 @@
 #include <QtCore>
 #include "MyGraphicsView.h"
 #include "MyGraphicsScene.h"
+#include "scaledialog.h"
 using namespace std;
 
 namespace Ui {
@@ -71,6 +72,7 @@ private:
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;
+    //QGraphicsScene *scene;
     QGraphicsScene *scene;
     QString filename;
 

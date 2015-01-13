@@ -10,20 +10,22 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     img = new QImage();
     filename = "";
 
-    scene = new QGraphicsScene(this);
+    scene = new QGraphicsScene();
+
     ui->graphicsView->setScene(scene);
+    ui->graphicsView->setAcceptDrops(true);
     //ui->graphicsView->setMouseTracking(true);
     //ui->graphicsView->show();
+
     initMenu();
-    //repeindre();
     ui->toolBar->toolButtonStyle();
     initBarreOutils();
+
     QDesktopWidget desktop;// = new QDesktopWidget;
     int xScreen = desktop.screenGeometry().width();
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -44,12 +46,6 @@ void myWindow::repeindre()
     ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
     scene->setSceneRect(0,0,img->width(),img->height());
-
-    QPixmap pix;
-    pix.load("icones/Carre.png");
-    QGraphicsPixmapItem *itemPix = scene->addPixmap(pix);
-    itemPix->setPos(0, 0);
-    itemPix->setZValue(1);
 
     //ui->graphicsView->setScene(scene);
     //ui->graphicsView->show();
@@ -236,15 +232,12 @@ bool myWindow::fusionner()
 
 bool myWindow::redimensionner()
 {
-    QPixmap pix;
-    pix.load("icones/carre.png");
-    QGraphicsPixmapItem *itemPix = scene->addPixmap(pix);
-    itemPix->setPos(0, 0);
-    itemPix->setZValue(1);
-    //itemPix->set
-
-
-    return true;
+    ScaleDialog scaleDialog(img);;
+    if (scaleDialog.exec() == QDialog::Accepted) {
+        repeindre();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::filtre()
