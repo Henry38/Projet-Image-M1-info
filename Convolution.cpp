@@ -15,7 +15,7 @@ void Convolution::remplireMatrix(int val)
 
 void Convolution::modifierCaseMatrix(int i, int j, int val)
 {
-    m.insert_element(i-1,j-1,val);
+    m.insert_element(i,j,val);
 }
 
 void Convolution::redimentionnerMatrix(int i, int val)
