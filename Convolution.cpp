@@ -22,7 +22,7 @@ void Convolution::remplirMatrix(int val)
 
 void Convolution::modifierCaseMatrix(int i, int j, int val)
 {
-    m.insert_element(i-1,j-1,val);
+    m.insert_element(i,j,val);
 }
 
 void Convolution::redimensionnerMatrix(int i, int val)
