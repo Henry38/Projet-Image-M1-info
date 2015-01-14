@@ -183,7 +183,11 @@ void myWindow::quitter(){
 /*affiche/edite l'histogramme*/
 bool myWindow::histo()
 {
-    Histogramme h(ui->graphicsView);
+    Histogramme h(*img);
+    h.afficheHisto();
+    h.afficherLignes();
+    img->swap(h);
+    repeindre();
     return true;
 }
 

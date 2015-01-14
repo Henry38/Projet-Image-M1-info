@@ -2,20 +2,37 @@
 #define HISTOGRAMME_H
 
 #include "myWindow.h"
-#include <QGraphicsScene>
-#include <QPixmap>
-
-class Histogramme : QGraphicsScene
+#include <QImage>
+class Histogramme : public QImage
 {
 
 public:
-    Histogramme(MyGraphicsView *m);
+    Histogramme(QImage image);
     ~Histogramme();
-    void repeindre();
+
+    void afficheHisto();
+    void compterPixel();
+    void afficherLignes();
+    void afficherLigne(int pixels[256], Qt::GlobalColor c);
 
 private:
-    QGraphicsScene *scene;
-    QPixmap *pix;
+    QImage img;
+
+    int distanceBord;
+    int nombreEspacementAbscisse;
+    int nombreEspacementOrdonnee;
+
+    int valeurMax;
+
+    int nbPixelRouge[256];
+    int nbPixelBleu[256];
+    int nbPixelVert[256];
+
+    int longueurAbscisse;
+    int longueurOrdonnee;
+
+
+
 };
 
 #endif // HISTOGRAMME_H
