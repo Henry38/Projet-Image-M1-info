@@ -9,7 +9,6 @@
 #include "AbstractDialog.h"
 #include "Convolution.h"
 
-
 class BlurDialog : public AbstractDialog {
 
     Q_OBJECT
@@ -27,6 +26,10 @@ private:
 public slots:
     void updateViewer();
     void acceptDialog();
+
+private slots:
+    void spinBoxChanged(int);
+
 };
 
 #endif // BLURDIALOG_H

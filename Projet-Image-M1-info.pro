@@ -4,7 +4,6 @@ SOURCES += \
     myWindow.cpp \
     BlurDialog.cpp \
     MyGraphicsView.cpp \
-    MyGraphicsScene.cpp \
     Convolution.cpp \
     Matrix.cpp \
     AbstractDialog.cpp \
@@ -17,7 +16,6 @@ HEADERS += \
     myWindow.h \
     BlurDialog.h \
     MyGraphicsView.h \
-    MyGraphicsScene.h \
     Convolution.h \
     Matrix.h \
     AbstractDialog.h \

@@ -1,7 +1,6 @@
 
 #include "BlurDialog.h"
 
-
 BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
     apercu = new QImage(*imgSource);
@@ -14,6 +13,8 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
     spinBox->move(80, 291);
     spinBox->setMinimum(0);
     spinBox->setMaximum(99);
+
+    QObject::connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChanged(int)));
 
     display(apercu);
     ok_clicked = false;
@@ -43,4 +44,8 @@ void BlurDialog::acceptDialog() {
         updateViewer();
     }
     imgSource->swap(*apercu);
+}
+
+void BlurDialog::spinBoxChanged(int) {
+    ok_clicked = false;
 }

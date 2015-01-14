@@ -23,7 +23,7 @@
 #include <QtCore>
 #include "MyGraphicsView.h"
 #include "MyGraphicsScene.h"
-#include "scaledialog.h"
+#include "ScaleDialog.h"
 using namespace std;
 
 namespace Ui {

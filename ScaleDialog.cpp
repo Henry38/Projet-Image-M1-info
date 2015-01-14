@@ -23,6 +23,9 @@ ScaleDialog::ScaleDialog(QImage *img) : AbstractDialog() {
     heightSpinBox->setMaximum(9999);
     heightSpinBox->setValue(imgSource->height());
 
+    QObject::connect(widthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sizeChanged(int)) );
+    QObject::connect(heightSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sizeChanged(int)));
+
     display(apercu);
     ok_clicked = false;
 }
@@ -218,4 +221,8 @@ void ScaleDialog::acceptDialog() {
         updateViewer();
     }
     imgSource->swap(*apercu);
+}
+
+void ScaleDialog::sizeChanged(int) {
+    ok_clicked = false;
 }
