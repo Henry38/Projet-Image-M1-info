@@ -92,8 +92,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/selection.png</normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/selection.png</iconset>
+    <iconset resource="Images.qrc">
+     <normaloff>:/icones/icones/selection.png</normaloff>:/icones/icones/selection.png</iconset>
    </property>
    <property name="text">
     <string>selection</string>
@@ -113,8 +113,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/pipette.png</normaloff>../build-Projet-Image-M1-info-Desktop-Debug/icones/pipette.png</iconset>
+    <iconset resource="Images.qrc">
+     <normaloff>:/icones/icones/pipette.png</normaloff>:/icones/icones/pipette.png</iconset>
    </property>
    <property name="text">
     <string>Pipette</string>
@@ -134,6 +134,8 @@
    <header>MyGraphicsView.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Images.qrc"/>
+ </resources>
  <connections/>
 </ui>

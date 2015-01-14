@@ -39,7 +39,9 @@ Matrix::~Matrix()
     {
         delete tab2D[i];
     }
-    delete tab2D;
+    if(size!=0){
+        delete tab2D;
+    }
 }
 
 int Matrix::sommeCoefficient()
@@ -122,9 +124,6 @@ int Matrix::get_element(int i, int j)
     return tab2D[i][j];
 }
 
-void Matrix::remplirGaussien(){
-
-}
 
 void Matrix::agrandir(int n){
     int n_size = getSize()+n;

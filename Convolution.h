@@ -18,6 +18,7 @@ public:
     void retournerMatrix();
     Matrix* convolution(Matrix *mat);
     void convolutionCascade(Matrix*,Matrix*,int);
+    void setNoyau(Matrix*);
 
 
 private:
