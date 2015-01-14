@@ -93,6 +93,10 @@ void FiltreDialog::updateViewer()
     }
     if(median->isChecked()){
         cout << "MEDIAN"<<endl;
+        Matrix *noyau = new Matrix(5,5);
+        int* tab = noyau->lineariser();
+        tab = noyau->trierTableau(tab);
+        int mediane = noyau->getMediane(tab);
     }
     if(gaussien->isChecked()){
         Matrix *noyau = new Matrix(2,1);
