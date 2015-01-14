@@ -256,7 +256,7 @@ bool myWindow::filtre()
 bool myWindow::contours()
 {
     Convolution c;
-    c.redimentionnerMatrix(3,0);
+    c.redimensionnerMatrix(3,0);
     c.modifierCaseMatrix(0,1,1);
     c.modifierCaseMatrix(2,1,1);
     c.modifierCaseMatrix(1,0,1);

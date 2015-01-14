@@ -10,7 +10,8 @@ SOURCES += \
     AbstractDialog.cpp \
     FusionDialog.cpp \
     Histogramme.cpp \
-    scaledialog.cpp
+    scaledialog.cpp \
+    FiltreDialog.cpp
 
 HEADERS += \
     myWindow.h \
@@ -22,7 +23,8 @@ HEADERS += \
     AbstractDialog.h \
     FusionDialog.h \
     Histogramme.h \
-    scaledialog.h
+    scaledialog.h \
+    FiltreDialog.h
 
 QT += widgets
 
