@@ -11,6 +11,8 @@ class ScaleDialog : public AbstractDialog
 public:
     ScaleDialog(QImage *img);
     ~ScaleDialog();
+    QImage* redimensionnementEnLargeur(QImage*, float);
+    QImage* redimensionnementEnHauteur(QImage*, float);
 
 private:
     QImage *imgSource, *apercu;
