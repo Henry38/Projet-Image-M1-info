@@ -11,20 +11,22 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     img = new QImage();
     filename = "";
 
-    scene = new QGraphicsScene(this);
+    scene = new QGraphicsScene();
+
     ui->graphicsView->setScene(scene);
+    ui->graphicsView->setAcceptDrops(true);
     //ui->graphicsView->setMouseTracking(true);
     //ui->graphicsView->show();
+
     initMenu();
-    //repeindre();
     ui->toolBar->toolButtonStyle();
     initBarreOutils();
+
     QDesktopWidget desktop;// = new QDesktopWidget;
     int xScreen = desktop.screenGeometry().width();
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -45,6 +47,7 @@ void myWindow::repeindre()
     ui->graphicsView->setImage(img);
     scene->addPixmap(QPixmap::fromImage(*img));
     scene->setSceneRect(0,0,img->width(),img->height());
+
     //ui->graphicsView->setScene(scene);
     //ui->graphicsView->show();
 }
@@ -88,27 +91,6 @@ bool myWindow::saveAsFilename()
 bool myWindow::save(QString url)
 {
     return img->save(url, 0, -1);
-}
-
-void myWindow::paintEvent(QPaintEvent *)
-{
-    /*QPainter painter(this);
-
-    int x = 0;
-    int y = 0;
-    if (width() > img->width())
-    {
-        x = (width() - img->width()) / 2;
-    }
-    if (height() > img->height())
-    {
-        y = (height() - img->height()) / 2;
-    }
-
-    painter.drawImage(x,y, *img);
-    painter.end();*/
-
-    //repeindre();
 }
 
 void myWindow::initMenu()
@@ -252,7 +234,12 @@ bool myWindow::fusionner()
 
 bool myWindow::redimensionner()
 {
-    return true;
+    ScaleDialog scaleDialog(img);;
+    if (scaleDialog.exec() == QDialog::Accepted) {
+        repeindre();
+        return true;
+    }
+    return false;
 }
 
 bool myWindow::filtre()

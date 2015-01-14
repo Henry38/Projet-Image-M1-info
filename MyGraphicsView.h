@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QRubberBand>
 #include <QPoint>
+#include <QDragMoveEvent>
 using namespace std;
 
 class MyGraphicsView : public QGraphicsView

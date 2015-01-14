@@ -23,6 +23,7 @@
 #include <QtCore>
 #include "MyGraphicsView.h"
 #include "MyGraphicsScene.h"
+#include "scaledialog.h"
 using namespace std;
 
 namespace Ui {
@@ -66,13 +67,12 @@ public slots:
     bool selection();
 
 private:
-    // Methodes
-    void paintEvent(QPaintEvent *);
     // Attribut
     QImage *img;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;
+    //QGraphicsScene *scene;
     QGraphicsScene *scene;
     QString filename;
 
