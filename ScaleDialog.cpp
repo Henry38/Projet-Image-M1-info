@@ -1,5 +1,5 @@
 
-#include "scaledialog.h"
+#include "ScaleDialog.h"
 
 ScaleDialog::ScaleDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
