@@ -2,7 +2,7 @@
 
 Convolution::Convolution(int taille, int init)
 {
-   // m = new Matrix(taille,init);
+    //m = new Matrix(taille,init);
     sommeCoefficient = m.sommeCoefficient();
 }
 
@@ -12,6 +12,7 @@ Convolution::Convolution(Matrix m){
 }
 
 Convolution::~Convolution(){
+
 }
 
 void Convolution::remplirMatrix(int val)
@@ -242,4 +243,8 @@ void Convolution::convolutionCascade(Matrix *noyau,Matrix *mat, int taille){
     }else{
         m = *mat;
     }
+}
+
+void Convolution::setNoyau(Matrix* noyau){
+    m = *(noyau->copie());
 }

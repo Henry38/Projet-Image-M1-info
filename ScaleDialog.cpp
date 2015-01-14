@@ -23,6 +23,9 @@ ScaleDialog::ScaleDialog(QImage *img) : AbstractDialog() {
     heightSpinBox->setMaximum(9999);
     heightSpinBox->setValue(imgSource->height());
 
+    QObject::connect(widthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sizeChanged(int)) );
+    QObject::connect(heightSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sizeChanged(int)));
+
     display(apercu);
     ok_clicked = false;
 }
@@ -34,95 +37,182 @@ ScaleDialog::~ScaleDialog() {
     delete widthSpinBox;
     delete heightSpinBox;
 }
-#include <iostream>
-void ScaleDialog::updateViewer()
-{
-    //delete apercu;
-    //apercu = new QImage(*imgSource);
 
-    float qW = ((float) widthSpinBox->value()) / ((float) imgSource->width());
-    float qH = ((float) heightSpinBox->value()) / ((float) imgSource->height());
-    float tmpqW, tmpqH;
-    int xImgSource = 0;
-    int yImgSource = 0;
-    int offset = 0;
-    int r1, r2, g1, g2, b1, b2;
-    QRgb pixel;
-
-    QImage *tmp = new QImage(imgSource->width(), (int) (imgSource->height()*qH), QImage::Format_ARGB32);
-    for (int x=0; x<tmp->width(); x++) {
-        xImgSource = x;
-        yImgSource = 0;
-        tmpqH = qH;
-        for (int y=0; y<tmp->height(); y++) {
-            while (tmpqH <= 1) {
-               pixel = tmp->pixel(x, y);
-               r1 = qRed(pixel);
-               g1 = qGreen(pixel);
-               b1 = qBlue(pixel);
-               pixel = imgSource->pixel(xImgSource, yImgSource);
-               if (offset != 0) {
-                   r2 = qRed(pixel) * (qH - offset);
-                   g2 = qGreen(pixel) * (qH - offset);
-                   b2 = qBlue(pixel) * (qH - offset);
-                   offset = 0;
-               } else {
-                   r2 = qRed(pixel) * qH;
-                   g2 = qGreen(pixel) * qH;
-                   b2 = qBlue(pixel) * qH;
-               }
-               tmp->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
-               tmpqH += qH;
-               yImgSource++;
-            }
-            if (tmpqH - qH <= 1) {
-                tmpqH = qH;
-            }
-            if (tmpqH > 1) {
-                tmpqH = 1 - (tmpqH - qH);
-                pixel = tmp->pixel(x, y);
-                r1 = qRed(pixel);
-                g1 = qGreen(pixel);
-                b1 = qBlue(pixel);
-                pixel = imgSource->pixel(xImgSource, yImgSource);
-                r2 = qRed(pixel) * tmpqH;
-                g2 = qGreen(pixel) * tmpqH;
-                b2 = qBlue(pixel) * tmpqH;
-                tmp->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
-                offset = tmpqH;
-                tmpqH = qH - tmpqH;
-            }
-
+QImage* ScaleDialog::redimensionnementEnLargeur(QImage *imgDepart, float ratio) {
+    QImage *imgArrivee = new QImage(imgDepart->width()*ratio, imgDepart->height(), QImage::Format_ARGB32);
+    for (int x=0; x<imgArrivee->width(); x++) {
+        for (int y=0; y<imgArrivee->height(); y++) {
+            imgArrivee->setPixel(x, y, qRgba(0, 0, 0, 255));
         }
     }
-    /*for (int x=0; x<tmp->width(); x++) {
-        xImgSource = x;
-        yImgSource = 0;
-        tmpqH = qH;
-        for (int y=0; y<tmp->height(); y++) {
-            if (tmpqH >= 1) {
-                //pixel = qRgba(qRed(xImgSource), qGreen(xImgSource), qBlue(xImgSource), 255);
-                pixel = imgSource->pixel(xImgSource, yImgSource);
-                tmp->setPixel(x, y, pixel);
-                tmpqH--;
-            } else {
-                pixel = imgSource->pixel(xImgSource, yImgSource);
-                int r1 = qRed(pixel) * tmpqH;
-                int g1 = qGreen(pixel) * tmpqH;
-                int b1 = qBlue(pixel) * tmpqH;
-                yImgSource++;
-                pixel = imgSource->pixel(xImgSource, yImgSource);
-                int r2 = qRed(pixel) * (1-tmpqH);
-                int g2 = qGreen(pixel) * (1-tmpqH);
-                int b2 = qBlue(pixel) * (1-tmpqH);
-                tmp->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
-                tmpqH = qH-(1-tmpqH);
+
+    int r1, r2, g1, g2, b1, b2;
+    float tmpRatio, coef;
+    int xImgDepart = 0;
+    int yImgDepart = 0;
+    QRgb pixel;
+
+    if (ratio < 1) {
+        // Redimensionnement négatif
+        for (int y=0; y<imgArrivee->height(); y++) {
+            xImgDepart = 0;
+            yImgDepart = y;
+            tmpRatio = ratio;
+            coef = 0;
+            for (int x=0; x<imgArrivee->width(); x++) {
+                while (tmpRatio <= 1) {
+                   pixel = imgArrivee->pixel(x, y);
+                   r1 = qRed(pixel);
+                   g1 = qGreen(pixel);
+                   b1 = qBlue(pixel);
+                   pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                   r2 = qRed(pixel) * (ratio - coef);
+                   g2 = qGreen(pixel) * (ratio - coef);    // tmpqH??
+                   b2 = qBlue(pixel) * (ratio - coef);
+                   imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                   tmpRatio += ratio;
+                   coef = 0;
+                   xImgDepart++;
+                }
+                coef = 1.0 - (tmpRatio-ratio);
+                if (coef > 0) {
+                    pixel = imgArrivee->pixel(x, y);
+                    r1 = qRed(pixel);
+                    g1 = qGreen(pixel);
+                    b1 = qBlue(pixel);
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r2 = qRed(pixel) * coef;
+                    g2 = qGreen(pixel) * coef;
+                    b2 = qBlue(pixel) * coef;
+                    imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                }
+                tmpRatio--;
             }
         }
-    }*/
+    } else {
+        // Redimensionnement positif
+        for (int y=0; y<imgArrivee->height(); y++) {
+            xImgDepart = 0;
+            yImgDepart = y;
+            tmpRatio = ratio;
+            for (int x=0; x<imgArrivee->width(); x++) {
+                if (tmpRatio >= 1) {
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    imgArrivee->setPixel(x, y, pixel);
+                    tmpRatio--;
+                } else {
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r1 = qRed(pixel) * tmpRatio;
+                    g1 = qGreen(pixel) * tmpRatio;
+                    b1 = qBlue(pixel) * tmpRatio;
+                    xImgDepart++;
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r2 = qRed(pixel) * (1-tmpRatio);
+                    g2 = qGreen(pixel) * (1-tmpRatio);
+                    b2 = qBlue(pixel) * (1-tmpRatio);
+                    imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                    tmpRatio = ratio - (1-tmpRatio);
+                }
+            }
+        }
+    }
 
-    std::cout << tmp->width() << std::endl;
-    display(tmp);
+    return imgArrivee;
+}
+
+QImage* ScaleDialog::redimensionnementEnHauteur(QImage *imgDepart, float ratio) {
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height()*ratio, QImage::Format_ARGB32);
+    for (int x=0; x<imgArrivee->width(); x++) {
+        for (int y=0; y<imgArrivee->height(); y++) {
+            imgArrivee->setPixel(x, y, qRgba(0, 0, 0, 255));
+        }
+    }
+
+    int r1, r2, g1, g2, b1, b2;
+    float tmpRatio, coef;
+    int xImgDepart = 0;
+    int yImgDepart = 0;
+    QRgb pixel;
+
+    if (ratio < 1) {
+        // Redimensionnement négatif
+        for (int x=0; x<imgArrivee->width(); x++) {
+            xImgDepart = x;
+            yImgDepart = 0;
+            tmpRatio = ratio;
+            coef = 0;
+            for (int y=0; y<imgArrivee->height(); y++) {
+                while (tmpRatio <= 1) {
+                   pixel = imgArrivee->pixel(x, y);
+                   r1 = qRed(pixel);
+                   g1 = qGreen(pixel);
+                   b1 = qBlue(pixel);
+                   pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                   r2 = qRed(pixel) * (ratio - coef);
+                   g2 = qGreen(pixel) * (ratio - coef);    // tmpqH??
+                   b2 = qBlue(pixel) * (ratio - coef);
+                   imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                   tmpRatio += ratio;
+                   coef = 0;
+                   yImgDepart++;
+                }
+                coef = 1.0 - (tmpRatio-ratio);
+                if (coef > 0) {
+                    pixel = imgArrivee->pixel(x, y);
+                    r1 = qRed(pixel);
+                    g1 = qGreen(pixel);
+                    b1 = qBlue(pixel);
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r2 = qRed(pixel) * coef;
+                    g2 = qGreen(pixel) * coef;
+                    b2 = qBlue(pixel) * coef;
+                    imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                }
+                tmpRatio--;
+            }
+        }
+    } else {
+        // Redimensionnement positif
+        for (int x=0; x<imgArrivee->width(); x++) {
+            xImgDepart = x;
+            yImgDepart = 0;
+            tmpRatio = ratio;
+            for (int y=0; y<imgArrivee->height(); y++) {
+                if (tmpRatio >= 1) {
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    imgArrivee->setPixel(x, y, pixel);
+                    tmpRatio--;
+                } else {
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r1 = qRed(pixel) * tmpRatio;
+                    g1 = qGreen(pixel) * tmpRatio;
+                    b1 = qBlue(pixel) * tmpRatio;
+                    yImgDepart++;
+                    pixel = imgDepart->pixel(xImgDepart, yImgDepart);
+                    r2 = qRed(pixel) * (1-tmpRatio);
+                    g2 = qGreen(pixel) * (1-tmpRatio);
+                    b2 = qBlue(pixel) * (1-tmpRatio);
+                    imgArrivee->setPixel(x, y, qRgba(r1+r2, g1+g2, b1+b2, 255));
+                    tmpRatio = ratio - (1-tmpRatio);
+                }
+            }
+        }
+    }
+
+    return imgArrivee;
+}
+
+void ScaleDialog::updateViewer()
+{
+    float ratioWidth = ((float) widthSpinBox->value()) / ((float) imgSource->width());
+    float ratioHeight = ((float) heightSpinBox->value()) / ((float) imgSource->height());
+
+    delete apercu;
+    QImage *tmp = redimensionnementEnLargeur(imgSource, ratioWidth);
+    apercu = redimensionnementEnHauteur(tmp, ratioHeight);
+    delete tmp;
+
+    display(apercu);
     ok_clicked = true;
 }
 
@@ -131,4 +221,8 @@ void ScaleDialog::acceptDialog() {
         updateViewer();
     }
     imgSource->swap(*apercu);
+}
+
+void ScaleDialog::sizeChanged(int) {
+    ok_clicked = false;
 }

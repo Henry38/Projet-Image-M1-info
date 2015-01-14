@@ -22,9 +22,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "MyGraphicsView.h"
-#include "MyGraphicsScene.h"
 #include "ScaleDialog.h"
-using namespace std;
 
 namespace Ui {
     class MainWindow;

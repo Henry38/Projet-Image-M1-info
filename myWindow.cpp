@@ -324,6 +324,7 @@ bool myWindow::rogner()
         QRect rect(HG,BD);
         *img = img->copy(rect);
         ui->graphicsView->cacherSelect();
+        ui->graphicsView->setPret(false);
         repeindre();
         return true;
     }else{

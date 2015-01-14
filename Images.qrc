@@ -1,0 +1,6 @@
+   <!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/icones">
+        <file>icones/pipette.png</file>
+        <file>icones/selection.png</file>
+    </qresource>
+    </RCC>

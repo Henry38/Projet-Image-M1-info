@@ -6,6 +6,9 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include <QRadioButton>
+#include <QLineEdit>
+#include <QValidator>
+#include <QCheckBox>
 #include <iostream>
 
 #include "AbstractDialog.h"
@@ -21,13 +24,19 @@ public:
     FiltreDialog(QImage*);
     ~FiltreDialog();
 
+public slots:
+    void changerMatricePerso(int);
+
 private:
     QLabel *text;
     QGridLayout *gridLayout;
-    QRadioButton *moyenneur,*gaussien,*median,*personnalise;
+    QRadioButton *moyenneur,*gaussien,*median,*personnalise/*,*gradient,*sobel,*robert*/;
     QSpinBox *spinBox;
     QImage *imgSource, *apercu;
-    bool ok_clicked;
+    bool ok_clicked, matriceRemplie,modePerso;
+    QLineEdit*** matP;
+    int valMax,dimMatP;
+
 
 public slots:
     void updateViewer();
