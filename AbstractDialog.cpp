@@ -6,6 +6,7 @@ AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog) {
     ui->setupUi(this);
 
     label = new QLabel();
+    ui->scrollArea->setWidget(label);
 
     QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(updateViewer()));
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -20,5 +21,4 @@ AbstractDialog::~AbstractDialog() {
 
 void AbstractDialog::display(QImage *img) {
     label->setPixmap(QPixmap::fromImage(*img));
-    ui->scrollArea->setWidget(label);
 }
