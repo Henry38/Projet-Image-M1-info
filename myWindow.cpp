@@ -3,6 +3,7 @@
 #include "ui_myWindow.h"
 #include "Histogramme.h"
 #include "FiltreDialog.h"
+#include "HistoDialog.h"
 #include <QPixmap>
 
 #include <QRectF>
@@ -199,19 +200,21 @@ void myWindow::quitter(){
 /*affiche/edite l'histogramme*/
 bool myWindow::histo()
 {
-    Histogramme h(*img);
-    h.afficheHisto();
-    h.afficherLignes();
-    img->swap(h);
-    repeindre();
-    return true;
+    HistoDialog histoDial(img);
+    if (histoDial.exec() == QDialog::Accepted)
+    {
+        repeindre();
+        return true;
+    }
+    return false;
 }
 
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
     QRgb pixel;
-    int i, j, tmp;
+    int i, j;
+    float tmp;
     int h = img->height();
     int w = img->width();
     for(i = 0; i < w; i++)

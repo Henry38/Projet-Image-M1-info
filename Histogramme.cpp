@@ -1,5 +1,6 @@
 #include "Histogramme.h"
 #include <qimage.h>
+#include <iostream>
 
 #define LONGUEUR_TRAIT 3
 #define NOMBRE_ESPACEMENT_ABSCISSE 10
@@ -8,11 +9,11 @@
 #define HAUTEUR 600
 #define LARGEUR 255*3+BORD*2+100
 
-Histogramme::Histogramme(QImage image) : QImage(LARGEUR,HAUTEUR,QImage::Format_RGB32)
+Histogramme::Histogramme(QImage *image) : QImage(LARGEUR,HAUTEUR,QImage::Format_RGB32)
 {
     QPainter paint;
-
-    img = image;
+    img = new QImage();
+    *img = (image->copy(0,0,image->width(),image->height()));
     distanceBord = BORD;
     nombreEspacementAbscisse = NOMBRE_ESPACEMENT_ABSCISSE;
     nombreEspacementOrdonnee = NOMBRE_ESPACEMENT_ABSCISSE;
@@ -34,7 +35,7 @@ Histogramme::Histogramme(QImage image) : QImage(LARGEUR,HAUTEUR,QImage::Format_R
 
 Histogramme::~Histogramme()
 {
-
+    delete img;
 }
 
 void Histogramme::afficheHisto()
@@ -70,11 +71,11 @@ void Histogramme::afficheHisto()
 void Histogramme::compterPixel()
 {
     QRgb pixel;
-    for(int i = 0; i < img.width(); i++)
+    for(int i = 0; i < img->width(); i++)
     {
-        for(int j = 0; j < img.height(); j++)
+        for(int j = 0; j < img->height(); j++)
         {
-            pixel = img.pixel(i,j);
+            pixel = img->pixel(i,j);
             nbPixelRouge[qRed(pixel)]++;
             nbPixelVert[qGreen(pixel)]++;
             nbPixelBleu[qBlue(pixel)]++;
@@ -129,7 +130,44 @@ void Histogramme::afficherLigne(int pixels[256], Qt::GlobalColor c)
         ancien.setY(nouveau.y());
         tmp += espaceEntrePoint;
     }
-
-
     paint.end();
+}
+
+void Histogramme::etalement(int min, int max, int vMin, int vMax)
+{
+    QRgb pixel;
+    int tmp;
+
+
+    for(int i = 0; i < 255; i++)
+    {
+        nbPixelRouge[i]=0;
+        nbPixelVert[i]=0;
+        nbPixelBleu[i]=0;
+    }
+    for(int i = 0; i < img->width(); i++)
+    {
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
+            tmp = vMax*(qRed(pixel)-min)/((double)(max-min));
+            if(tmp>255)
+            {
+                //cout << tmp << endl;
+                tmp = 255;
+            }
+            else if(tmp < 0)
+            {
+                //cout << tmp << endl;
+                tmp = 0;
+            }
+            img->setPixel(i,j,qRgba(tmp,tmp,tmp,qAlpha(pixel)));
+        }
+    }
+   afficherLignes();
+}
+
+QImage *Histogramme::getImg()
+{
+    return img;
 }

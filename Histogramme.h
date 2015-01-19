@@ -7,16 +7,19 @@ class Histogramme : public QImage
 {
 
 public:
-    Histogramme(QImage image);
+    Histogramme(QImage *image);
     ~Histogramme();
 
     void afficheHisto();
     void compterPixel();
     void afficherLignes();
     void afficherLigne(int pixels[256], Qt::GlobalColor c);
+    void etalement(int v0, int v1, int vMin = 0, int vMax = 255);
+
+    QImage *getImg();
 
 private:
-    QImage img;
+    QImage *img;
 
     int distanceBord;
     int nombreEspacementAbscisse;

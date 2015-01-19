@@ -12,7 +12,8 @@ SOURCES += \
     FiltreDialog.cpp \
     ScaleDialog.cpp \
     MyGraphicsScene.cpp \
-    Calcul.cpp
+    Calcul.cpp \
+    HistoDialog.cpp
 
 HEADERS += \
     myWindow.h \
@@ -26,7 +27,8 @@ HEADERS += \
     FiltreDialog.h \
     ScaleDialog.h \
     MyGraphicsScene.h \
-    Calcul.h
+    Calcul.h \
+    HistoDialog.h
 
 QT += widgets
 
