@@ -13,7 +13,7 @@ MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
     offset = QPoint(0, 0);
     rectTool = addRect(0, 0, 0, 0, QPen(), QBrush());
     rectTool->setZValue(100);
-    grabTool = addPixmap(QPixmap::fromImage(QImage("../Projet-Image-M1-info/ressources/Carre.png")));
+    grabTool = addPixmap(QPixmap::fromImage(QImage("../Projet-Image-M1-info/icones/Carre.png")));
     grabTool->setZValue(100);
 
     setVisibleResizeTool(false);
