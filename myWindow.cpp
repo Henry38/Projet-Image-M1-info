@@ -197,7 +197,8 @@ bool myWindow::histo()
 bool myWindow::gris()
 {
     QRgb pixel;
-    int i, j, tmp;
+    int i, j;
+    float tmp;
     int h = img->height();
     int w = img->width();
     for(i = 0; i < w; i++)
