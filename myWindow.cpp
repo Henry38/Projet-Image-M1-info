@@ -8,29 +8,45 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#include <QRectF>
+#include "Calcul.h"
+
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     img = new QImage();
+
     filename = "";
 
-    scene = new QGraphicsScene();
-
+    scene = new MyGraphicsScene(this);
+    scene->setPixmapItem(itemPixmap);
     ui->graphicsView->setScene(scene);
-    ui->graphicsView->setAcceptDrops(true);
-    //ui->graphicsView->setMouseTracking(true);
-    //ui->graphicsView->show();
+
+    itemPixmap = scene->addPixmap(QPixmap::fromImage(*img));
 
     initMenu();
     ui->toolBar->toolButtonStyle();
     initBarreOutils();
 
-    QDesktopWidget desktop;// = new QDesktopWidget;
+    QDesktopWidget desktop;
     int xScreen = desktop.screenGeometry().width();
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
 
+
+    QObject::connect(scene, SIGNAL(redimensionnement(QRectF)), this, SLOT(redimensionnementIteractif(QRectF)));
+}
+
+bool myWindow::redimensionnementIteractif(QRectF rect) {
+    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
+    delete img;
+    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    delete tmp;
+    repeindre();
+
+    return true;
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -41,19 +57,20 @@ myWindow::myWindow(QString url) : myWindow()
 myWindow::~myWindow()
 {
     delete img;
+    delete scene;
     delete ui;
 }
 
 void myWindow::repeindre()
 {
-    scene->clear();
-    //ui->graphicsView->setBackgroundBrush(Qt::red);
-    ui->graphicsView->setImage(img);
-    scene->addPixmap(QPixmap::fromImage(*img));
-    scene->setSceneRect(0,0,img->width(),img->height());
+    itemPixmap->setPixmap(QPixmap::fromImage(*img));
 
-    //ui->graphicsView->setScene(scene);
-    //ui->graphicsView->show();
+    ui->graphicsView->setImage(img);
+    scene->setPixmapItem(itemPixmap);
+    scene->setSceneRect(0, 0, img->width(), img->height());
+    scene->update();
+
+    scene->setVisibleResizeTool(true);
 }
 
 /* Ouvrir */
@@ -402,7 +419,7 @@ bool myWindow::selection()
     actionRogner->setEnabled(ui->graphicsView->modeSelection());
     if(ui->actionPipette->isChecked()){
         ui->actionPipette->setChecked(false);
-     }
+    }
     return true;
 }
 /*

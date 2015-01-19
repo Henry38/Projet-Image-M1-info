@@ -21,6 +21,7 @@
 #include <QGraphicsScene>
 #include <QtGui>
 #include <QtCore>
+#include "MyGraphicsScene.h"
 #include "MyGraphicsView.h"
 #include "ScaleDialog.h"
 
@@ -63,6 +64,7 @@ public slots:
     bool rogner();
     bool pipette();
     bool selection();
+    bool redimensionnementIteractif(QRectF);
 
 private:
     // Attribut
@@ -87,8 +89,9 @@ private:
     QPoint origin;
     Ui::MainWindow *ui;
     //QGraphicsScene *scene;
-    QGraphicsScene *scene;
+    MyGraphicsScene *scene;
     QString filename;
+    QGraphicsPixmapItem *itemPixmap;
 
 };
 
