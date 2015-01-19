@@ -185,40 +185,4 @@ Matrix* Matrix::copie(){
     return mat;
 }
 
-int* Matrix::lineariser(){
-    int* tableau = new int[size*size];
-    int k=0;
-    for(int i=0;i<size;i++){
-        for(int j=0;j<size;j++){
-            tableau[k]= get_element(i,j);
-            k++;
-        }
-    }
-    return tableau;
-}
 
-int Matrix::getMediane(int* tab){
-    return tab[size+1];
-}
-
-int* Matrix::trierTableau(int* tab){
-
-    bool tab_en_ordre = false;
-    int taille = size*size;
-    while(!tab_en_ordre)
-    {
-        tab_en_ordre = true;
-        for(int i=0 ; i < taille-1 ; i++)
-        {
-            if(tab[i] > tab[i+1])
-            {
-                swap(tab[i],tab[i+1]);
-                tab_en_ordre = false;
-             }
-        }
-        taille--;
-    }
-
-    return tab;
-
-}

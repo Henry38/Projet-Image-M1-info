@@ -67,6 +67,22 @@ public slots:
 private:
     // Attribut
     QImage *img;
+    QAction *actionOuvrir;
+    QAction *actionSauvegarder;
+    QAction *actionSauvegarderSous;
+    QAction *actionQuitter;
+    QAction *actionHistogramme;
+    QAction *actionNiveauDeGris;
+    QAction *actionFlouter;
+    QAction *actionFusion;
+    QAction *actionRedimensionner;
+    QAction *actionFiltre;
+    QAction *actionContours;
+    QAction *actionRedimIntell;
+    QAction *actionGrabCut;
+    QAction *actionRogner;
+    QAction *actionPipette;
+    QAction *actionSelection;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;

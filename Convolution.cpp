@@ -37,50 +37,6 @@ void Convolution::retournerMatrix()
     m.retourner();
 }
 
-/*void Convolution::convolution(QImage *image)
-{
-    int sommeR;
-    int sommeG;
-    int sommeB;
-    QRgb pixel;
-    int decallage = m.getSize()/2;
-    int finI = image->width() - m.getSize();
-    int finJ = image->height() - m.getSize();
-    QImage imageCopie(*image);
-    retournerMatrix();
-    for(int i = 0; i < finI; i++)
-    {
-        for(int j = 0; j<finJ; j++)
-        {
-            sommeR = 0;
-            sommeG = 0;
-            sommeB = 0;
-            for(int k = 0; k < m.getSize(); k++)
-            {
-                for(int l = 0; l < m.getSize(); l++)
-                {
-                    pixel = image->pixel(i+k,j+l);
-                    sommeR += qRed(pixel)*m.get_element(k,l);
-                    sommeG += qGreen(pixel)*m.get_element(k,l);
-                    sommeB += qBlue(pixel)*m.get_element(k,l);
-                }
-            }
-            if(sommeCoefficient > 0)
-            {
-                sommeR/=sommeCoefficient;
-                sommeG/=sommeCoefficient;
-                sommeB/=sommeCoefficient;
-            }
-            ajusterCouleur(&sommeR);
-            ajusterCouleur(&sommeG);
-            ajusterCouleur(&sommeB);
-            imageCopie.setPixel(i+decallage,j+decallage,qRgb(sommeR,sommeG,sommeB));
-        }
-    }
-    image->swap(imageCopie);
-    retournerMatrix();
-}*/
-
 void Convolution::convolution(QImage *image)
 {
     int sommeR;
@@ -88,8 +44,6 @@ void Convolution::convolution(QImage *image)
     int sommeB;
     int nbPixel;
     QRgb pixel;
-    //int finI = image->width();
-    //int finJ = image->height() - m.getSize();
     QImage imageCopie(*image);
     retournerMatrix();
     if(m.estPaire()){
@@ -245,6 +199,89 @@ void Convolution::convolutionCascade(Matrix *noyau,Matrix *mat, int taille){
     }
 }
 
+void Convolution::convolutionMedian(QImage *image,int taille)
+{
+    QImage imageCopie(*image);
+        for(int x = 0; x < image->width(); x++)
+        {
+            for(int y = 0; y < image->height(); y++)
+            {
+                if (x+taille <= image->width() && y+taille <= image->height()) {
+                            int med = getMediane(y,x,taille,&imageCopie);
+                            image->setPixel(x+(taille/2+1),y+(taille/2+1),qRgb(med,med,med));
+
+                }
+            }
+        }
+
+
+    //image->swap(imageCopie);
+}
+
 void Convolution::setNoyau(Matrix* noyau){
     m = *(noyau->copie());
+}
+
+
+int* Convolution::lineariser(int debI, int debJ,int taille,QImage* img){
+    int* tableau = new int[taille*taille];
+    int k=0;
+    for(int i=debI;i<debI+taille;i++){
+        for(int j=debJ;j<debJ+taille;j++){
+            /*ON PREND LA VALEUR DE GRIS DE L'IMAGE*/
+            tableau[k]= qGray(img->pixel(j,i));
+            k++;
+        }
+    }
+    return tableau;
+}
+
+int Convolution::getMedianeFromTab(int* tab,int taille){
+    return tab[((taille*taille)/2)];
+}
+
+int Convolution::getMediane(int debI,int debJ,int taille,QImage *img){
+
+    int* tab = lineariser(debI,debJ,taille,img);
+    tab = trierTableau(tab,taille);
+
+    bool tab_en_ordre = false;
+    int N = taille*taille;
+    while(!tab_en_ordre)
+    {
+        tab_en_ordre = true;
+        for(int i=0 ; i < N-1 ; i++)
+        {
+            if(tab[i] > tab[i+1])
+            {
+                swap(tab[i],tab[i+1]);
+                tab_en_ordre = false;
+             }
+        }
+        N--;
+    }
+
+    return getMedianeFromTab(tab,taille);
+
+}
+
+int* Convolution::trierTableau(int* tab,int taille){
+
+    bool tab_en_ordre = false;
+    int N = taille*taille;
+    while(!tab_en_ordre)
+    {
+        tab_en_ordre = true;
+        for(int i=0 ; i < N-1 ; i++)
+        {
+            if(tab[i] > tab[i+1])
+            {
+                swap(tab[i],tab[i+1]);
+                tab_en_ordre = false;
+             }
+        }
+        N--;
+    }
+    return tab;
+
 }

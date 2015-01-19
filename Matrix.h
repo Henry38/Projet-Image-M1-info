@@ -27,9 +27,6 @@ public:
     void agrandir(int);
     void afficher();
     Matrix* copie();
-    int* lineariser();
-    int getMediane(int*);
-    int* trierTableau(int*);
 
 
 private:
