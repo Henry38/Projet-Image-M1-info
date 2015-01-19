@@ -19,17 +19,25 @@ public:
     AbstractDialog();
     ~AbstractDialog();
     void display(QImage*);
+
+    QPoint getOKAnnuler();
     //QScrollArea* getViewer();
 
 private:
     QLabel *label;
+    void resizeEvent(QResizeEvent *event);
+
 
 public slots:
     virtual void updateViewer() = 0;
     virtual void acceptDialog() = 0;
 
-public:
+protected:
     Ui::AbstractDialog *ui;
+    int distBordGauche;
+    int distBordHaut;
+    int distBordDroit;
+    int distBordBas;
 };
 
 #endif // ABSTRACTDIALOG_H
