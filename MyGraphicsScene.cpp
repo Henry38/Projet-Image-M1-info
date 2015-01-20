@@ -10,6 +10,7 @@
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {
     grab = false;
+    mode = 0;
     offset = QPoint(0, 0);
     rectTool = addRect(0, 0, 0, 0, QPen(), QBrush());
     rectTool->setZValue(100);
@@ -29,6 +30,18 @@ void MyGraphicsScene::setPixmapItem(QGraphicsPixmapItem *itemSource)
     item = itemSource;
 }
 
+void MyGraphicsScene::enableRedimension()
+{
+    mode = 3;
+    setVisibleResizeTool(true);
+}
+
+void MyGraphicsScene::disableRedimension()
+{
+    mode = 0;
+    setVisibleResizeTool(false);
+}
+
 void MyGraphicsScene::setVisibleResizeTool(bool visible) {
     if (visible) {
         rectTool->setRect(item->x(), item->y(), item->pixmap().width(), item->pixmap().height());
@@ -44,6 +57,8 @@ void MyGraphicsScene::setVisibleResizeTool(bool visible) {
 
 void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    QGraphicsScene::mouseMoveEvent(mouseEvent);
+
     if (grab) {
         rectTool->setRect(item->x(), item->y(), grabTool->x(), grabTool->y());
         QPointF point = mouseEvent->scenePos() - offset;
@@ -59,6 +74,8 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    QGraphicsScene::mousePressEvent(mouseEvent);
+
     QPointF point = mouseEvent->scenePos() - grabTool->pos();
     if (grabTool->boundingRect().contains(point.x(), point.y())) {
         offset = point;
@@ -66,8 +83,13 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    grab = false;
-    emit redimensionnement(rectTool->rect());
+    QGraphicsScene::mouseReleaseEvent(mouseEvent);
+
+    if (grab) {
+        grab = false;
+        emit redimensionnement(rectTool->rect());
+    }
+
 }

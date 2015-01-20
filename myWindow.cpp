@@ -69,8 +69,6 @@ void myWindow::repeindre()
     scene->setPixmapItem(itemPixmap);
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
-
-    scene->setVisibleResizeTool(true);
 }
 
 /* Ouvrir */
@@ -177,6 +175,7 @@ void myWindow::initBarreOutils()
 {
     QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
     QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
+    QObject::connect(ui->actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimension()));
     actionRogner->setEnabled(false);
 }
 
@@ -403,11 +402,20 @@ bool myWindow::rogner()
 
 bool myWindow::pipette()
 {
-   ui->graphicsView->setModePipette();
-   if(ui->actionSelection->isChecked()){
-       actionRogner->setEnabled(false);
-       ui->graphicsView->cacherSelect();
-       ui->actionSelection->setChecked(false);
+    if (ui->actionPipette->isChecked()) {
+        ui->graphicsView->setModePipette();
+    } else {
+        ui->graphicsView->resetMode();
+    }
+
+    if(ui->actionSelection->isChecked()){
+        actionRogner->setEnabled(false);
+        ui->graphicsView->cacherSelect();
+        ui->actionSelection->setChecked(false);
+    }
+    if (ui->actionRedimensionner->isChecked()) {
+        ui->actionRedimensionner->setChecked(false);
+        scene->disableRedimension();
     }
 
     return true;
@@ -415,13 +423,46 @@ bool myWindow::pipette()
 
 bool myWindow::selection()
 {
-    ui->graphicsView->setModeSelection();
-    actionRogner->setEnabled(ui->graphicsView->modeSelection());
+    if (ui->actionSelection->isChecked()) {
+        ui->graphicsView->setModeSelection();
+        actionRogner->setEnabled(true);
+    } else {
+        actionRogner->setEnabled(false);
+        ui->graphicsView->cacherSelect();
+    }
+
     if(ui->actionPipette->isChecked()){
         ui->actionPipette->setChecked(false);
     }
+    if (ui->actionRedimensionner->isChecked()) {
+        ui->actionRedimensionner->setChecked(false);
+        scene->disableRedimension();
+    }
     return true;
 }
+
+bool myWindow::redimension()
+{
+    if (ui->actionRedimensionner->isChecked()) {
+        ui->graphicsView->setModeRedimension();
+        scene->enableRedimension();
+    } else {
+        ui->graphicsView->resetMode();
+        scene->disableRedimension();
+    }
+
+    if(ui->actionSelection->isChecked()){
+        actionRogner->setEnabled(false);
+        ui->graphicsView->cacherSelect();
+        ui->actionSelection->setChecked(false);
+    }
+    if(ui->actionPipette->isChecked()){
+        ui->actionPipette->setChecked(false);
+    }
+
+    return true;
+}
+
 /*
 void myWindow::showMessage(const QString &message){
     statusBar()->showMessage(message);

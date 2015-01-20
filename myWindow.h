@@ -65,6 +65,7 @@ public slots:
     bool pipette();
     bool selection();
     bool redimensionnementIteractif(QRectF);
+    bool redimension();
 
 private:
     // Attribut

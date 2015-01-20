@@ -13,6 +13,8 @@ public:
     void setPixmapItem(QGraphicsPixmapItem *);
     //QGraphicsPixmapItem *addPixmap(const QPixmap&);
     void setVisibleResizeTool(bool);
+    void enableRedimension();
+    void disableRedimension();
 
 private:
     QPointF offset;
@@ -20,6 +22,7 @@ private:
     QGraphicsRectItem *rectTool;
     QGraphicsPixmapItem *grabTool;
     bool grab;
+    int mode;
 
 
 protected:
