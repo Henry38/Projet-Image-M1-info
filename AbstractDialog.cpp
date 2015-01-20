@@ -40,3 +40,8 @@ QPoint AbstractDialog::getOKAnnuler()
     return QPoint(ui->buttonBox->width(), ui->buttonBox->height());
 
 }
+
+QScrollArea *AbstractDialog::getScrollArea()
+{
+    return ui->scrollArea;
+}

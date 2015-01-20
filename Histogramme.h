@@ -3,6 +3,7 @@
 
 #include "myWindow.h"
 #include <QImage>
+
 class Histogramme : public QImage
 {
 
@@ -11,15 +12,19 @@ public:
     ~Histogramme();
 
     void afficheHisto();
-    void compterPixel();
-    void afficherLignes();
+    virtual void compterPixel() = 0;
+    virtual void afficherLignes() = 0;
+    bool gray();
     void afficherLigne(int pixels[256], Qt::GlobalColor c);
-    void etalement(int v0, int v1, int vMin = 0, int vMax = 255);
+    virtual void etalement(int v0, int v1, int vMin = 0, int vMax = 255) = 0;
 
     QImage *getImg();
+    void setImg(QImage *image);
 
-private:
+protected:
     QImage *img;
+
+    bool gris;
 
     int distanceBord;
     int nombreEspacementAbscisse;
@@ -27,15 +32,10 @@ private:
 
     int valeurMax;
 
-    int nbPixelRouge[256];
-    int nbPixelBleu[256];
-    int nbPixelVert[256];
+    int composantes[3][256];
 
     int longueurAbscisse;
     int longueurOrdonnee;
-
-
-
 };
 
 #endif // HISTOGRAMME_H

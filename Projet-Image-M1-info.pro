@@ -11,7 +11,9 @@ SOURCES += \
     Histogramme.cpp \
     FiltreDialog.cpp \
     ScaleDialog.cpp \
-    HistoDialog.cpp
+    HistoDialog.cpp \
+    HistoRGB.cpp \
+    HistoYUV.cpp
 
 HEADERS += \
     myWindow.h \
@@ -24,7 +26,9 @@ HEADERS += \
     Histogramme.h \
     FiltreDialog.h \
     ScaleDialog.h \
-    HistoDialog.h
+    HistoDialog.h \
+    HistoRGB.h \
+    HistoYUV.h
 
 QT += widgets
 
