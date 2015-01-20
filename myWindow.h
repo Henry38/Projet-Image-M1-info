@@ -21,6 +21,7 @@
 #include <QGraphicsScene>
 #include <QtGui>
 #include <QtCore>
+#include "MyGraphicsScene.h"
 #include "MyGraphicsView.h"
 #include "ScaleDialog.h"
 
@@ -63,16 +64,35 @@ public slots:
     bool rogner();
     bool pipette();
     bool selection();
+    bool redimensionnementIteractif(QRectF);
+    bool redimension();
 
 private:
     // Attribut
     QImage *img;
+    QAction *actionOuvrir;
+    QAction *actionSauvegarder;
+    QAction *actionSauvegarderSous;
+    QAction *actionQuitter;
+    QAction *actionHistogramme;
+    QAction *actionNiveauDeGris;
+    QAction *actionFlouter;
+    QAction *actionFusion;
+    QAction *actionRedimensionner;
+    QAction *actionFiltre;
+    QAction *actionContours;
+    QAction *actionRedimIntell;
+    QAction *actionGrabCut;
+    QAction *actionRogner;
+    QAction *actionPipette;
+    QAction *actionSelection;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;
     //QGraphicsScene *scene;
-    QGraphicsScene *scene;
+    MyGraphicsScene *scene;
     QString filename;
+    QGraphicsPixmapItem *itemPixmap;
 
 };
 

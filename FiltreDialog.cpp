@@ -6,6 +6,7 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     apercu = new QImage(*imgSource);
     valMax = 9;
 
+    FiltreDialog::setFixedWidth(800);
     text = new QLabel(this);
     text->move(291, 50);
     text->setText("Taille : ");
@@ -25,7 +26,7 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
          matP[i][j] = new QLineEdit(this);
          matP[i][j]->setValidator(validator);
          matP[i][j]->setFixedWidth(30);
-         matP[i][j]->move(400+31*j,400+31*i);
+         matP[i][j]->move(450+31*j,50+31*i);
         }
     }
     dimMatP = valMax;
@@ -92,11 +93,7 @@ void FiltreDialog::updateViewer()
         c.convolution(apercu);
     }
     if(median->isChecked()){
-        cout << "MEDIAN"<<endl;
-        Matrix *noyau = new Matrix(5,5);
-        int* tab = noyau->lineariser();
-        tab = noyau->trierTableau(tab);
-        int mediane = noyau->getMediane(tab);
+        c.convolutionMedian(apercu,spinBox->value());
     }
     if(gaussien->isChecked()){
         Matrix *noyau = new Matrix(2,1);
