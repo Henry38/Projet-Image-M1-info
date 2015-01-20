@@ -12,7 +12,7 @@ SOURCES += \
     FiltreDialog.cpp \
     ScaleDialog.cpp \
     HistoRGB.cpp \
-    HistoYUV.cpp
+    HistoYUV.cpp \
     MyGraphicsScene.cpp \
     Calcul.cpp \
     HistoDialog.cpp
@@ -29,7 +29,7 @@ HEADERS += \
     FiltreDialog.h \
     ScaleDialog.h \
     HistoRGB.h \
-    HistoYUV.h
+    HistoYUV.h \
     MyGraphicsScene.h \
     Calcul.h \
     HistoDialog.h

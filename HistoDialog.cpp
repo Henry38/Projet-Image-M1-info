@@ -6,7 +6,7 @@
 HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB(img),conteneurHisto(this), choixCouleur(this), choixOperation(this)
 {
     histoRGB.afficheHisto();
-    //histoRGB.afficherLignes();
+    histoRGB.afficherLignes();
     this->img = img;
     RGB = true;
     setFixedSize(width()+histoRGB.width()+distBordGauche,getOKAnnuler().y() + histoRGB.height()+distBordHaut+distBordBas);
@@ -118,12 +118,17 @@ void HistoDialog::annulerOperation()
     if(RGB)
     {
         histoRGB.setImg(img);
+        histoRGB.afficheHisto();
         histoRGB.afficherLignes();
+        conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
+
     }
     else
     {
         histoYUV.setImg(img);
+        histoYUV.afficheHisto();
         histoYUV.afficherLignes();
+        conteneurHisto.setPixmap(QPixmap::fromImage(histoYUV));
     }
 }
 
