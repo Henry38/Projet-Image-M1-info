@@ -21,11 +21,16 @@ Histogramme::Histogramme(QImage *image) : QImage(LARGEUR,HAUTEUR,QImage::Format_
     longueurAbscisse = width()-distanceBord-1- distanceBord;
     longueurOrdonnee = height()-distanceBord-1 - distanceBord;
 
-    for(int i = 0; i < 256; i++)
+    gris = true;
+    QRgb pixel;
+    for(int i = 0; i < img->width(); i++)
     {
-        nbPixelRouge[i] = 0;
-        nbPixelVert[i] = 0;
-        nbPixelBleu[i] = 0;
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
+            if(qRed(pixel)!=qGreen(pixel) || qGreen(pixel)!=qBlue(pixel))
+                gris = false;
+        }
     }
 
     paint.begin(this);
@@ -68,43 +73,9 @@ void Histogramme::afficheHisto()
     paint.end();
 }
 
-void Histogramme::compterPixel()
+bool Histogramme::gray()
 {
-    QRgb pixel;
-    for(int i = 0; i < img->width(); i++)
-    {
-        for(int j = 0; j < img->height(); j++)
-        {
-            pixel = img->pixel(i,j);
-            nbPixelRouge[qRed(pixel)]++;
-            nbPixelVert[qGreen(pixel)]++;
-            nbPixelBleu[qBlue(pixel)]++;
-        }
-    }
-    valeurMax = 0;
-    for(int i = 0; i < 256; i++)
-    {
-        if(nbPixelRouge[i] > valeurMax)
-        {
-            valeurMax = nbPixelRouge[i];
-        }
-        if(nbPixelVert[i] > valeurMax)
-        {
-            valeurMax = nbPixelVert[i];
-        }
-        if(nbPixelBleu[i] > valeurMax)
-        {
-            valeurMax = nbPixelBleu[i];
-        }
-    }
-}
-
-void Histogramme::afficherLignes()
-{
-    compterPixel();
-    afficherLigne(nbPixelBleu,Qt::blue);
-    afficherLigne(nbPixelRouge,Qt::red);
-    afficherLigne(nbPixelVert,Qt::green);
+    return gris;
 }
 
 void Histogramme::afficherLigne(int pixels[256], Qt::GlobalColor c)
@@ -133,41 +104,14 @@ void Histogramme::afficherLigne(int pixels[256], Qt::GlobalColor c)
     paint.end();
 }
 
-void Histogramme::etalement(int min, int max, int vMin, int vMax)
-{
-    QRgb pixel;
-    int tmp;
-
-
-    for(int i = 0; i < 255; i++)
-    {
-        nbPixelRouge[i]=0;
-        nbPixelVert[i]=0;
-        nbPixelBleu[i]=0;
-    }
-    for(int i = 0; i < img->width(); i++)
-    {
-        for(int j = 0; j < img->height(); j++)
-        {
-            pixel = img->pixel(i,j);
-            tmp = vMax*(qRed(pixel)-min)/((double)(max-min));
-            if(tmp>255)
-            {
-                //cout << tmp << endl;
-                tmp = 255;
-            }
-            else if(tmp < 0)
-            {
-                //cout << tmp << endl;
-                tmp = 0;
-            }
-            img->setPixel(i,j,qRgba(tmp,tmp,tmp,qAlpha(pixel)));
-        }
-    }
-   afficherLignes();
-}
-
 QImage *Histogramme::getImg()
 {
     return img;
+}
+
+void Histogramme::setImg(QImage * image)
+{
+    delete img;
+    img = new QImage();
+    *img = (image->copy(0,0,image->width(),image->height()));
 }

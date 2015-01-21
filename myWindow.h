@@ -64,7 +64,9 @@ public slots:
     bool rogner();
     bool pipette();
     bool selection();
-    bool redimensionnementIteractif(QRectF);
+    bool redimensionnementIteractif(QRect);
+    bool redimensionMode();
+    bool redimensionIntellMode();
 
 private:
     // Attribut

@@ -21,6 +21,7 @@ public:
     void display(QImage*);
 
     QPoint getOKAnnuler();
+    QScrollArea *getScrollArea();
     //QScrollArea* getViewer();
 
 private:
