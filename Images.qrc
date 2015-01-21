@@ -3,5 +3,6 @@
         <file>icones/pipette.png</file>
         <file>icones/selection.png</file>
         <file>icones/redimensionnement.png</file>
+        <file>icones/redimensionnementIntell.png</file>
     </qresource>
 </RCC>

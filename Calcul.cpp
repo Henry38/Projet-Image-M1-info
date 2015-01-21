@@ -328,3 +328,66 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
 
     return imgArrivee;
 }
+
+#include <iostream>
+#include "Matrix.h"
+#include "Convolution.h"
+
+QImage* Calcul::zoneDeDensite(QImage *imgDepart) {
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+    QRgb pixel, tmp;
+
+    int somme;
+    int min = 765;
+    int max = 0;
+    //std::cout << qAbs(-1) << std::endl;
+
+    Matrix *m = new Matrix(imgDepart->width(), imgDepart->height());
+    /*m->insert_element(0,0,1);
+    m->insert_element(0,1,2);
+    m->insert_element(0,2,1);
+    m->insert_element(1,0,0);
+    m->insert_element(1,1,0);
+    m->insert_element(1,2,0);
+    m->insert_element(2,0,-1);
+    m->insert_element(2,1,-2);
+    m->insert_element(2,2,-1);*/
+
+    for (int x=0; x<imgArrivee->width(); x++) {
+        for (int y=0; y<imgArrivee->height(); y++) {
+            pixel = imgDepart->pixel(x, y);
+
+            somme = 0;
+            for (int i=x-1; i<=x+1; i++) {
+                for (int j=x-1; j<=x+1; j++) {
+                    if (i >= 0 && i < imgArrivee->width() && j >= 0 && j < imgArrivee->height()) {
+                        tmp = imgDepart->pixel(i, j);
+                        somme += qAbs(qRed(pixel) - qRed(tmp));
+                        somme += qAbs(qGreen(pixel) - qGreen(tmp));
+                        somme += qAbs(qBlue(pixel) - qBlue(tmp));
+                    }
+                }
+            }
+            if (min > somme) {
+                min = somme;
+            }
+            if (max < somme) {
+                max = somme;
+            }
+            m->insert_element(x, y, somme);
+            //imgArrivee->setPixel(x, y, qRgba(somme, somme, somme, 255));
+            //std::cout << qRed(imgArrivee->pixel(x, y)) << std::endl;
+        }
+    }
+
+    int res;
+    for (int x=0; x<imgArrivee->width(); x++) {
+        for (int y=0; y<imgArrivee->height(); y++) {
+            res = (int) ((((float) (m->get_element(x, y) - min)) / ((float) (max - min))) * 255.0);
+
+            imgArrivee->setPixel(x, y, qRgba(res, res, res, 255));
+        }
+    }
+
+    return imgArrivee;
+}

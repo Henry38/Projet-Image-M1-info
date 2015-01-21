@@ -24,6 +24,7 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     ui->graphicsView->setScene(scene);
 
     itemPixmap = scene->addPixmap(QPixmap::fromImage(*img));
+    scene->setPixmapItem(itemPixmap);
 
     initMenu();
     ui->toolBar->toolButtonStyle();
@@ -36,10 +37,10 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
 
 
-    QObject::connect(scene, SIGNAL(redimensionnement(QRectF)), this, SLOT(redimensionnementIteractif(QRectF)));
+    QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
 }
 
-bool myWindow::redimensionnementIteractif(QRectF rect) {
+bool myWindow::redimensionnementIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
     delete img;
     img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
@@ -66,7 +67,6 @@ void myWindow::repeindre()
     itemPixmap->setPixmap(QPixmap::fromImage(*img));
 
     ui->graphicsView->setImage(img);
-    scene->setPixmapItem(itemPixmap);
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
 }
@@ -175,7 +175,7 @@ void myWindow::initBarreOutils()
 {
     QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
     QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
-    QObject::connect(ui->actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimension()));
+    QObject::connect(ui->actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimensionMode()));
     actionRogner->setEnabled(false);
 }
 
@@ -323,6 +323,11 @@ bool myWindow::contours()
 
 bool myWindow::redimIntell()
 {
+    //delete img;
+    QImage *tmp = Calcul::zoneDeDensite(img);
+    delete img;
+    img = tmp;
+    repeindre();
 
     actionRogner->setEnabled(false);
     ui->graphicsView->cacherSelect();
@@ -441,7 +446,7 @@ bool myWindow::selection()
     return true;
 }
 
-bool myWindow::redimension()
+bool myWindow::redimensionMode()
 {
     if (ui->actionRedimensionner->isChecked()) {
         ui->graphicsView->setModeRedimension();
