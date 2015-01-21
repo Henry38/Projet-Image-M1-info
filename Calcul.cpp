@@ -391,3 +391,14 @@ QImage* Calcul::zoneDeDensite(QImage *imgDepart) {
 
     return imgArrivee;
 }
+
+QVector<float> Calcul::getYUV(QRgb pixel) {
+    QVector<float> yuv;
+    float y = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+    float u = 0.492 * (qBlue(pixel) - y);
+    float v = 0.877 * (qRed(pixel) - y);
+    yuv.append(y);
+    yuv.append(u);
+    yuv.append(v);
+    return yuv;
+}

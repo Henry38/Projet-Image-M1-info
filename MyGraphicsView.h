@@ -7,6 +7,7 @@
 #include <QRubberBand>
 #include <QPoint>
 #include <QDragMoveEvent>
+#include "Calcul.h"
 using namespace std;
 
 class MyGraphicsView : public QGraphicsView

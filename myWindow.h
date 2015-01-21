@@ -66,6 +66,7 @@ public slots:
     bool selection();
     bool redimensionnementIteractif(QRect);
     bool redimensionMode();
+    bool redimensionIntellMode();
 
 private:
     // Attribut
