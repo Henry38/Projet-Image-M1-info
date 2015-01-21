@@ -6,10 +6,12 @@
 #include "HistoDialog.h"
 #include <QPixmap>
 #include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 #include <opencv/highgui.h>
 
 #include <QRectF>
 #include "Calcul.h"
+using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
@@ -332,17 +334,77 @@ bool myWindow::redimIntell()
 
 bool myWindow::grabCut()
 {
-
     actionRogner->setEnabled(false);
     ui->graphicsView->cacherSelect();
-/*if(img->format() == QImage::Format_RGB32){
-    img->convertToFormat(QImage::Format_Indexed8);
-}*/
+    if(ui->graphicsView->getPret()){
 
+    /*Tab temp à ne pas modifier tt que sur mme image*/
+    Mat bgdModel = *(new Mat());
+    Mat fgdModel= *(new Mat());
+    /*nb d'iter de l'algo avt de rvoyer le res*/
+    int iterCount =1;
+    const string name= filename.toStdString();
+    /*image*/
+    Mat im = imread(name,1);
+    /*masque*/
+    Mat mask;
+    mask.create( im.size(), CV_8UC1);
+    /*ROI : region of interest*/
 
-    //cv::grabCut();
+       QPoint HG = ui->graphicsView->getHG();
+       QPoint BD = ui->graphicsView->getBD();
+       /*Si selection dépasse de l'image*/
+       if(BD.x()<0){
+           BD.setX(0);
+       }
+       if(HG.x()<0){
+           HG.setX(0);
+       }
+       if(BD.y()<0){
+           BD.setY(0);
+       }
+       if(HG.y()<0){
+           HG.setY(0);
+       }
 
-    return true;
+       if(BD.x() > img->width()){
+         /*on recadre à la limite*/
+          BD.setX(img->width());
+       }
+
+       if(BD.y() > img->width()){
+         /*on recadre à la limite*/
+           BD.setY(img->width());
+       }
+
+       if(HG.x() > img->width()){
+         /*on recadre à la limite*/
+           HG.setX(img->width());
+       }
+
+       if(HG.y() > img->width()){
+         /*on recadre à la limite*/
+           HG.setY(img->width());
+       }
+       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+       ui->graphicsView->cacherSelect();
+       ui->graphicsView->setPret(false);
+        /*rect : selection*/
+        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+        /*fait le decoupage*/
+        compare(mask,GC_PR_FGD,mask,CMP_EQ);
+
+        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+        im.copyTo(fgd,mask);
+        //im.copyTo(fgdModel,mask);
+
+        cv::imshow("test5",fgd);
+        repeindre();
+        return true;
+
+   }else{
+       return false;
+   }
 }
 
 /* rogne la selection de l'image*/
