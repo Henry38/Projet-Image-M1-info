@@ -126,7 +126,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
             stringstream ss;
             QVector<float> yuv = Calcul::getYUV(pixel);
             ss << "alpha :"<< qAlpha(pixel) <<" R :"<< qRed(pixel) <<" G :"<< qGreen(pixel) <<" B :" << qBlue(pixel)<< endl;
-            ss <<"| Y :"<< yuv.at(0) <<" U :"<< yuv.at(1) <<" V :"<< yuv.at(2) <<endl;
+            ss <<"| Y :"<< (int) yuv.at(0) <<" U :"<< (int) yuv.at(1) <<" V :"<< (int) yuv.at(2) <<endl;
 
             myWindow *w = (myWindow*)this->window();
             w->statusBar()->showMessage(ss.str().c_str());

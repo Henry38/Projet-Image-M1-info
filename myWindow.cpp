@@ -66,9 +66,13 @@ void myWindow::repeindre()
     ui->graphicsView->setImage(img);
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
+
+//    if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
+//        scene->updateVisibleTool();
+//    }
 }
 
-/* Ouvrir */
+/*ouvre une nouvelle image en demandant l'url*/
 bool myWindow::openFilename()
 {
     QString filename = QFileDialog::getOpenFileName(this,
@@ -80,6 +84,7 @@ bool myWindow::openFilename()
     return false;
 }
 
+/*ouvre l'image ciblee par l'url*/
 bool myWindow::open(QString url)
 {
     if (img->load(url))
@@ -94,7 +99,7 @@ bool myWindow::open(QString url)
     return false;
 }
 
-/* Sauvegarder sous*/
+/*sauvegarder sous*/
 bool myWindow::saveAsFilename()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save File",
@@ -107,6 +112,7 @@ bool myWindow::saveAsFilename()
     return false;
 }
 
+/*sauvegarde l'image a l'url donnee*/
 bool myWindow::save(QString url)
 {
     return img->save(url, 0, -1);
@@ -183,12 +189,15 @@ void myWindow::initBarreOutils()
 /* Sauvegarder */
 bool myWindow::sauvegarder()
 {
-    save(filename);
-    return true;
+    if (filename != "") {
+        return save(filename);
+    }
+    return false;
 }
 
-void myWindow::quitter(){
-    /*êtes vous sur ?*/
+/*quitte l'application*/
+void myWindow::quitter()
+{
     qApp->quit();
 }
 
@@ -251,6 +260,7 @@ bool myWindow::fusionner()
     return false;
 }
 
+/*redimensionne l'image en changeant les proportion*/
 bool myWindow::redimensionner()
 {
     ScaleDialog scaleDialog(img);
@@ -301,10 +311,9 @@ bool myWindow::contours()
 
 bool myWindow::redimIntell()
 {
+    QImage *tmp = Calcul::chemin(img);
     //delete img;
-    QImage *tmp = Calcul::zoneDeDensite(img);
-    delete img;
-    img = tmp;
+    //img = tmp;
     repeindre();
 
     return true;

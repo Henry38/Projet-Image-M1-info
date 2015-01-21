@@ -330,11 +330,76 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
 }
 
 #include <iostream>
+
+QImage* Calcul::chemin(QImage* imgDepart) {
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
+    int width = imgArrivee->width();
+    int height = imgArrivee->height();
+
+    float table[width][height];   // colonne ligne
+    int indice[width][height];
+    QRgb pixel;
+    float power;
+
+    // Initialisation
+    for (int x=0; x<width; x++) {
+        pixel = imgDepart->pixel(x, 0);
+        table[x][0] = niveauDeGris(pixel);
+        indice[x][0] = 0;
+    }
+
+    for (int y=1; y<height; y++) {
+        for (int x=0; x<width; x++) {
+            pixel = imgDepart->pixel(x, y);
+            power = niveauDeGris(pixel);
+            table[x][y] = std::numeric_limits<int>::max();
+            indice[x][y] = 0;
+            for (int k=-1; k<=1; k++) {
+                if (x+k >= 0 && x+k < width) {
+                    if (power + table[x+k][y-1] < table[x][y]) {
+                        table[x][y] = power + table[x+k][y-1];
+                        indice[x][y] = k;
+                    }
+                }
+            }
+        }
+    }
+
+    float min = table[0][height-1];
+    int indexMin = 0;
+    for (int x=1; x<width; x++) {
+        power = table[x][height-1];
+        if (power < min) {
+            min = power;
+            indexMin = x;
+        }
+    }
+
+    for (int y=height-1; y>=0; y--) {
+        imgDepart->setPixel(indexMin, y, qRgba(255, 0, 0, 255));
+        indexMin += indice[indexMin][y];
+    }
+
+    return imgArrivee;
+}
+
 #include "Matrix.h"
 #include "Convolution.h"
 
+QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWidth) {
+    QImage *imgArrivee = new QImage(targetWidth, imgDepart->height(), imgDepart->format());
+
+    return imgArrivee;
+}
+
+QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHeight) {
+    QImage *imgArrivee = new QImage(imgDepart->width(), targetHeight, imgDepart->format());
+
+    return imgArrivee;
+}
+
 QImage* Calcul::zoneDeDensite(QImage *imgDepart) {
-    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
     QRgb pixel, tmp;
 
     int somme;
@@ -401,4 +466,8 @@ QVector<float> Calcul::getYUV(QRgb pixel) {
     yuv.append(u);
     yuv.append(v);
     return yuv;
+}
+
+float Calcul::niveauDeGris(QRgb pixel) {
+    return 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
 }
