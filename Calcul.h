@@ -6,6 +6,7 @@
 
 class Calcul {
 public:
+    static QImage* contour(QImage*);
     static QImage* redimensionnementEnLargeur(QImage*, int);
     static QImage* redimensionnementEnHauteur(QImage*, int);
     static QImage* chemin(QImage*);

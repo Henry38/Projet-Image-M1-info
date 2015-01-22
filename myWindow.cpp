@@ -39,16 +39,6 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
 }
 
-bool myWindow::redimensionnementIteractif(QRect rect) {
-    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
-    delete img;
-    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
-    delete tmp;
-    repeindre();
-
-    return true;
-}
-
 myWindow::myWindow(QString url) : myWindow()
 {
     open(url);
@@ -184,6 +174,8 @@ void myWindow::initBarreOutils()
     QObject::connect(ui->actionRedimensionIntell,SIGNAL(triggered()),this,SLOT(redimensionIntellMode()));
 
     QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnLargeur(QRect)), this, SLOT(redimensionnementIntellEnLargeurIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnHauteur(QRect)), this, SLOT(redimensionnementIntellEnHauteurIteractif(QRect)));
 
     actionRogner->setEnabled(false);
 }
@@ -286,38 +278,17 @@ bool myWindow::filtre()
 
 bool myWindow::contours()
 {
-    Convolution c;
-   c.redimensionnerMatrix(3,0);
 
-   Matrix *noyau = new Matrix(3,0);
-   noyau->insert_element(0,0,0);
-    noyau->insert_element(0,1,-1);
-    noyau->insert_element(0,2,0);
-   noyau->insert_element(1,0,-1);
-   noyau->insert_element(1,1,5);
-   noyau->insert_element(1,2,-1);
-    noyau->insert_element(2,0,0);
-   noyau->insert_element(2,1,-1);
-    noyau->insert_element(2,2,0);
-    c.setNoyau(noyau);
-/*
-    c.modifierCaseMatrix(0,1,1);
-    c.modifierCaseMatrix(2,1,1);
-    c.modifierCaseMatrix(1,0,1);
-    c.modifierCaseMatrix(2,2,1);
-    c.modifierCaseMatrix(1,1,-4);*/
-    c.convolution(img);
+//    QImage *tmp = Calcul::contour(img);
+//    delete img;
+//    img = tmp;
+
     repeindre();
     return true;
 }
 
 bool myWindow::redimIntell()
 {
-    QImage *tmp = Calcul::chemin(img);
-    //delete img;
-    //img = tmp;
-    repeindre();
-
     return true;
 }
 
@@ -451,6 +422,32 @@ bool myWindow::rogner()
     }else{
         return false;
     }
+}
+
+bool myWindow::redimensionnementIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
+    delete img;
+    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    delete tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
+    delete img;
+    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    delete tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.width());
+
+    return true;
 }
 
 bool myWindow::selection()

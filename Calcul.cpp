@@ -1,5 +1,89 @@
 
 #include "Calcul.h"
+#include "Convolution.h"
+#include "Matrix.h"
+
+QImage* contour(QImage *imgDepart) {
+
+//    QImage *imgArrivee = new QImage(*imgDepart);
+//    Convolution c;
+//    c.redimensionnerMatrix(3,0);
+
+//    Matrix *noyau = new Matrix(3,0);
+//    noyau->insert_element(0,0,0);
+//    noyau->insert_element(0,1,-1);
+//    noyau->insert_element(0,2,0);
+//    noyau->insert_element(1,0,-1);
+//    noyau->insert_element(1,1,4);
+//    noyau->insert_element(1,2,-1);
+//    noyau->insert_element(2,0,0);
+//    noyau->insert_element(2,1,-1);
+//    noyau->insert_element(2,2,0);
+
+//    c.setNoyau(noyau);
+//    c.convolution(imgArrivee);
+
+//    c.modifierCaseMatrix(0,1,1);
+//    c.modifierCaseMatrix(2,1,1);
+//    c.modifierCaseMatrix(1,0,1);
+//    c.modifierCaseMatrix(1,2,1);
+//    c.modifierCaseMatrix(1,1,-4);
+//    c.convolution(img);
+
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+    Convolution c;
+    //c.redimensionnerMatrix(3,0);
+
+    // Filtre 1 de Sobel
+    Matrix *Gx = new Matrix(3,0);
+    Gx->insert_element(0, 0, 1);
+    Gx->insert_element(0, 1, 2);
+    Gx->insert_element(0, 2, 1);
+    Gx->insert_element(1, 0, 0);
+    Gx->insert_element(1, 1, 0);
+    Gx->insert_element(1, 2, 0);
+    Gx->insert_element(2, 0, -1);
+    Gx->insert_element(2, 1, -2);
+    Gx->insert_element(2, 2, -1);
+    c.setNoyau(Gx);
+
+    QImage *tmp1 = new QImage(*imgDepart);
+    c.convolution(tmp1);
+
+    // Filtre 2 de Sobel
+    Matrix *Gy = new Matrix(3,0);
+    Gy->insert_element(0, 0, 1);
+    Gy->insert_element(0, 1, 0);
+    Gy->insert_element(0, 2, -1);
+    Gy->insert_element(1, 0, 2);
+    Gy->insert_element(1, 1, 0);
+    Gy->insert_element(1, 2, -2);
+    Gy->insert_element(2, 0, 1);
+    Gy->insert_element(2, 1, 0);
+    Gy->insert_element(2, 2, -1);
+    c.setNoyau(Gy);
+
+    QImage *tmp2 = new QImage(*imgDepart);
+    c.convolution(tmp2);
+
+    int r, g, b;
+    // Creation de l'image finale
+    for (int x=0; x<imgArrivee->width(); x++) {
+        for (int y=0; y<imgArrivee->height(); y++) {
+            r = qRed(tmp1->pixel(x, y)) + qRed(tmp2->pixel(x, y));
+            g = qGreen(tmp1->pixel(x, y)) + qGreen(tmp2->pixel(x, y));
+            b = qBlue(tmp1->pixel(x, y)) + qBlue(tmp2->pixel(x, y));
+            imgArrivee->setPixel(x, y, qRgba(r, g, b, 255));
+        }
+    }
+
+    delete tmp1;
+    delete tmp2;
+    delete Gx;
+    delete Gy;
+
+    return imgArrivee;
+}
 
 /*QImage* ScaleDialog::redimensionnementEnLargeur(QImage *imgDepart, double ratio) {
     QImage *imgArrivee = new QImage(imgDepart->width()*ratio, imgDepart->height(), QImage::Format_ARGB32);
@@ -332,12 +416,14 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
 #include <iostream>
 
 QImage* Calcul::chemin(QImage* imgDepart) {
-    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
+    QImage *imgArrivee = new QImage(imgDepart->width()-1, imgDepart->height(), imgDepart->format());
     int width = imgArrivee->width();
     int height = imgArrivee->height();
 
-    float table[width][height];   // colonne ligne
-    int indice[width][height];
+    float table[width][height];     // colonne ligne
+    int indice[width][height];      // indice (-1, 0 ou 1) pour chaque pixel
+    float min = std::numeric_limits<int>::max();
+    int indexMin = -1;              // index X du pixel de poids cumulatif minimal sur la derniere ligne
     QRgb pixel;
     float power;
 
@@ -348,35 +434,53 @@ QImage* Calcul::chemin(QImage* imgDepart) {
         indice[x][0] = 0;
     }
 
+    // Remplissage de la table et des indices
     for (int y=1; y<height; y++) {
         for (int x=0; x<width; x++) {
             pixel = imgDepart->pixel(x, y);
             power = niveauDeGris(pixel);
             table[x][y] = std::numeric_limits<int>::max();
-            indice[x][y] = 0;
+            indice[x][y] = -1;
             for (int k=-1; k<=1; k++) {
                 if (x+k >= 0 && x+k < width) {
                     if (power + table[x+k][y-1] < table[x][y]) {
                         table[x][y] = power + table[x+k][y-1];
                         indice[x][y] = k;
+                        if (y == height-1 && table[x][y] < min) {
+                            min = table[x][y];
+                            indexMin = x;
+                        }
                     }
                 }
             }
         }
     }
 
-    float min = table[0][height-1];
-    int indexMin = 0;
-    for (int x=1; x<width; x++) {
-        power = table[x][height-1];
-        if (power < min) {
-            min = power;
-            indexMin = x;
-        }
-    }
+    /*float min = table[0][height-1];
+    int indexMin = -1;*/
+//    for (int x=1; x<width; x++) {
+//        power = table[x][height-1];
+//        if (power < min) {
+//            min = power;
+//            indexMin = x;
+//        }
+//    }
 
+//    for (int y=height-1; y>=0; y--) {
+//        imgDepart->setPixel(indexMin, y, qRgba(255, 0, 0, 255));
+//        indexMin += indice[indexMin][y];
+//    }
+
+    int decal = 0;
     for (int y=height-1; y>=0; y--) {
-        imgDepart->setPixel(indexMin, y, qRgba(255, 0, 0, 255));
+        decal = 0;
+        for (int x=0; x<width; x++) {
+            if (x != indexMin) {
+                imgArrivee->setPixel(x-decal, y, imgDepart->pixel(x, y));
+            } else {
+                decal++;
+            }
+        }
         indexMin += indice[indexMin][y];
     }
 
@@ -387,7 +491,27 @@ QImage* Calcul::chemin(QImage* imgDepart) {
 #include "Convolution.h"
 
 QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWidth) {
-    QImage *imgArrivee = new QImage(targetWidth, imgDepart->height(), imgDepart->format());
+    QImage *imgArrivee = new QImage(*imgDepart);//new QImage(targetWidth, imgDepart->height(), imgDepart->format());
+    QImage *tmp;
+
+    int iteration = qAbs(targetWidth - imgDepart->width());
+
+    // Redimensionnement negatif
+    if (targetWidth < imgDepart->width()) {
+
+        while (iteration > 0) {
+            iteration--;
+            tmp = chemin(imgArrivee);
+            delete imgArrivee;
+            imgArrivee = tmp;
+        }
+
+
+    // Redimensionnement positif
+    } else {
+
+
+    }
 
     return imgArrivee;
 }

@@ -65,6 +65,8 @@ public slots:
     bool pipette();
     bool selection();
     bool redimensionnementIteractif(QRect);
+    bool redimensionnementIntellEnLargeurIteractif(QRect);
+    bool redimensionnementIntellEnHauteurIteractif(QRect);
     bool redimensionMode();
     bool redimensionIntellMode();
 

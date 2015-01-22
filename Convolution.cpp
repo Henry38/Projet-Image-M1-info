@@ -65,7 +65,10 @@ void Convolution::convolution(QImage *image)
                             sommeR += qRed(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeG += qGreen(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
-                            nbPixel += m.get_element(i+decalage,j+decalage);
+                            if (m.get_element(i+decalage,j+decalage) > 0) {
+                                nbPixel += m.get_element(i+decalage,j+decalage);
+                            }
+
                         }
                     }
                 }
