@@ -69,9 +69,9 @@ void myWindow::repeindre()
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
 
-//    if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
-//        scene->updateVisibleTool();
-//    }
+    if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
+        scene->updateVisibleTool();
+    }
 }
 
 /*ouvre une nouvelle image en demandant l'url*/

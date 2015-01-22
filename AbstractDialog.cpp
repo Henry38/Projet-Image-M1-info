@@ -2,6 +2,8 @@
 #include "AbstractDialog.h"
 #include "ui_AbstractDialog.h"
 
+#include <iostream>
+
 AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog) {
     ui->setupUi(this);
 
@@ -11,6 +13,8 @@ AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog) {
     distBordBas = 20;
 
     label = new QLabel();
+    label->setAlignment(Qt::AlignCenter);
+
     ui->scrollArea->setWidget(label);
 
     QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(updateViewer()));

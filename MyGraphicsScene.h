@@ -16,12 +16,13 @@ public:
     void disableRedimension();
     void enableRedimensionIntell();
     void disableRedimensionIntell();
-
-private:
-    // Methodes
     bool isModeRedimension();
     bool isModeRedimensionIntell();
     void updateVisibleTool();
+
+private:
+    // Methodes
+
     // Attributs
     QPointF offset;
     QGraphicsPixmapItem *item;
