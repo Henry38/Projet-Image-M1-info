@@ -26,6 +26,10 @@
 #include "MyGraphicsView.h"
 #include "ScaleDialog.h"
 
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
+
 namespace Ui {
     class MainWindow;
 }
@@ -44,6 +48,7 @@ public:
     void initMenu();
     void initBarreOutils();
     bool estDansImage();
+    inline cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = true );
 
 public slots:
     // Slot du menu
