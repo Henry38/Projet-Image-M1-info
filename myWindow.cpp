@@ -210,23 +210,11 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-    QRgb pixel;
-    int i, j;
-    float tmp;
-    int h = img->height();
-    int w = img->width();
-    for(i = 0; i < w; i++)
-    {
-        for(j = 0; j < h; j++)
-        {
-            pixel = img->pixel(i, j);
-            tmp = Calcul::getYUV(pixel).at(0);
-            //tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
-            pixel = qRgba(tmp, tmp, tmp, qAlpha(pixel));
-            img->setPixel(i, j, pixel);
-        }
-    }
+    QImage *tmp = Calcul::imageEnNiveauDeGris(img);
+    delete img;
+    img = tmp;
     repeindre();
+
     return true;
 }
 
@@ -278,12 +266,11 @@ bool myWindow::filtre()
 
 bool myWindow::contours()
 {
-
-//    QImage *tmp = Calcul::contour(img);
-//    delete img;
-//    img = tmp;
-
+    QImage *tmp = Calcul::contour(img);
+    delete img;
+    img = tmp;
     repeindre();
+
     return true;
 }
 
@@ -424,6 +411,7 @@ bool myWindow::rogner()
     }
 }
 
+/*redimensionne l'image a la taille du rectangle*/
 bool myWindow::redimensionnementIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
     delete img;
@@ -436,16 +424,17 @@ bool myWindow::redimensionnementIteractif(QRect rect) {
 
 bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
+    //QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, 272);
     delete img;
-    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
-    delete tmp;
+    //img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    img = tmp;
     repeindre();
 
     return true;
 }
 
 bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
-    QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.width());
+    //QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.width());
 
     return true;
 }

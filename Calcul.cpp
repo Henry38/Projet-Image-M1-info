@@ -3,7 +3,7 @@
 #include "Convolution.h"
 #include "Matrix.h"
 
-QImage* contour(QImage *imgDepart) {
+QImage* Calcul::contour(QImage *imgDepart) {
 
 //    QImage *imgArrivee = new QImage(*imgDepart);
 //    Convolution c;
@@ -30,6 +30,8 @@ QImage* contour(QImage *imgDepart) {
 //    c.modifierCaseMatrix(1,1,-4);
 //    c.convolution(img);
 
+    QImage *imgGris = imageEnNiveauDeGris(imgDepart);
+
     QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
     Convolution c;
     //c.redimensionnerMatrix(3,0);
@@ -47,8 +49,8 @@ QImage* contour(QImage *imgDepart) {
     Gx->insert_element(2, 2, -1);
     c.setNoyau(Gx);
 
-    QImage *tmp1 = new QImage(*imgDepart);
-    c.convolution(tmp1);
+    QImage *tmpGx = new QImage(*imgGris);
+    c.convolution(tmpGx);
 
     // Filtre 2 de Sobel
     Matrix *Gy = new Matrix(3,0);
@@ -63,24 +65,46 @@ QImage* contour(QImage *imgDepart) {
     Gy->insert_element(2, 2, -1);
     c.setNoyau(Gy);
 
-    QImage *tmp2 = new QImage(*imgDepart);
-    c.convolution(tmp2);
+    QImage *tmpGy = new QImage(*imgGris);
+    c.convolution(tmpGy);
 
     int r, g, b;
     // Creation de l'image finale
     for (int x=0; x<imgArrivee->width(); x++) {
         for (int y=0; y<imgArrivee->height(); y++) {
-            r = qRed(tmp1->pixel(x, y)) + qRed(tmp2->pixel(x, y));
-            g = qGreen(tmp1->pixel(x, y)) + qGreen(tmp2->pixel(x, y));
-            b = qBlue(tmp1->pixel(x, y)) + qBlue(tmp2->pixel(x, y));
+            r = qRed(tmpGx->pixel(x, y)) + qRed(tmpGy->pixel(x, y));
+            g = qGreen(tmpGx->pixel(x, y)) + qGreen(tmpGy->pixel(x, y));
+            b = qBlue(tmpGx->pixel(x, y)) + qBlue(tmpGy->pixel(x, y));
             imgArrivee->setPixel(x, y, qRgba(r, g, b, 255));
         }
     }
 
-    delete tmp1;
-    delete tmp2;
     delete Gx;
     delete Gy;
+    delete imgGris;
+    delete tmpGx;
+    delete tmpGy;
+
+    return imgArrivee;
+}
+
+QImage* Calcul::imageEnNiveauDeGris(QImage *imgDepart) {
+    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
+
+    QRgb pixel;
+    int i, j;
+    float tmp;
+    int height = imgArrivee->height();
+    int width = imgArrivee->width();
+    for(i = 0; i < width; i++)
+    {
+        for(j = 0; j < height; j++)
+        {
+            pixel = imgDepart->pixel(i, j);
+            tmp = niveauDeGris(pixel);
+            imgArrivee->setPixel(i, j, qRgba(tmp, tmp, tmp, qAlpha(pixel)));
+        }
+    }
 
     return imgArrivee;
 }
@@ -415,10 +439,10 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
 
 #include <iostream>
 
-QImage* Calcul::chemin(QImage* imgDepart) {
-    QImage *imgArrivee = new QImage(imgDepart->width()-1, imgDepart->height(), imgDepart->format());
-    int width = imgArrivee->width();
-    int height = imgArrivee->height();
+/*retourne l'ensemble des coordonnees x des pixels du chemin le moins informatif*/
+void Calcul::lessImportantPass(QImage *imgEnergie, QVector<int> *vect) {
+    int width = imgEnergie->width();
+    int height = imgEnergie->height();
 
     float table[width][height];     // colonne ligne
     int indice[width][height];      // indice (-1, 0 ou 1) pour chaque pixel
@@ -429,18 +453,16 @@ QImage* Calcul::chemin(QImage* imgDepart) {
 
     // Initialisation
     for (int x=0; x<width; x++) {
-        pixel = imgDepart->pixel(x, 0);
-        table[x][0] = niveauDeGris(pixel);
-        indice[x][0] = 0;
+        table[x][0] = niveauDeGris(imgEnergie->pixel(x, 0));
     }
 
     // Remplissage de la table et des indices
     for (int y=1; y<height; y++) {
         for (int x=0; x<width; x++) {
-            pixel = imgDepart->pixel(x, y);
+            pixel = imgEnergie->pixel(x, y);
             power = niveauDeGris(pixel);
             table[x][y] = std::numeric_limits<int>::max();
-            indice[x][y] = -1;
+            indice[x][y] = 0;
             for (int k=-1; k<=1; k++) {
                 if (x+k >= 0 && x+k < width) {
                     if (power + table[x+k][y-1] < table[x][y]) {
@@ -456,62 +478,59 @@ QImage* Calcul::chemin(QImage* imgDepart) {
         }
     }
 
-    /*float min = table[0][height-1];
-    int indexMin = -1;*/
-//    for (int x=1; x<width; x++) {
-//        power = table[x][height-1];
-//        if (power < min) {
-//            min = power;
-//            indexMin = x;
-//        }
-//    }
-
-//    for (int y=height-1; y>=0; y--) {
-//        imgDepart->setPixel(indexMin, y, qRgba(255, 0, 0, 255));
-//        indexMin += indice[indexMin][y];
-//    }
-
-    int decal = 0;
     for (int y=height-1; y>=0; y--) {
-        decal = 0;
-        for (int x=0; x<width; x++) {
-            if (x != indexMin) {
-                imgArrivee->setPixel(x-decal, y, imgDepart->pixel(x, y));
-            } else {
-                decal++;
-            }
-        }
+        vect->append(indexMin);
         indexMin += indice[indexMin][y];
     }
-
-    return imgArrivee;
 }
 
-#include "Matrix.h"
-#include "Convolution.h"
-
 QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWidth) {
-    QImage *imgArrivee = new QImage(*imgDepart);//new QImage(targetWidth, imgDepart->height(), imgDepart->format());
-    QImage *tmp;
+    QImage *imgArrivee = new QImage(*imgDepart);
+    QImage *imgEnergie = contour(imgDepart);
+    QImage *tmpArrivee;
+    QImage *tmpEnergie;
 
+    int decal;
     int iteration = qAbs(targetWidth - imgDepart->width());
+
+    // Coordonnees X des pixels du chemin
+    QVector<int> *path = new QVector<int>(0);
 
     // Redimensionnement negatif
     if (targetWidth < imgDepart->width()) {
-
         while (iteration > 0) {
             iteration--;
-            tmp = chemin(imgArrivee);
-            delete imgArrivee;
-            imgArrivee = tmp;
-        }
+            path->clear();
+            lessImportantPass(imgEnergie, path);
 
+            tmpArrivee = new QImage(imgArrivee->width()-1, imgArrivee->height(), imgArrivee->format());
+            tmpEnergie = new QImage(imgArrivee->width()-1, imgArrivee->height(), imgEnergie->format());
+
+            // Modification des images en fonction du chemin trouve
+            for (int y=tmpArrivee->height()-1; y>=0; y--) {
+                decal = 0;
+                for (int x=0; x<tmpArrivee->width(); x++) {
+                    if (x != path->at(y)) {
+                        tmpArrivee->setPixel(x-decal, y, imgArrivee->pixel(x, y));
+                        tmpEnergie->setPixel(x-decal, y, imgEnergie->pixel(x, y));
+                    } else {
+                        decal++;
+                    }
+                }
+            }
+            delete imgArrivee;
+            delete imgEnergie;
+            imgArrivee = tmpArrivee;
+            imgEnergie = tmpEnergie;
+        }
 
     // Redimensionnement positif
     } else {
 
 
     }
+
+    delete path;
 
     return imgArrivee;
 }
