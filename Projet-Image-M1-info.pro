@@ -1,4 +1,4 @@
-
+a
 SOURCES += \
     main.cpp \
     myWindow.cpp \
@@ -32,7 +32,8 @@ HEADERS += \
     HistoYUV.h \
     MyGraphicsScene.h \
     Calcul.h \
-    HistoDialog.h
+    HistoDialog.h \
+    Couple.h
 
 QT += widgets
 

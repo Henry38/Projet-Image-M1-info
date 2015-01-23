@@ -5,11 +5,10 @@ HistoRGB::HistoRGB(QImage *img) : Histogramme(img)
 
 }
 
-void HistoRGB::etalement(int min, int max, int vMin, int vMax)
+void HistoRGB::etalement(Couple c)
 {
     QRgb pixel;
-    int tmp;
-
+    float gris;
 
     for(int j = 0; j < 255; j++)
     {
@@ -17,25 +16,70 @@ void HistoRGB::etalement(int min, int max, int vMin, int vMax)
         composantes[1][j]=0;
         composantes[2][j]=0;
     }
-
     for(int i = 0; i < img->width(); i++)
     {
         for(int j = 0; j < img->height(); j++)
         {
             pixel = img->pixel(i,j);
-            tmp = vMax*(qRed(pixel)-min)/((double)(max-min));
-            if(tmp>255)
+            gris = 255*(qRed(pixel)-c.deb)/((double)(c.fin-c.deb));
+            if(gris>255)
             {
-                tmp = 255;
+                gris = 255;
             }
-            else if(tmp < 0)
+            else if(gris < 0)
             {
-                tmp = 0;
+                gris = 0;
             }
-            img->setPixel(i,j,qRgba(tmp,tmp,tmp,qAlpha(pixel)));
+            img->setPixel(i,j,qRgba(gris,gris,gris,qAlpha(pixel)));
         }
     }
-    afficherLignes();
+}
+
+void HistoRGB::etalement()
+{
+    QRgb pixel;
+    float rouge, vert, bleu;
+    Couple cRouge = getDelimitation(composantes[0]), cVert = getDelimitation(composantes[1]), cBleu = getDelimitation(composantes[2]);
+    for(int i = 0; i < img->width(); i++)
+    {
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
+            rouge = 255*(qRed(pixel)-cRouge.deb)/((double)(cRouge.fin-cRouge.deb));
+            vert = 255*(qGreen(pixel)-cVert.deb)/((double)(cVert.fin-cVert.deb));
+            bleu = 255*(qBlue(pixel)-cBleu.deb)/((double)(cBleu.fin-cBleu.deb));
+            /*if(rouge>255)
+            {
+                rouge = 255;
+            }
+            else if(rouge < 0)
+            {
+                rouge = 0;
+            }
+            if(vert>255)
+            {
+                vert = 255;
+            }
+            else if(vert < 0)
+            {
+                vert = 0;
+            }
+            if(bleu>255)
+            {
+                bleu = 255;
+            }
+            else if(bleu < 0)
+            {
+                bleu = 0;
+            }*/
+            img->setPixel(i,j,qRgba(rouge,vert,bleu,qAlpha(pixel)));
+        }
+    }
+}
+
+void HistoRGB::egalisation()
+{
+
 }
 
 void HistoRGB::afficherLignes()

@@ -8,6 +8,7 @@
 #include "QGroupBox"
 #include "HistoRGB.h"
 #include "HistoYUV.h"
+#include "QSlider"
 
 class HistoDialog  : public AbstractDialog
 {
@@ -31,9 +32,13 @@ private slots:
     void afficherLignesYUV();
 
 private:
+
     bool RGB;
+    int operation;
+
     QGroupBox choixCouleur;
     QGroupBox choixOperation;
+
     QLabel conteneurHisto;
     HistoRGB histoRGB;
     HistoYUV histoYUV;

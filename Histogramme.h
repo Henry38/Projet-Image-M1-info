@@ -4,6 +4,8 @@
 #include "myWindow.h"
 #include <QImage>
 
+#include "Couple.h"
+
 class Histogramme : public QImage
 {
 
@@ -16,10 +18,13 @@ public:
     virtual void afficherLignes() = 0;
     bool gray();
     void afficherLigne(int pixels[256], Qt::GlobalColor c);
-    virtual void etalement(int v0, int v1, int vMin = 0, int vMax = 255) = 0;
+    Couple getDelimitation(int nbPixel[256]);
+    virtual void etalement(Couple c) = 0;
 
     QImage *getImg();
     void setImg(QImage *image);
+
+    int *getRouge();
 
 protected:
     QImage *img;
