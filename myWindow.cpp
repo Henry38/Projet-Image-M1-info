@@ -5,10 +5,12 @@
 #include "FiltreDialog.h"
 #include "HistoDialog.h"
 #include <QPixmap>
+
 #include <opencv/cv.h>
-#include <opencv2/opencv.hpp>
 #include <opencv/highgui.h>
 
+#include <QKeyEvent>
+#include <QShortCut>
 #include <QRectF>
 #include "Calcul.h"
 using namespace cv;
@@ -25,6 +27,8 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     scene->setPixmapItem(itemPixmap);
     ui->graphicsView->setScene(scene);
 
+    pileAnnuler = new QStack<QImage*>();
+    pileRefaire = new QStack<QImage*>();
     itemPixmap = scene->addPixmap(QPixmap::fromImage(*img));
     scene->setPixmapItem(itemPixmap);
 
@@ -57,6 +61,8 @@ myWindow::myWindow(QString url) : myWindow()
 myWindow::~myWindow()
 {
     delete img;
+    delete pileAnnuler;
+    delete pileRefaire;
     delete scene;
     delete ui;
 }
@@ -69,9 +75,10 @@ void myWindow::repeindre()
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
 
-//    if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
-//        scene->updateVisibleTool();
-//    }
+    cout <<"je repeins"<<endl;
+    QImage* image = new QImage(img->copy(img->rect()));
+    pileAnnuler->push(image);
+    pileRefaire->empty();
 }
 
 /*ouvre une nouvelle image en demandant l'url*/
@@ -95,6 +102,8 @@ bool myWindow::open(QString url)
         if(img->format() <= QImage::Format_Indexed8){
             img->convertToFormat(QImage::Format_RGB32);
         }
+
+        pileAnnuler->empty();
         repeindre();
         return true;
     }
@@ -184,6 +193,41 @@ void myWindow::initBarreOutils()
     QObject::connect(ui->actionRedimensionIntell,SIGNAL(triggered()),this,SLOT(redimensionIntellMode()));
 
     QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
+
+//    actionAnnuler = new QAction("&Annuler",this);
+//    actionAnnuler->setShortcut(QKeySequence("Ctrl+Z"));
+//    actionAnnuler->setVisible(true);
+    QShortcut *raccourciAnnuler= new QShortcut(QKeySequence("Ctrl+Z"),this);
+    QObject::connect(raccourciAnnuler, SIGNAL(activated()),this, SLOT(annuler()));/*
+    QObject::connect(actionAnnuler,SIGNAL(triggered()),this,SLOT(annuler()));
+
+    actionRefaire = new QAction("&Refaire",this);
+    actionRefaire->setShortcut(QKeySequence("Ctrl+Y"));
+    actionRefaire->setVisible(true);*/
+    QShortcut *raccourciRefaire= new QShortcut(QKeySequence("Ctrl+Y"),this);
+    QObject::connect(raccourciRefaire, SIGNAL(activated()),this, SLOT(refaire()));
+  //  QObject::connect(actionRefaire,SIGNAL(triggered()),this,SLOT(refaire()));
+
+//    actionCopier = new QAction("&Copier",this);
+//    actionCopier->setShortcut(QKeySequence("Ctrl+C"));
+//    actionCopier->setVisible(true);
+    QShortcut *raccourciCopier= new QShortcut(QKeySequence("Ctrl+C"),this);
+    QObject::connect(raccourciCopier, SIGNAL(activated()),this, SLOT(copier()));/*
+    QObject::connect(actionCopier,SIGNAL(triggered()),this,SLOT(copier()));
+
+    actionCouper = new QAction("&Couper",this);
+    actionCouper->setShortcut(QKeySequence("Ctrl+X"));
+    actionCouper->setVisible(true);*/
+    QShortcut *raccourciCouper= new QShortcut(QKeySequence("Ctrl+X"),this);
+    QObject::connect(raccourciCouper, SIGNAL(activated()),this, SLOT(couper()));
+    //QObject::connect(actionCouper,SIGNAL(triggered()),this,SLOT(couper()));
+
+//    actionColler = new QAction("&Coller",this);
+//    actionColler->setShortcut(QKeySequence("Ctrl+V"));
+//    actionColler->setVisible(true);
+    QShortcut *raccourciColler= new QShortcut(QKeySequence("Ctrl+V"),this);
+    QObject::connect(raccourciColler, SIGNAL(activated()),this, SLOT(coller()));
+    //QObject::connect(actionColler,SIGNAL(triggered()),this,SLOT(coller()));
 
     actionRogner->setEnabled(false);
 }
@@ -323,78 +367,49 @@ bool myWindow::redimIntell()
 
 bool myWindow::grabCut()
 {
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
-    if(ui->graphicsView->getPret()){
+//    actionRogner->setEnabled(false);
+//    ui->graphicsView->cacherSelect();
+//    if(ui->graphicsView->getPret()){
 
-    /*Tab temp à ne pas modifier tt que sur mme image*/
-    Mat bgdModel = *(new Mat());
-    Mat fgdModel= *(new Mat());
-    /*nb d'iter de l'algo avt de rvoyer le res*/
-    int iterCount =1;
-    const string name= filename.toStdString();
-    /*image*/
-    Mat im = imread(name,1);
-    /*masque*/
-    Mat mask;
-    mask.create( im.size(), CV_8UC1);
-    /*ROI : region of interest*/
+//    /*Tab temp à ne pas modifier tt que sur mme image*/
+//    Mat bgdModel = *(new Mat());
+//    Mat fgdModel= *(new Mat());
+//    /*nb d'iter de l'algo avt de rvoyer le res*/
+//    int iterCount =1;
+//    const string name= filename.toStdString();
+//    /*image*/
+//    Mat im = cv::imread(name,1);
+//    /*masque*/
+//    Mat mask;
+//    mask.create( im.size(), CV_8UC1);
+//    /*ROI : region of interest*/
 
-       QPoint HG = ui->graphicsView->getHG();
-       QPoint BD = ui->graphicsView->getBD();
-       /*Si selection dépasse de l'image*/
-       if(BD.x()<0){
-           BD.setX(0);
-       }
-       if(HG.x()<0){
-           HG.setX(0);
-       }
-       if(BD.y()<0){
-           BD.setY(0);
-       }
-       if(HG.y()<0){
-           HG.setY(0);
-       }
+//       QPoint HG = ui->graphicsView->getHG();
+//       QPoint BD = ui->graphicsView->getBD();
+//       Calcul::recadrer(img,&HG,&BD);
+//       /*Si selection dépasse de l'image*/
 
-       if(BD.x() > img->width()){
-         /*on recadre à la limite*/
-          BD.setX(img->width());
-       }
-
-       if(BD.y() > img->width()){
-         /*on recadre à la limite*/
-           BD.setY(img->width());
-       }
-
-       if(HG.x() > img->width()){
-         /*on recadre à la limite*/
-           HG.setX(img->width());
-       }
-
-       if(HG.y() > img->width()){
-         /*on recadre à la limite*/
-           HG.setY(img->width());
-       }
-       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
-       ui->graphicsView->cacherSelect();
-       ui->graphicsView->setPret(false);
-        /*rect : selection*/
-        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
-        /*fait le decoupage*/
-        compare(mask,GC_PR_FGD,mask,CMP_EQ);
+//       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+//       ui->graphicsView->cacherSelect();
+//       ui->graphicsView->setPret(false);
+//        /*rect : selection*/
+//        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+//        /*fait le decoupage*/
+//        compare(mask,GC_PR_FGD,mask,CMP_EQ);
 
 
-        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
-        im.copyTo(fgd,mask);
-        //im.copyTo(fgdModel,mask);
+//        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+//        im.copyTo(fgd,mask);
+//        //im.copyTo(fgdModel,mask);
 
-        cv::imshow("test5",fgd);
-        repeindre();
+//        cv::imshow("test5",fgd);
+//        img = image;
+//        repeindre();
         return true;
 
-   }else{
-       return false;
-   }
+//   }else{
+//       return false;
+//   }
 }
 
 /* rogne la selection de l'image*/
@@ -406,38 +421,7 @@ bool myWindow::rogner()
             QPoint HG = ui->graphicsView->getHG();
             QPoint BD = ui->graphicsView->getBD();
             /*Si selection dépasse de l'image*/
-            if(BD.x()<0){
-                BD.setX(0);
-            }
-            if(HG.x()<0){
-                HG.setX(0);
-            }
-            if(BD.y()<0){
-                BD.setY(0);
-            }
-            if(HG.y()<0){
-                HG.setY(0);
-            }
-
-            if(BD.x() > img->width()){
-              /*on recadre à la limite*/
-               BD.setX(img->width());
-            }
-
-            if(BD.y() > img->width()){
-              /*on recadre à la limite*/
-                BD.setY(img->width());
-            }
-
-            if(HG.x() > img->width()){
-              /*on recadre à la limite*/
-                HG.setX(img->width());
-            }
-
-            if(HG.y() > img->width()){
-              /*on recadre à la limite*/
-                HG.setY(img->width());
-            }
+            Calcul::recadrer(img,&HG,&BD);
             QRect rect(HG,BD);
             *img = img->copy(rect);
             ui->graphicsView->cacherSelect();
@@ -551,5 +535,88 @@ bool myWindow::redimensionIntellMode()
         ui->actionRedimensionner->setChecked(false);
         scene->disableRedimension();
     }
+    return true;
+}
+
+bool myWindow::annuler(){
+    cout<<"annuler"<<endl;
+    if(!pileAnnuler->isEmpty()){
+        /*recuperer image ds pile annuler*/
+
+        QImage * image = pileAnnuler->pop();
+        image = new QImage(image->copy(image->rect()));
+        /*mettre cette image dans pile refaire*/
+        pileRefaire->push(image);
+
+        /*afficher l'image*/
+        img = image;
+        itemPixmap->setPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setImage(img);
+        scene->setSceneRect(0, 0, img->width(), img->height());
+        scene->update();
+
+        return true;
+    }else{
+        cout<<"FAUX! "<<endl;
+        return false;
+    }
+}
+
+bool myWindow::refaire(){
+    cout<<"refaire"<<endl;
+    if(!pileRefaire->isEmpty()){
+        /*recuperer image ds pile refaire*/
+        QImage * image =  pileRefaire->pop();
+        image = new QImage(image->copy(image->rect()));
+        /*mettre cette image dans pile annuler*/
+        pileAnnuler->push(image);
+        /*afficher image*/
+        img = image;
+        itemPixmap->setPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setImage(img);
+        scene->setSceneRect(0, 0, img->width(), img->height());
+        scene->update();
+
+        return true;
+    }else{
+        cout<<"FAUX! "<<endl;
+        return false;
+    }
+
+
+}
+
+bool myWindow::copier(){
+    cout<<"copier"<<endl;
+
+
+    QPoint HG = ui->graphicsView->getHG();
+    QPoint BD = ui->graphicsView->getBD();
+    /*Si selection dépasse de l'image*/
+    Calcul::recadrer(img,&HG,&BD);
+    QRect rect(HG,BD);
+    copie = new QImage(img->copy(rect));
+    return true;
+}
+
+bool myWindow::couper(){
+    cout << "couper"<<endl;
+    QPoint HG = ui->graphicsView->getHG();
+    QPoint BD = ui->graphicsView->getBD();
+    /*Si selection dépasse de l'image*/
+    Calcul::recadrer(img,&HG,&BD);
+    QRect rect(HG,BD);
+    copie = new QImage(img->copy(rect));
+    copie->fill(Qt::white);
+    /*fusion de copie et img*/
+    /*img = nvelle_image*/
+    /*remplacer avec blanc*/
+
+    return true;
+}
+
+bool myWindow::coller(){
+    cout <<"coller"<<endl;
+    /*remplacer avec copie là où pointeur de souris*/
     return true;
 }

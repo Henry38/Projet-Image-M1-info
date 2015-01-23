@@ -30,7 +30,7 @@ public slots:
 private:
     QLabel *text;
     QGridLayout *gridLayout;
-    QRadioButton *moyenneur,*gaussien,*median,*personnalise/*,*gradient,*sobel,*robert*/;
+    QRadioButton *moyenneur,*gaussien,*median,*personnalise,*gradient/*,*sobel,*robert*/;
     QSpinBox *spinBox;
     QImage *imgSource, *apercu;
     bool ok_clicked, matriceRemplie,modePerso;
