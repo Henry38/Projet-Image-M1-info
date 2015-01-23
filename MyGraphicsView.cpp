@@ -44,11 +44,11 @@ void MyGraphicsView::setModePipette(){
 }
 
 void MyGraphicsView::setModeRedimension(){
-    mode = 3;
+
 }
 
 void MyGraphicsView::setModeRedimIntell(){
-    mode = 4;
+
 }
 
 bool MyGraphicsView::sansMode(){
@@ -124,13 +124,9 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
         if(estDansImage(pix)){
             QRgb pixel = image->pixel(*pix);
             stringstream ss;
-            int Y = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
-            int U = 0.492*(qBlue(pixel)-Y);
-            int V = 0.877*(qRed(pixel)-Y);
+            QVector<float> yuv = Calcul::getYUV(pixel);
             ss << "alpha :"<< qAlpha(pixel) <<" R :"<< qRed(pixel) <<" G :"<< qGreen(pixel) <<" B :" << qBlue(pixel)<< endl;
-            ss <<"|Y :"<<Y <<" U :"<<U<<" V :"<<V <<endl;
-
-            cout << ss.str();
+            ss <<"| Y :"<< (int) yuv.at(0) <<" U :"<< (int) yuv.at(1) <<" V :"<< (int) yuv.at(2) <<endl;
 
             myWindow *w = (myWindow*)this->window();
             w->statusBar()->showMessage(ss.str().c_str());

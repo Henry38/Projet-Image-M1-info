@@ -51,11 +51,11 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
 
    // QPushButton *ok = new QPushButton();
 
-/*
+
     gradient = new QRadioButton(this);
     gradient->setText("gradient");
     gradient->move(291,200);
-
+/*
 
     sobel = new QRadioButton(this);
     sobel->setText("sobel");
@@ -120,12 +120,39 @@ void FiltreDialog::updateViewer()
             }
             i++;
         }
+
         if(entreeValide){
             c.setNoyau(noyau);
             c.convolution(apercu);
+            entreeValide = false;
         }else{
             cout<<"Il faut remplir toutes les cases !"<<endl;
         }
+    }
+    if(gradient->isChecked()){
+        Matrix *noyau = new Matrix(3,0);
+        noyau->insert_element(0,0,-1);
+        noyau->insert_element(0,1,0);
+        noyau->insert_element(0,2,1);
+        noyau->insert_element(1,0,-2);
+        noyau->insert_element(1,1,0);
+        noyau->insert_element(1,2,2);
+        noyau->insert_element(2,0,-1);
+        noyau->insert_element(2,1,0);
+        noyau->insert_element(2,2,1);
+        c.setNoyau(noyau);
+        c.convolution(apercu);
+        noyau->insert_element(0,0,1);
+        noyau->insert_element(0,1,2);
+        noyau->insert_element(0,2,1);
+        noyau->insert_element(1,0,0);
+        noyau->insert_element(1,1,0);
+        noyau->insert_element(1,2,0);
+        noyau->insert_element(2,0,-1);
+        noyau->insert_element(2,1,-2);
+        noyau->insert_element(2,2,-1);
+        c.setNoyau(noyau);
+        c.convolution(apercu);
     }
     display(apercu);
     ok_clicked = true;

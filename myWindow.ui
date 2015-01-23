@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>803</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -84,6 +84,7 @@
    <addaction name="actionSelection"/>
    <addaction name="actionPipette"/>
    <addaction name="actionRedimensionner"/>
+   <addaction name="actionRedimensionIntell"/>
   </widget>
   <action name="actionSelection">
    <property name="checkable">
@@ -137,6 +138,18 @@
    </property>
    <property name="text">
     <string>redimensionner</string>
+   </property>
+  </action>
+  <action name="actionRedimensionIntell">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Images.qrc">
+     <normaloff>:/icones/icones/redimensionnementIntell.png</normaloff>:/icones/icones/redimensionnementIntell.png</iconset>
+   </property>
+   <property name="text">
+    <string>RedimensionIntell</string>
    </property>
   </action>
  </widget>

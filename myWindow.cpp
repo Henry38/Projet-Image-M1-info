@@ -5,11 +5,15 @@
 #include "FiltreDialog.h"
 #include "HistoDialog.h"
 #include <QPixmap>
+
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#include <QKeyEvent>
+#include <QShortCut>
 #include <QRectF>
 #include "Calcul.h"
+using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
@@ -23,7 +27,10 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     scene->setPixmapItem(itemPixmap);
     ui->graphicsView->setScene(scene);
 
+    pileAnnuler = new QStack<QImage*>();
+    pileRefaire = new QStack<QImage*>();
     itemPixmap = scene->addPixmap(QPixmap::fromImage(*img));
+    scene->setPixmapItem(itemPixmap);
 
     initMenu();
     ui->toolBar->toolButtonStyle();
@@ -34,12 +41,9 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-
-
-    QObject::connect(scene, SIGNAL(redimensionnement(QRectF)), this, SLOT(redimensionnementIteractif(QRectF)));
 }
 
-bool myWindow::redimensionnementIteractif(QRectF rect) {
+bool myWindow::redimensionnementIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
     delete img;
     img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
@@ -57,6 +61,8 @@ myWindow::myWindow(QString url) : myWindow()
 myWindow::~myWindow()
 {
     delete img;
+    delete pileAnnuler;
+    delete pileRefaire;
     delete scene;
     delete ui;
 }
@@ -66,12 +72,18 @@ void myWindow::repeindre()
     itemPixmap->setPixmap(QPixmap::fromImage(*img));
 
     ui->graphicsView->setImage(img);
-    scene->setPixmapItem(itemPixmap);
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
+
+    QImage* image = new QImage(img->copy(img->rect()));
+    pileAnnuler->push(image);
+    pileRefaire->empty();
+    if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
+        scene->updateVisibleTool();
+    }
 }
 
-/* Ouvrir */
+/*ouvre une nouvelle image en demandant l'url*/
 bool myWindow::openFilename()
 {
     QString filename = QFileDialog::getOpenFileName(this,
@@ -83,6 +95,7 @@ bool myWindow::openFilename()
     return false;
 }
 
+/*ouvre l'image ciblee par l'url*/
 bool myWindow::open(QString url)
 {
     if (img->load(url))
@@ -91,13 +104,15 @@ bool myWindow::open(QString url)
         if(img->format() <= QImage::Format_Indexed8){
             img->convertToFormat(QImage::Format_RGB32);
         }
+
+        pileAnnuler->empty();
         repeindre();
         return true;
     }
     return false;
 }
 
-/* Sauvegarder sous*/
+/*sauvegarder sous*/
 bool myWindow::saveAsFilename()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save File",
@@ -110,6 +125,7 @@ bool myWindow::saveAsFilename()
     return false;
 }
 
+/*sauvegarde l'image a l'url donnee*/
 bool myWindow::save(QString url)
 {
     return img->save(url, 0, -1);
@@ -175,31 +191,67 @@ void myWindow::initBarreOutils()
 {
     QObject::connect(ui->actionPipette,SIGNAL(triggered()),this,SLOT(pipette()));
     QObject::connect(ui->actionSelection,SIGNAL(triggered()),this,SLOT(selection()));
-    QObject::connect(ui->actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimension()));
+    QObject::connect(ui->actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimensionMode()));
+    QObject::connect(ui->actionRedimensionIntell,SIGNAL(triggered()),this,SLOT(redimensionIntellMode()));
+
+    QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
+
+//    actionAnnuler = new QAction("&Annuler",this);
+//    actionAnnuler->setShortcut(QKeySequence("Ctrl+Z"));
+//    actionAnnuler->setVisible(true);
+    QShortcut *raccourciAnnuler= new QShortcut(QKeySequence("Ctrl+Z"),this);
+    QObject::connect(raccourciAnnuler, SIGNAL(activated()),this, SLOT(annuler()));/*
+    QObject::connect(actionAnnuler,SIGNAL(triggered()),this,SLOT(annuler()));
+
+    actionRefaire = new QAction("&Refaire",this);
+    actionRefaire->setShortcut(QKeySequence("Ctrl+Y"));
+    actionRefaire->setVisible(true);*/
+    QShortcut *raccourciRefaire= new QShortcut(QKeySequence("Ctrl+Y"),this);
+    QObject::connect(raccourciRefaire, SIGNAL(activated()),this, SLOT(refaire()));
+  //  QObject::connect(actionRefaire,SIGNAL(triggered()),this,SLOT(refaire()));
+
+//    actionCopier = new QAction("&Copier",this);
+//    actionCopier->setShortcut(QKeySequence("Ctrl+C"));
+//    actionCopier->setVisible(true);
+    QShortcut *raccourciCopier= new QShortcut(QKeySequence("Ctrl+C"),this);
+    QObject::connect(raccourciCopier, SIGNAL(activated()),this, SLOT(copier()));/*
+    QObject::connect(actionCopier,SIGNAL(triggered()),this,SLOT(copier()));
+
+    actionCouper = new QAction("&Couper",this);
+    actionCouper->setShortcut(QKeySequence("Ctrl+X"));
+    actionCouper->setVisible(true);*/
+    QShortcut *raccourciCouper= new QShortcut(QKeySequence("Ctrl+X"),this);
+    QObject::connect(raccourciCouper, SIGNAL(activated()),this, SLOT(couper()));
+    //QObject::connect(actionCouper,SIGNAL(triggered()),this,SLOT(couper()));
+
+//    actionColler = new QAction("&Coller",this);
+//    actionColler->setShortcut(QKeySequence("Ctrl+V"));
+//    actionColler->setVisible(true);
+    QShortcut *raccourciColler= new QShortcut(QKeySequence("Ctrl+V"),this);
+    QObject::connect(raccourciColler, SIGNAL(activated()),this, SLOT(coller()));
+    //QObject::connect(actionColler,SIGNAL(triggered()),this,SLOT(coller()));
+
     actionRogner->setEnabled(false);
 }
 
 /* Sauvegarder */
 bool myWindow::sauvegarder()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
-    save(filename);
-    return true;
+    if (filename != "") {
+        return save(filename);
+    }
+    return false;
 }
 
-void myWindow::quitter(){
-    /*êtes vous sur ?*/
+/*quitte l'application*/
+void myWindow::quitter()
+{
     qApp->quit();
 }
 
 /*affiche/edite l'histogramme*/
 bool myWindow::histo()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     HistoDialog histoDial(img);
     if (histoDial.exec() == QDialog::Accepted)
     {
@@ -212,9 +264,6 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     QRgb pixel;
     int i, j;
     float tmp;
@@ -225,7 +274,8 @@ bool myWindow::gris()
         for(j = 0; j < h; j++)
         {
             pixel = img->pixel(i, j);
-            tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+            tmp = Calcul::getYUV(pixel).at(0);
+            //tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
             pixel = qRgba(tmp, tmp, tmp, qAlpha(pixel));
             img->setPixel(i, j, pixel);
         }
@@ -237,9 +287,6 @@ bool myWindow::gris()
 /*floute l'image*/
 bool myWindow::flouter()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     BlurDialog blurDiag(img);
     if (blurDiag.exec() == QDialog::Accepted)
     {
@@ -252,9 +299,6 @@ bool myWindow::flouter()
 /*permet de selectionner 2 images et de les fusionner*/
 bool myWindow::fusionner()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     FusionDialog fusionDialog(img);
     if (fusionDialog.exec() == QDialog::Accepted)
     {
@@ -264,12 +308,10 @@ bool myWindow::fusionner()
     return false;
 }
 
+/*redimensionne l'image en changeant les proportion*/
 bool myWindow::redimensionner()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
-    ScaleDialog scaleDialog(img);;
+    ScaleDialog scaleDialog(img);
     if (scaleDialog.exec() == QDialog::Accepted) {
         repeindre();
         return true;
@@ -279,9 +321,6 @@ bool myWindow::redimensionner()
 
 bool myWindow::filtre()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     FiltreDialog filtreDialog(img);
     if (filtreDialog.exec() == QDialog::Accepted)
     {
@@ -293,9 +332,6 @@ bool myWindow::filtre()
 
 bool myWindow::contours()
 {
-
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     Convolution c;
    c.redimensionnerMatrix(3,0);
 
@@ -323,25 +359,59 @@ bool myWindow::contours()
 
 bool myWindow::redimIntell()
 {
+    QImage *tmp = Calcul::chemin(img);
+    //delete img;
+    //img = tmp;
+    repeindre();
 
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
     return true;
 }
 
 bool myWindow::grabCut()
 {
+//    actionRogner->setEnabled(false);
+//    ui->graphicsView->cacherSelect();
+//    if(ui->graphicsView->getPret()){
 
-    actionRogner->setEnabled(false);
-    ui->graphicsView->cacherSelect();
-/*if(img->format() == QImage::Format_RGB32){
-    img->convertToFormat(QImage::Format_Indexed8);
-}*/
+//    /*Tab temp à ne pas modifier tt que sur mme image*/
+//    Mat bgdModel = *(new Mat());
+//    Mat fgdModel= *(new Mat());
+//    /*nb d'iter de l'algo avt de rvoyer le res*/
+//    int iterCount =1;
+//    const string name= filename.toStdString();
+//    /*image*/
+//    Mat im = cv::imread(name,1);
+//    /*masque*/
+//    Mat mask;
+//    mask.create( im.size(), CV_8UC1);
+//    /*ROI : region of interest*/
+
+//       QPoint HG = ui->graphicsView->getHG();
+//       QPoint BD = ui->graphicsView->getBD();
+//       Calcul::recadrer(img,&HG,&BD);
+//       /*Si selection dépasse de l'image*/
+
+//       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+//       ui->graphicsView->cacherSelect();
+//       ui->graphicsView->setPret(false);
+//        /*rect : selection*/
+//        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+//        /*fait le decoupage*/
+//        compare(mask,GC_PR_FGD,mask,CMP_EQ);
 
 
-    //cv::grabCut();
+//        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+//        im.copyTo(fgd,mask);
+//        //im.copyTo(fgdModel,mask);
 
-    return true;
+//        cv::imshow("test5",fgd);
+//        img = image;
+//        repeindre();
+        return true;
+
+//   }else{
+//       return false;
+//   }
 }
 
 /* rogne la selection de l'image*/
@@ -353,38 +423,7 @@ bool myWindow::rogner()
             QPoint HG = ui->graphicsView->getHG();
             QPoint BD = ui->graphicsView->getBD();
             /*Si selection dépasse de l'image*/
-            if(BD.x()<0){
-                BD.setX(0);
-            }
-            if(HG.x()<0){
-                HG.setX(0);
-            }
-            if(BD.y()<0){
-                BD.setY(0);
-            }
-            if(HG.y()<0){
-                HG.setY(0);
-            }
-
-            if(BD.x() > img->width()){
-              /*on recadre à la limite*/
-               BD.setX(img->width());
-            }
-
-            if(BD.y() > img->width()){
-              /*on recadre à la limite*/
-                BD.setY(img->width());
-            }
-
-            if(HG.x() > img->width()){
-              /*on recadre à la limite*/
-                HG.setX(img->width());
-            }
-
-            if(HG.y() > img->width()){
-              /*on recadre à la limite*/
-                HG.setY(img->width());
-            }
+            Calcul::recadrer(img,&HG,&BD);
             QRect rect(HG,BD);
             *img = img->copy(rect);
             ui->graphicsView->cacherSelect();
@@ -400,39 +439,99 @@ bool myWindow::rogner()
     }
 }
 
-bool myWindow::pipette()
-{
-    if (ui->actionPipette->isChecked()) {
-        ui->graphicsView->setModePipette();
-    } else {
-        ui->graphicsView->resetMode();
-    }
-
-    if(ui->actionSelection->isChecked()){
-        actionRogner->setEnabled(false);
-        ui->graphicsView->cacherSelect();
-        ui->actionSelection->setChecked(false);
-    }
-    if (ui->actionRedimensionner->isChecked()) {
-        ui->actionRedimensionner->setChecked(false);
-        scene->disableRedimension();
-    }
-
-    return true;
-}
-
 bool myWindow::selection()
 {
     if (ui->actionSelection->isChecked()) {
         ui->graphicsView->setModeSelection();
         actionRogner->setEnabled(true);
     } else {
-        actionRogner->setEnabled(false);
+        ui->graphicsView->resetMode();
         ui->graphicsView->cacherSelect();
+        actionRogner->setEnabled(false);
     }
 
+    if(ui->actionPipette->isChecked()) {
+        ui->actionPipette->setChecked(false);
+        ui->statusbar->clearMessage();
+    }
+    if (ui->actionRedimensionner->isChecked()) {
+        ui->actionRedimensionner->setChecked(false);
+        scene->disableRedimension();
+    }
+    if (ui->actionRedimensionIntell->isChecked()) {
+        ui->actionRedimensionIntell->setChecked(false);
+        scene->disableRedimensionIntell();
+    }
+    return true;
+}
+
+bool myWindow::pipette()
+{
+    if (ui->actionPipette->isChecked()) {
+        ui->graphicsView->setModePipette();
+    } else {
+        ui->graphicsView->resetMode();
+        ui->statusbar->clearMessage();
+    }
+
+    if(ui->actionSelection->isChecked()){
+        ui->actionSelection->setChecked(false);
+        ui->graphicsView->cacherSelect();
+        actionRogner->setEnabled(false);
+    }
+    if (ui->actionRedimensionner->isChecked()) {
+        ui->actionRedimensionner->setChecked(false);
+        scene->disableRedimension();
+    }
+    if (ui->actionRedimensionIntell->isChecked()) {
+        ui->actionRedimensionIntell->setChecked(false);
+        scene->disableRedimensionIntell();
+    }
+    return true;
+}
+
+bool myWindow::redimensionMode()
+{
+    if (ui->actionRedimensionner->isChecked()) {
+        scene->enableRedimension();
+    } else {
+        scene->disableRedimension();
+    }
+
+    ui->graphicsView->resetMode();
+    if(ui->actionSelection->isChecked()){
+        ui->actionSelection->setChecked(false);
+        ui->graphicsView->cacherSelect();
+        actionRogner->setEnabled(false);
+    }
     if(ui->actionPipette->isChecked()){
         ui->actionPipette->setChecked(false);
+        ui->statusbar->clearMessage();
+    }
+    if (ui->actionRedimensionIntell->isChecked()) {
+        ui->actionRedimensionIntell->setChecked(false);
+        scene->disableRedimensionIntell();
+    }
+    return true;
+}
+
+bool myWindow::redimensionIntellMode()
+{
+    if (ui->actionRedimensionIntell->isChecked()) {
+        scene->enableRedimensionIntell();
+    } else {
+        scene->disableRedimensionIntell();
+    }
+
+    ui->graphicsView->resetMode();
+    if(ui->actionSelection->isChecked()){
+        ui->actionSelection->setChecked(false);
+        ui->graphicsView->cacherSelect();
+        actionRogner->setEnabled(false);
+    }
+    if(ui->actionPipette->isChecked()){
+        ui->actionPipette->setChecked(false);
+        ui->statusbar->clearMessage();
     }
     if (ui->actionRedimensionner->isChecked()) {
         ui->actionRedimensionner->setChecked(false);
@@ -441,31 +540,85 @@ bool myWindow::selection()
     return true;
 }
 
-bool myWindow::redimension()
-{
-    if (ui->actionRedimensionner->isChecked()) {
-        ui->graphicsView->setModeRedimension();
-        scene->enableRedimension();
-    } else {
-        ui->graphicsView->resetMode();
-        scene->disableRedimension();
+bool myWindow::annuler(){
+    cout<<"annuler"<<endl;
+    if(!pileAnnuler->isEmpty()){
+        /*recuperer image ds pile annuler*/
+
+        QImage * image = pileAnnuler->pop();
+        image = new QImage(image->copy(image->rect()));
+        /*mettre cette image dans pile refaire*/
+        pileRefaire->push(image);
+
+        /*afficher l'image*/
+        img = image;
+        itemPixmap->setPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setImage(img);
+        scene->setSceneRect(0, 0, img->width(), img->height());
+        scene->update();
+
+        return true;
+    }else{
+        cout<<"FAUX! "<<endl;
+        return false;
+    }
+}
+
+bool myWindow::refaire(){
+    cout<<"refaire"<<endl;
+    if(!pileRefaire->isEmpty()){
+        /*recuperer image ds pile refaire*/
+        QImage * image =  pileRefaire->pop();
+        image = new QImage(image->copy(image->rect()));
+        /*mettre cette image dans pile annuler*/
+        pileAnnuler->push(image);
+        /*afficher image*/
+        img = image;
+        itemPixmap->setPixmap(QPixmap::fromImage(*img));
+        ui->graphicsView->setImage(img);
+        scene->setSceneRect(0, 0, img->width(), img->height());
+        scene->update();
+
+        return true;
+    }else{
+        cout<<"FAUX! "<<endl;
+        return false;
     }
 
-    if(ui->actionSelection->isChecked()){
-        actionRogner->setEnabled(false);
-        ui->graphicsView->cacherSelect();
-        ui->actionSelection->setChecked(false);
-    }
-    if(ui->actionPipette->isChecked()){
-        ui->actionPipette->setChecked(false);
-    }
+
+}
+
+bool myWindow::copier(){
+    cout<<"copier"<<endl;
+
+
+    QPoint HG = ui->graphicsView->getHG();
+    QPoint BD = ui->graphicsView->getBD();
+    /*Si selection dépasse de l'image*/
+    Calcul::recadrer(img,&HG,&BD);
+    QRect rect(HG,BD);
+    copie = new QImage(img->copy(rect));
+    return true;
+}
+
+bool myWindow::couper(){
+    cout << "couper"<<endl;
+    QPoint HG = ui->graphicsView->getHG();
+    QPoint BD = ui->graphicsView->getBD();
+    /*Si selection dépasse de l'image*/
+    Calcul::recadrer(img,&HG,&BD);
+    QRect rect(HG,BD);
+    copie = new QImage(img->copy(rect));
+    copie->fill(Qt::white);
+    /*fusion de copie et img*/
+    /*img = nvelle_image*/
+    /*remplacer avec blanc*/
 
     return true;
 }
 
-/*
-void myWindow::showMessage(const QString &message){
-    statusBar()->showMessage(message);
+bool myWindow::coller(){
+    cout <<"coller"<<endl;
+    /*remplacer avec copie là où pointeur de souris*/
+    return true;
 }
-*/
-

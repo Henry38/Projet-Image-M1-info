@@ -8,30 +8,39 @@ class MyGraphicsScene : public QGraphicsScene {
     Q_OBJECT
 
 public:
+    // Methodes
     MyGraphicsScene(QWidget *parent = 0);
     ~MyGraphicsScene();
     void setPixmapItem(QGraphicsPixmapItem *);
-    //QGraphicsPixmapItem *addPixmap(const QPixmap&);
-    void setVisibleResizeTool(bool);
     void enableRedimension();
     void disableRedimension();
+    void enableRedimensionIntell();
+    void disableRedimensionIntell();
+    bool isModeRedimension();
+    bool isModeRedimensionIntell();
+    void updateVisibleTool();
 
 private:
+    // Methodes
+
+    // Attributs
     QPointF offset;
     QGraphicsPixmapItem *item;
     QGraphicsRectItem *rectTool;
-    QGraphicsPixmapItem *grabTool;
-    bool grab;
+    QGraphicsPixmapItem *dragTool;
+    QGraphicsPixmapItem *dragXTool, *dragYTool;
+    bool grabTool, grabXTool, grabYTool;
     int mode;
 
-
 protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent*);
-    void mousePressEvent(QGraphicsSceneMouseEvent*);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
+    void mousePressEvent(QGraphicsSceneMouseEvent *);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 
 signals:
-    void redimensionnement(QRectF);
+    void redimensionnement(QRect);
+    void redimensionnementIntellEnLargeur(QRect);
+    void redimensionnementIntellEnHauteur(QRect);
 
 };
 
