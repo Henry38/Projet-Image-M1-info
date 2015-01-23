@@ -340,6 +340,7 @@ QImage* Calcul::chemin(QImage* imgDepart) {
     int indice[width][height];
     QRgb pixel;
     float power;
+    int dejaVu[width];
 
     // Initialisation
     for (int x=0; x<width; x++) {
@@ -367,6 +368,7 @@ QImage* Calcul::chemin(QImage* imgDepart) {
 
     float min = table[0][height-1];
     int indexMin = 0;
+    int indexMin2;
     for (int x=1; x<width; x++) {
         power = table[x][height-1];
         if (power < min) {
@@ -374,12 +376,26 @@ QImage* Calcul::chemin(QImage* imgDepart) {
             indexMin = x;
         }
     }
-
+    indexMin2 = indexMin;
+    std::cout <<"indexMin1 : "<<indexMin<<std::endl;
     for (int y=height-1; y>=0; y--) {
         imgDepart->setPixel(indexMin, y, qRgba(255, 0, 0, 255));
         indexMin += indice[indexMin][y];
     }
 
+
+    for (int x=1; x<width; x++) {
+        power = table[x][height-1];
+        if (power < min && indexMin2 != indexMin) {
+            min = power;
+            indexMin = x;
+        }
+    }
+    std::cout <<"indexMin12 : "<<indexMin<<std::endl;
+    for (int y=height-1; y>=0; y--) {
+        imgDepart->setPixel(indexMin, y, qRgba(0,255, 0, 255));
+        indexMin += indice[indexMin][y];
+    }
     return imgArrivee;
 }
 
