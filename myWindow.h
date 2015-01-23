@@ -21,6 +21,7 @@
 #include <QGraphicsScene>
 #include <QtGui>
 #include <QtCore>
+#include <QStack>
 #include "MyGraphicsScene.h"
 #include "MyGraphicsView.h"
 #include "ScaleDialog.h"
@@ -69,6 +70,11 @@ public slots:
     bool redimensionnementIntellEnHauteurIteractif(QRect);
     bool redimensionMode();
     bool redimensionIntellMode();
+    bool annuler();
+    bool refaire();
+    bool copier();
+    bool couper();
+    bool coller();
 
 private:
     // Attribut
@@ -89,6 +95,14 @@ private:
     QAction *actionRogner;
     QAction *actionPipette;
     QAction *actionSelection;
+    QAction *actionAnnuler;
+    QAction *actionRefaire;
+    QAction *actionCopier;
+    QAction *actionCouper;
+    QAction *actionColler;
+    QStack<QImage*>* pileAnnuler;
+    QStack<QImage*>* pileRefaire;
+    QImage* copie;
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;

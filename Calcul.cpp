@@ -703,65 +703,42 @@ float Calcul::niveauDeGris(QRgb pixel) {
     return 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
 }
 
-/*retourne l'ensemble des chemins tries par ordre croissant de leur poids*/
-//QVector<QVector<int>>* Calcul::sortImportantPass(QImage *imgEnergie) {
-//    int width = imgEnergie->width();
-//    int height = imgEnergie->height();
+void Calcul::recadrer(QImage* img,QPoint* A,QPoint*B){
 
+    if(A->x()<0){
+        A->setX(0);
+    }
 
-//    QVector<QVector<int>> *res = new QVector<QVector<int>>(0);
+    if(A->y()<0){
+        A->setY(0);
+    }
 
-//    float table[width][height];         // colonne ligne
-//    int indice[width][height];          // indice (-1, 0 ou 1) pour chaque pixel
-//    //float min = std::numeric_limits<int>::max();
-//    //int indexMin = -1;                  // index X du pixel de poids cumulatif minimal sur la derniere ligne
-//    QVector<int> indexMin(0);
-//    QRgb pixel;
-//    float power;
-//    int pos;
+    if(B->y()<0){
+        B->setY(0);
+    }
 
-//    // Initialisation
-//    for (int x=0; x<width; x++) {
-//        table[x][0] = niveauDeGris(imgEnergie->pixel(x, 0));
-//        res->append(QVector<int>(0));
-//    }
+    if(B->x()<0){
+        B->setX(0);
+    }
 
-//    // Remplissage de la table et des indices
-//    for (int y=1; y<height; y++) {
-//        for (int x=0; x<width; x++) {
-//            pixel = imgEnergie->pixel(x, y);
-//            power = niveauDeGris(pixel);
-//            table[x][y] = std::numeric_limits<int>::max();
-//            indice[x][y] = 0;
-//            for (int k=-1; k<=1; k++) {
-//                if (x+k >= 0 && x+k < width) {
-//                    if (power + table[x+k][y-1] < table[x][y]) {
-//                        table[x][y] = power + table[x+k][y-1];
-//                        indice[x][y] = k;
-//                        if (y == height-1) {// && table[x][y] < min) {
-//                            //min = table[x][y];
-//                            //indexMin = x;
-//                            pos = 0;
-//                            while (pos < indexMin.size() && indexMin.at(pos) <= table[x][y]) {
-//                                pos++;
-//                            }
-//                            indexMin.insert(pos, x);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    if(A->x() > img->width()){
+      /*on recadre à la limite*/
+       A->setX(img->width());
+    }
 
-//    int index;
-//    int num = 0;
-//    while (indexMin.size() > 0) {
-//        index = indexMin.takeFirst();
-//        for (int y=height-1; y>=0; y--) {
-//            (res->at(num)).append(index);
-//            index += indice[index][y];
-//        }
-//    }
+    if(A->y() > img->width()){
+      /*on recadre à la limite*/
+        A->setY(img->width());
+    }
 
-//    return res;
-//}
+    if(B->x() > img->width()){
+      /*on recadre à la limite*/
+        B->setX(img->width());
+    }
+
+    if(B->y() > img->width()){
+      /*on recadre à la limite*/
+        B->setY(img->width());
+    }
+
+}
