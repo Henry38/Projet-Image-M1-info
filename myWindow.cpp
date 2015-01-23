@@ -424,9 +424,7 @@ bool myWindow::redimensionnementIteractif(QRect rect) {
 
 bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
-    //QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, 272);
     delete img;
-    //img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
     img = tmp;
     repeindre();
 
@@ -434,7 +432,10 @@ bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
 }
 
 bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
-    //QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.width());
+    QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.height());
+    delete img;
+    img = tmp;
+    repeindre();
 
     return true;
 }

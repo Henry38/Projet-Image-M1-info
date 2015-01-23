@@ -17,10 +17,12 @@ public:
     static QImage* zoneDeDensite(QImage*);
     static QVector<float> getYUV(QRgb);
     static float niveauDeGris(QRgb);
+    //static QVector<QVector<int>>* sortImportantPass(QImage*);
 
 private:
     //Methodes
-    static void lessImportantPass(QImage*, QVector<int>*);
+    static void lessImportantVerticalPath(QImage*, QVector<int>*);
+    static void lessImportantHorizontalPath(QImage*, QVector<int>*);
 
 };
 
