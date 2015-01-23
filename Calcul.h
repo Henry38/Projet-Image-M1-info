@@ -14,6 +14,8 @@ public:
     static QImage* zoneDeDensite(QImage*);
     static QVector<float> getYUV(QRgb);
     static float niveauDeGris(QRgb);
+    static void recadrer(QImage*,QPoint*,QPoint*);
+
 };
 
 #endif // CALCUL_H

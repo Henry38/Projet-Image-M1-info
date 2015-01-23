@@ -487,3 +487,43 @@ QVector<float> Calcul::getYUV(QRgb pixel) {
 float Calcul::niveauDeGris(QRgb pixel) {
     return 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
 }
+
+void Calcul::recadrer(QImage* img,QPoint* A,QPoint*B){
+
+    if(A->x()<0){
+        A->setX(0);
+    }
+
+    if(A->y()<0){
+        A->setY(0);
+    }
+
+    if(B->y()<0){
+        B->setY(0);
+    }
+
+    if(B->x()<0){
+        B->setX(0);
+    }
+
+    if(A->x() > img->width()){
+      /*on recadre à la limite*/
+       A->setX(img->width());
+    }
+
+    if(A->y() > img->width()){
+      /*on recadre à la limite*/
+        A->setY(img->width());
+    }
+
+    if(B->x() > img->width()){
+      /*on recadre à la limite*/
+        B->setX(img->width());
+    }
+
+    if(B->y() > img->width()){
+      /*on recadre à la limite*/
+        B->setY(img->width());
+    }
+
+}
