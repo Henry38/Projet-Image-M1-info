@@ -1,7 +1,6 @@
 #ifndef BLURDIALOG_H
 #define BLURDIALOG_H
 
-#include <QObject>
 #include <QImage>
 #include <QLabel>
 #include <QSpinBox>
@@ -18,9 +17,9 @@ public:
     ~BlurDialog();
 
 private:
+    QImage *imgSource, *apercu;
     QLabel *text;
     QSpinBox *spinBox;
-    QImage *imgSource, *apercu;
     bool ok_clicked;
 
 public slots:

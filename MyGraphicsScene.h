@@ -2,6 +2,13 @@
 #define MYGRAPHICSSCENE_H
 
 #include <QGraphicsScene>
+#include <QWidget>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsRectItem>
+#include <QPoint>
+
+#include "Calcul.h"
 
 class MyGraphicsScene : public QGraphicsScene {
 
@@ -21,8 +28,6 @@ public:
     void updateVisibleTool();
 
 private:
-    // Methodes
-
     // Attributs
     QPointF offset;
     QGraphicsPixmapItem *item;

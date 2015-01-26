@@ -1,25 +1,15 @@
+
 #include "myWindow.h"
-#include "BlurDialog.h"
 #include "ui_myWindow.h"
+
 #include "Histogramme.h"
-#include "FiltreDialog.h"
 #include "HistoDialog.h"
-#include <QPixmap>
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <opencv2/opencv.hpp>
-
-#include <QKeyEvent>
-#include <QShortcut>
-#include <QRectF>
-#include "Calcul.h"
 using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     img = new QImage();
 
     filename = "";

@@ -532,7 +532,7 @@ void Calcul::lessImportantHorizontalPath(QImage *imgEnergie, QVector<int> *vect)
 
 QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWidth) {
     QImage *imgArrivee = new QImage(*imgDepart);
-    QImage *imgEnergie = contour(imgDepart);
+    QImage *imgEnergie = contour(imgDepart); //normeDuGradient(imgDepart);
     QImage *tmpArrivee;
     QImage *tmpEnergie;
 
@@ -582,7 +582,7 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
 
 QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHeight) {
     QImage *imgArrivee = new QImage(*imgDepart);
-    QImage *imgEnergie = contour(imgDepart);
+    QImage *imgEnergie = contour(imgDepart); //normeDuGradient(imgDepart);
     QImage *tmpArrivee;
     QImage *tmpEnergie;
 

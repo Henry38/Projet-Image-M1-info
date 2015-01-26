@@ -1,12 +1,11 @@
 #ifndef SCALEDIALOG_H
 #define SCALEDIALOG_H
 
-#include <QObject>
-#include <QImage>
 #include <QLabel>
 #include <QSpinBox>
 
 #include "AbstractDialog.h"
+#include "Calcul.h"
 
 class ScaleDialog : public AbstractDialog {
 

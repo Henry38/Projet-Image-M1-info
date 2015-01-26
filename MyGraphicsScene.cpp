@@ -1,13 +1,5 @@
 
 #include "MyGraphicsScene.h"
-#include "Calcul.h"
-
-#include <QWidget>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsRectItem>
-#include <QPoint>
-#include <iostream>
 
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {

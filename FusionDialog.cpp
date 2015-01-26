@@ -95,7 +95,8 @@ void FusionDialog::openFilename()
     }
 }
 
-void FusionDialog::writeOpacity(int value) {
+void FusionDialog::writeOpacity(int value)
+{
     label->setText("Opacité : " + QString::number(value));
     updateViewer();
 }
