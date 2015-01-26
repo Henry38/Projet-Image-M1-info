@@ -1,9 +1,8 @@
 #include "HistoDialog.h"
-#include <QLabel>
-#include <QPixmap>
 #include <qpoint.h>
+#include "couple.h"
 
-HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB(img),conteneurHisto(this), choixCouleur(this), choixOperation(this)
+HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB(img), conteneurHisto(this), choixCouleur(this), choixOperation(this)
 {
     histoRGB.afficheHisto();
     histoRGB.afficherLignes();
@@ -35,14 +34,18 @@ HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB
     QRadioButton *egalisation = new QRadioButton("egalisation");
     QRadioButton *etalement = new QRadioButton("etalement");
     QRadioButton *aucun = new QRadioButton("aucun");
+
+    operation = 0;
     aucun->setChecked(true);
 
     QVBoxLayout *vbox2 = new QVBoxLayout;
+    vbox2->addWidget(aucun);
     vbox2->addWidget(egalisation);
     vbox2->addWidget(etalement);
-    vbox2->addWidget(aucun);
+
     choixOperation.setLayout(vbox2);
     choixOperation.setStyleSheet("border: 1px solid black;");
+
     egalisation->setStyleSheet("border: 0px solid black;");
     etalement->setStyleSheet("border: 0px solid black;");
     aucun->setStyleSheet("border: 0px solid black;");
@@ -51,6 +54,7 @@ HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB
     QObject::connect(etalement, SIGNAL(clicked()), this, SLOT(etalement()));
     QObject::connect(aucun, SIGNAL(clicked()), this, SLOT(annulerOperation()));
     //--- fin creation choix operation
+    
 
     choixCouleur.move(distBordGauche,getScrollArea()->height()+ distBordHaut*2);
     choixOperation.move(choixCouleur.x() + choixCouleur.width() + 15,choixCouleur.y());
@@ -67,19 +71,40 @@ HistoDialog::~HistoDialog()
 void HistoDialog::afficherLignesRGB()
 {
     RGB = true;
-    histoRGB.afficheHisto();
-    histoRGB.afficherLignes();
-    conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
+    if(operation == 0)
+    {
+        histoRGB.afficheHisto();
+        histoRGB.afficherLignes();
+        conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
+    }
+    else if(operation == 1)
+    {
+        egalisation();
+    }
+    else
+    {
+        etalement();
+    }
 }
 
 void HistoDialog::afficherLignesYUV()
 {
     RGB = false;
-    histoYUV.afficheHisto();
-    histoYUV.afficherLignes();
-    conteneurHisto.setPixmap(QPixmap::fromImage(histoYUV));
+    if(operation == 0)
+    {
+        histoYUV.afficheHisto();
+        histoYUV.afficherLignes();
+        conteneurHisto.setPixmap(QPixmap::fromImage(histoYUV));
+    }
+    else if(operation == 1)
+    {
+        egalisation();
+    }
+    else
+    {
+        etalement();
+    }
 }
-
 
 void HistoDialog::updateViewer()
 {
@@ -99,22 +124,62 @@ void HistoDialog::acceptDialog()
 
 void HistoDialog::egalisation()
 {
-
+    Histogramme *h;
+    if(operation == 1 || operation == 2)
+    {
+        histoRGB.reset(img);
+        histoYUV.reset(img);
+    }
+    operation = 1;
+    if(RGB)
+    {
+        h = &histoRGB;
+        if(histoRGB.gray())
+        {
+            histoRGB.egalisation();
+        }
+    }
+    else
+    {
+        h = &histoYUV;
+        if(histoYUV.gray())
+        {
+            histoYUV.egalisation();
+        }
+    }
+    h->afficheHisto();
+    h->afficherLignes();
+    conteneurHisto.setPixmap(QPixmap::fromImage(*h));
 }
 
 void HistoDialog::etalement()
 {
-    int deb ,fin;
+    Histogramme *h;
+    if(operation == 1 || operation == 2)
+    {
+        histoRGB.reset(img);
+        histoYUV.reset(img);
+    }
+    operation = 2;
     if(RGB)
     {
-        histoRGB.afficheHisto();
-        histoRGB.etalement(150,200);
-        conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
+        h = &histoRGB;
+        histoRGB.etalement();
     }
+    else
+    {
+        h = &histoYUV;
+        Couple c = histoYUV.getDelimitation(histoYUV.getY());
+        histoYUV.etalement(c);
+    }
+    h->afficheHisto();
+    h->afficherLignes();
+    conteneurHisto.setPixmap(QPixmap::fromImage(*h));
 }
 
 void HistoDialog::annulerOperation()
 {
+    operation = 0;
     if(RGB)
     {
         histoRGB.setImg(img);
