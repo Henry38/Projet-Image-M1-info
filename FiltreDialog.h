@@ -9,6 +9,7 @@
 #include <QLineEdit>
 
 #include "AbstractDialog.h"
+#include "Calcul.h"
 #include "Convolution.h"
 
 using namespace std;
@@ -39,4 +40,5 @@ public slots:
     void acceptDialog();
 
 };
+
 #endif // FILTREDIALOG_H
