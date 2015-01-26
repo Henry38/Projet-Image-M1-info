@@ -1,5 +1,5 @@
+
 #include "FiltreDialog.h"
-#include "Calcul.h"
 
 FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
@@ -148,14 +148,16 @@ void FiltreDialog::updateViewer()
 
 }
 
-void FiltreDialog::acceptDialog() {
+void FiltreDialog::acceptDialog()
+{
     if (!ok_clicked) {
         updateViewer();
     }
     imgSource->swap(*apercu);
 }
 
-void FiltreDialog::changerMatricePerso(int b){
+void FiltreDialog::changerMatricePerso(int b)
+{
     if(personnalise->isChecked()){
         if(spinBox->value()<dimMatP){
             for(int i= 0;i<dimMatP;i++){

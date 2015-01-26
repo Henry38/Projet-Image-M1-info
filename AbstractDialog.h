@@ -1,8 +1,6 @@
 #ifndef ABSTRACTDIALOG_H
 #define ABSTRACTDIALOG_H
 
-#include <QtGui>
-#include <QtCore>
 #include <QDialog>
 #include <QScrollArea>
 #include <QLabel>
@@ -24,10 +22,10 @@ public:
     QScrollArea *getScrollArea();
 
 private:
+    // Methodes
+    void resizeEvent(QResizeEvent *event);  // inutile ?
     // Attributs
     QLabel *label;
-    void resizeEvent(QResizeEvent *event);  // inutile ?
-
 
 public slots:
     virtual void updateViewer() = 0;

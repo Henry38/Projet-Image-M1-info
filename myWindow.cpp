@@ -1,26 +1,15 @@
+
 #include "myWindow.h"
-#include "BlurDialog.h"
 #include "ui_myWindow.h"
+
 #include "Histogramme.h"
-#include "FiltreDialog.h"
 #include "HistoDialog.h"
-#include <QPixmap>
-
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <opencv2/opencv.hpp>
-
-#include <QKeyEvent>
-#include <QShortcut>
-#include <QRectF>
-#include "Calcul.h"
 
 using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     img = new QImage();
 
     filename = "";
@@ -145,7 +134,6 @@ void myWindow::initMenu()
     actionRedimensionner = new QAction("&Redimensionner",this);
     actionFiltre = new QAction("&Filtre",this);
     actionContours = new QAction("&Contours",this);
-    actionRedimIntell = new QAction("&RedimIntell",this);
     actionGrabCut = new QAction("&GrabCut",this);
     actionRogner = new QAction("&Rogner",this);
     menuEdition->addAction(actionHistogramme);
@@ -155,7 +143,6 @@ void myWindow::initMenu()
     menuEdition->addAction(actionRedimensionner);
     menuEdition->addAction(actionFiltre);
     menuEdition->addAction(actionContours);
-    menuEdition->addAction(actionRedimIntell);
     menuEdition->addAction(actionGrabCut);
     menuEdition->addAction(actionRogner);
 
@@ -174,7 +161,6 @@ void myWindow::initMenu()
     QObject::connect(actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimensionner()));
     QObject::connect(actionFiltre,SIGNAL(triggered()),this,SLOT(filtre()));
     QObject::connect(actionContours,SIGNAL(triggered()),this,SLOT(contours()));
-    QObject::connect(actionRedimIntell,SIGNAL(triggered()),this,SLOT(redimIntell()));
     QObject::connect(actionGrabCut,SIGNAL(triggered()),this,SLOT(grabCut()));
     QObject::connect(actionRogner,SIGNAL(triggered()),this,SLOT(rogner()));
 }
@@ -319,11 +305,6 @@ bool myWindow::contours()
     img = tmp;
     repeindre();
 
-    return true;
-}
-
-bool myWindow::redimIntell()
-{
     return true;
 }
 

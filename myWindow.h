@@ -1,30 +1,25 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
-#include <QImage>
 #include <QMainWindow>
-#include <QPaintEvent>
-#include <QPainter>
 #include <QString>
+#include <QImage>
+#include <QPoint>
+#include <QGraphicsPixmapItem>
 #include <QFileDialog>
+#include <QStatusBar>
+#include <QStack>
 #include <QDesktopWidget>
-#include <QObject>
+#include <QShortcut>
+#include <QDebug>
+
+#include "Calcul.h"
 #include "BlurDialog.h"
 #include "FusionDialog.h"
-#include <QtWidgets>
-#include <iostream>
-#include <QApplication>
-#include <QPoint>
-#include <QMouseEvent>
-#include <QMessageBox>
-#include <QRubberBand>
-#include <QGraphicsScene>
-#include <QtGui>
-#include <QtCore>
-#include <QStack>
+#include "FiltreDialog.h"
+#include "ScaleDialog.h"
 #include "MyGraphicsScene.h"
 #include "MyGraphicsView.h"
-#include "ScaleDialog.h"
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -33,9 +28,11 @@
 namespace Ui {
     class MainWindow;
 }
+
 class myWindow : public QMainWindow {
 
     Q_OBJECT
+
 public:
     // Methodes
     myWindow();
@@ -63,7 +60,6 @@ public slots:
     bool redimensionner();
     bool filtre();
     bool contours();
-    bool redimIntell();
     bool grabCut();
     bool rogner();
     bool pipette();
@@ -93,7 +89,6 @@ private:
     QAction *actionRedimensionner;
     QAction *actionFiltre;
     QAction *actionContours;
-    QAction *actionRedimIntell;
     QAction *actionGrabCut;
     QAction *actionRogner;
     QAction *actionPipette;
@@ -109,7 +104,6 @@ private:
     QRubberBand *rubberBand;
     QPoint origin;
     Ui::MainWindow *ui;
-    //QGraphicsScene *scene;
     MyGraphicsScene *scene;
     QString filename;
     QGraphicsPixmapItem *itemPixmap;
