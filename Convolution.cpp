@@ -68,7 +68,6 @@ void Convolution::convolution(QImage *image)
                             if (m.get_element(i+decalage,j+decalage) > 0) {
                                 nbPixel += m.get_element(i+decalage,j+decalage);
                             }
-
                         }
                     }
                 }
@@ -109,9 +108,9 @@ void Convolution::convolution(QImage *image)
                     }
                 }
                 if (nbPixel != 0) {
-                    sommeR/=nbPixel;
-                    sommeG/=nbPixel;
-                    sommeB/=nbPixel;
+                    sommeR/=nbPixel/2;
+                    sommeG/=nbPixel/2;
+                    sommeB/=nbPixel/2;
                 }
                 ajusterCouleur(&sommeR);
                 ajusterCouleur(&sommeG);

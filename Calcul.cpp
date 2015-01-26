@@ -5,85 +5,72 @@
 
 QImage* Calcul::contour(QImage *imgDepart) {
 
-//    QImage *imgArrivee = new QImage(*imgDepart);
-//    Convolution c;
-//    c.redimensionnerMatrix(3,0);
+    QImage *imgArrivee = new QImage(*imgDepart);
 
-//    Matrix *noyau = new Matrix(3,0);
-//    noyau->insert_element(0,0,0);
-//    noyau->insert_element(0,1,-1);
-//    noyau->insert_element(0,2,0);
-//    noyau->insert_element(1,0,-1);
-//    noyau->insert_element(1,1,4);
-//    noyau->insert_element(1,2,-1);
-//    noyau->insert_element(2,0,0);
-//    noyau->insert_element(2,1,-1);
-//    noyau->insert_element(2,2,0);
-
-//    c.setNoyau(noyau);
-//    c.convolution(imgArrivee);
-
-//    c.modifierCaseMatrix(0,1,1);
-//    c.modifierCaseMatrix(2,1,1);
-//    c.modifierCaseMatrix(1,0,1);
-//    c.modifierCaseMatrix(1,2,1);
-//    c.modifierCaseMatrix(1,1,-4);
-//    c.convolution(img);
-
-    QImage *imgGris = imageEnNiveauDeGris(imgDepart);
-
-    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
     Convolution c;
-    //c.redimensionnerMatrix(3,0);
+    c.redimensionnerMatrix(3,0);
 
-    // Filtre 1 de Sobel
-    Matrix *Gx = new Matrix(3,0);
-    Gx->insert_element(0, 0, 1);
-    Gx->insert_element(0, 1, 2);
-    Gx->insert_element(0, 2, 1);
-    Gx->insert_element(1, 0, 0);
-    Gx->insert_element(1, 1, 0);
-    Gx->insert_element(1, 2, 0);
-    Gx->insert_element(2, 0, -1);
-    Gx->insert_element(2, 1, -2);
-    Gx->insert_element(2, 2, -1);
-    c.setNoyau(Gx);
+    c.modifierCaseMatrix(0,1,-1);
+    c.modifierCaseMatrix(2,1,-1);
+    c.modifierCaseMatrix(1,0,-1);
+    c.modifierCaseMatrix(1,2,-1);
+    c.modifierCaseMatrix(1,1, 5);
+    c.convolution(imgArrivee);
 
-    QImage *tmpGx = new QImage(*imgGris);
-    c.convolution(tmpGx);
 
-    // Filtre 2 de Sobel
-    Matrix *Gy = new Matrix(3,0);
-    Gy->insert_element(0, 0, 1);
-    Gy->insert_element(0, 1, 0);
-    Gy->insert_element(0, 2, -1);
-    Gy->insert_element(1, 0, 2);
-    Gy->insert_element(1, 1, 0);
-    Gy->insert_element(1, 2, -2);
-    Gy->insert_element(2, 0, 1);
-    Gy->insert_element(2, 1, 0);
-    Gy->insert_element(2, 2, -1);
-    c.setNoyau(Gy);
+//    QImage *imgGris = imageEnNiveauDeGris(imgDepart);
 
-    QImage *tmpGy = new QImage(*imgGris);
-    c.convolution(tmpGy);
+//    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+//    Convolution c;
 
-    int r, g, b;
-    // Creation de l'image finale
-    for (int x=0; x<imgArrivee->width(); x++) {
-        for (int y=0; y<imgArrivee->height(); y++) {
-            r = qRed(tmpGx->pixel(x, y)) + qRed(tmpGy->pixel(x, y));
-            g = qGreen(tmpGx->pixel(x, y)) + qGreen(tmpGy->pixel(x, y));
-            b = qBlue(tmpGx->pixel(x, y)) + qBlue(tmpGy->pixel(x, y));
-            imgArrivee->setPixel(x, y, qRgba(r, g, b, 255));
-        }
-    }
+//    // Filtre 1 de Sobel
+//    Matrix *Gx = new Matrix(3,0);
+//    Gx->insert_element(0, 0, 1);
+//    Gx->insert_element(0, 1, 2);
+//    Gx->insert_element(0, 2, 1);
+//    Gx->insert_element(1, 0, 0);
+//    Gx->insert_element(1, 1, 0);
+//    Gx->insert_element(1, 2, 0);
+//    Gx->insert_element(2, 0, -1);
+//    Gx->insert_element(2, 1, -2);
+//    Gx->insert_element(2, 2, -1);
+//    c.setNoyau(Gx);
 
-    delete Gx;
-    delete Gy;
-    delete imgGris;
-    delete tmpGx;
-    delete tmpGy;
+//    QImage *tmpGx = new QImage(*imgGris);
+//    c.convolution(tmpGx);
+
+//    // Filtre 2 de Sobel
+//    Matrix *Gy = new Matrix(3,0);
+//    Gy->insert_element(0, 0, 1);
+//    Gy->insert_element(0, 1, 0);
+//    Gy->insert_element(0, 2, -1);
+//    Gy->insert_element(1, 0, 2);
+//    Gy->insert_element(1, 1, 0);
+//    Gy->insert_element(1, 2, -2);
+//    Gy->insert_element(2, 0, 1);
+//    Gy->insert_element(2, 1, 0);
+//    Gy->insert_element(2, 2, -1);
+//    c.setNoyau(Gy);
+
+//    QImage *tmpGy = new QImage(*imgGris);
+//    c.convolution(tmpGy);
+
+//    int r, g, b;
+//    // Creation de l'image finale
+//    for (int x=0; x<imgArrivee->width(); x++) {
+//        for (int y=0; y<imgArrivee->height(); y++) {
+//            r = qAbs(qRed(tmpGx->pixel(x, y))) + qAbs(qRed(tmpGy->pixel(x, y)));
+//            g = qAbs(qGreen(tmpGx->pixel(x, y))) + qAbs(qGreen(tmpGy->pixel(x, y)));
+//            b = qAbs(qBlue(tmpGx->pixel(x, y))) + qAbs(qBlue(tmpGy->pixel(x, y)));
+//            imgArrivee->setPixel(x, y, qRgba(r, g, b, 255));
+//        }
+//    }
+
+//    delete Gx;
+//    delete Gy;
+//    delete imgGris;
+//    delete tmpGx;
+//    delete tmpGy;
 
     return imgArrivee;
 }

@@ -62,7 +62,6 @@ public slots:
     bool redimensionner();
     bool filtre();
     bool contours();
-    bool redimIntell();
     bool grabCut();
     bool rogner();
     bool pipette();
@@ -92,7 +91,6 @@ private:
     QAction *actionRedimensionner;
     QAction *actionFiltre;
     QAction *actionContours;
-    QAction *actionRedimIntell;
     QAction *actionGrabCut;
     QAction *actionRogner;
     QAction *actionPipette;
