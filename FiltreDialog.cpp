@@ -1,5 +1,5 @@
 #include "FiltreDialog.h"
-
+#include "Calcul.h"
 
 FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
@@ -128,31 +128,12 @@ void FiltreDialog::updateViewer()
         }else{
             cout<<"Il faut remplir toutes les cases !"<<endl;
         }
+        delete noyau;
     }
     if(gradient->isChecked()){
-        Matrix *noyau = new Matrix(3,0);
-        noyau->insert_element(0,0,-1);
-        noyau->insert_element(0,1,0);
-        noyau->insert_element(0,2,1);
-        noyau->insert_element(1,0,-2);
-        noyau->insert_element(1,1,0);
-        noyau->insert_element(1,2,2);
-        noyau->insert_element(2,0,-1);
-        noyau->insert_element(2,1,0);
-        noyau->insert_element(2,2,1);
-        c.setNoyau(noyau);
-        c.convolution(apercu);
-        noyau->insert_element(0,0,1);
-        noyau->insert_element(0,1,2);
-        noyau->insert_element(0,2,1);
-        noyau->insert_element(1,0,0);
-        noyau->insert_element(1,1,0);
-        noyau->insert_element(1,2,0);
-        noyau->insert_element(2,0,-1);
-        noyau->insert_element(2,1,-2);
-        noyau->insert_element(2,2,-1);
-        c.setNoyau(noyau);
-        c.convolution(apercu);
+       QImage *tmp = Calcul::normeDuGradient(apercu);
+       delete apercu;
+       apercu = tmp;
     }
     display(apercu);
     ok_clicked = true;
