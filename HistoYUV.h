@@ -14,6 +14,8 @@ public:
     void etalement(Couple c);
     void etalement();
     void egalisation();
+
+    int *getY();
 };
 
 #endif // HISTOYUV_H

@@ -19,7 +19,6 @@ public:
 
     void initDelimitation(Couple c);
 
-
 };
 
 #endif // HISTORGB_H

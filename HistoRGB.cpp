@@ -1,4 +1,6 @@
 #include "HistoRGB.h"
+#include <QImage>
+#include <QPixmap>
 
 HistoRGB::HistoRGB(QImage *img) : Histogramme(img)
 {
@@ -9,13 +11,6 @@ void HistoRGB::etalement(Couple c)
 {
     QRgb pixel;
     float gris;
-
-    for(int j = 0; j < 255; j++)
-    {
-        composantes[0][j]=0;
-        composantes[1][j]=0;
-        composantes[2][j]=0;
-    }
     for(int i = 0; i < img->width(); i++)
     {
         for(int j = 0; j < img->height(); j++)
@@ -40,15 +35,21 @@ void HistoRGB::etalement()
     QRgb pixel;
     float rouge, vert, bleu;
     Couple cRouge = getDelimitation(composantes[0]), cVert = getDelimitation(composantes[1]), cBleu = getDelimitation(composantes[2]);
-    for(int i = 0; i < img->width(); i++)
+    if(gris)
     {
-        for(int j = 0; j < img->height(); j++)
+        etalement(cRouge);
+    }
+    else
+    {
+        for(int i = 0; i < img->width(); i++)
         {
-            pixel = img->pixel(i,j);
-            rouge = 255*(qRed(pixel)-cRouge.deb)/((double)(cRouge.fin-cRouge.deb));
-            vert = 255*(qGreen(pixel)-cVert.deb)/((double)(cVert.fin-cVert.deb));
-            bleu = 255*(qBlue(pixel)-cBleu.deb)/((double)(cBleu.fin-cBleu.deb));
-            /*if(rouge>255)
+            for(int j = 0; j < img->height(); j++)
+            {
+                pixel = img->pixel(i,j);
+                rouge = 255*(qRed(pixel)-cRouge.deb)/((double)(cRouge.fin-cRouge.deb));
+                vert = 255*(qGreen(pixel)-cVert.deb)/((double)(cVert.fin-cVert.deb));
+                bleu = 255*(qBlue(pixel)-cBleu.deb)/((double)(cBleu.fin-cBleu.deb));
+                /*if(rouge>255)
             {
                 rouge = 255;
             }
@@ -72,14 +73,33 @@ void HistoRGB::etalement()
             {
                 bleu = 0;
             }*/
-            img->setPixel(i,j,qRgba(rouge,vert,bleu,qAlpha(pixel)));
+                img->setPixel(i,j,qRgba(rouge,vert,bleu,qAlpha(pixel)));
+            }
         }
     }
 }
 
 void HistoRGB::egalisation()
 {
-
+    QRgb pixel;
+    float transformation[256];
+    float constante = 255.0/((float)(img->width()*img->height()));
+    int somme = 0;
+    int tmp;
+    for(int i = 0; i < 256; i++)
+    {
+        somme+=composantes[0][i];
+        transformation[i] = constante*somme;
+    }
+    for(int i = 0; i < img->width(); i++)
+    {
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
+            tmp = transformation[qRed(pixel)];
+            img->setPixel(i,j,qRgba(tmp,tmp,tmp,qAlpha(pixel)));
+        }
+    }
 }
 
 void HistoRGB::afficherLignes()

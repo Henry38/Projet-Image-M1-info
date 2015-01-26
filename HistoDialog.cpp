@@ -1,6 +1,4 @@
 #include "HistoDialog.h"
-#include <QLabel>
-#include <QPixmap>
 #include <qpoint.h>
 #include "couple.h"
 
@@ -73,7 +71,6 @@ HistoDialog::~HistoDialog()
 void HistoDialog::afficherLignesRGB()
 {
     RGB = true;
-    choixOperation.setVisible(true);
     if(operation == 0)
     {
         histoRGB.afficheHisto();
@@ -107,7 +104,6 @@ void HistoDialog::afficherLignesYUV()
     {
         etalement();
     }
-    choixOperation.setVisible(false);
 }
 
 void HistoDialog::updateViewer()
@@ -128,11 +124,32 @@ void HistoDialog::acceptDialog()
 
 void HistoDialog::egalisation()
 {
+    Histogramme *h;
     if(operation == 1 || operation == 2)
     {
-        histoRGB.setImg(img);
+        histoRGB.reset(img);
+        histoYUV.reset(img);
     }
     operation = 1;
+    if(RGB)
+    {
+        h = &histoRGB;
+        if(histoRGB.gray())
+        {
+            histoRGB.egalisation();
+        }
+    }
+    else
+    {
+        h = &histoRGB;
+        if(histoRGB.gray())
+        {
+            histoRGB.egalisation();
+        }
+    }
+    h->afficheHisto();
+    h->afficherLignes();
+    conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
 }
 
 void HistoDialog::etalement()
@@ -140,28 +157,20 @@ void HistoDialog::etalement()
     Histogramme *h;
     if(operation == 1 || operation == 2)
     {
-        histoRGB.setImg(img);
-        histoYUV.setImg(img);
+        histoRGB.reset(img);
+        histoYUV.reset(img);
     }
     operation = 2;
     if(RGB)
     {
         h = &histoRGB;
-        if(histoRGB.gray())
-        {
-            Couple c = histoRGB.getDelimitation(histoRGB.getRouge());
-            histoRGB.etalement(c);
-
-        }
-        else
-        {
-            histoRGB.etalement();
-        }
+        histoRGB.etalement();
     }
     else
     {
         h = &histoYUV;
-        histoYUV.etalement();
+        Couple c = histoYUV.getDelimitation(histoYUV.getY());
+        histoYUV.etalement(c);
     }
     h->afficheHisto();
     h->afficherLignes();

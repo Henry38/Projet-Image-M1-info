@@ -60,13 +60,12 @@ void HistoYUV::compterPixel()
     }
 }
 
-void HistoYUV::etalement()
+void HistoYUV::etalement(Couple cY)
 {
     QRgb pixel;
     float Y, U, V;
+    float Yfin, Ufin, Vfin;
     float tmp;
-    Couple cY = getDelimitation(composantes[0]), cU = getDelimitation(composantes[1]), cV = getDelimitation(composantes[2]);
-    std::cout<< "cYdeb : " << cY.deb << "cYfin : " << cY.fin << "cU.deb : " << cU.deb << "cU.fin : " << cU.fin  << "cV.deb : " << cV.deb  << "cV.fin : " << cV.fin<< std::endl;
     for(int i = 0; i < img->width(); i++)
     {
         for(int j = 0; j < img->height(); j++)
@@ -74,44 +73,38 @@ void HistoYUV::etalement()
             pixel = img->pixel(i,j);
             tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
             Y = 255*(tmp-cY.deb)/((double)(cY.fin-cY.deb));
-            U = 255*(0.492*(qBlue(pixel)-tmp)-cU.deb)/((double)(cU.fin-cU.deb));
-            V = 255*(0.877*(qRed(pixel)-tmp)-cV.deb)/((double)(cV.fin-cV.deb));
-            std::cout<< "Y : " << Y << " U : " << U << " V : " << V  << std::endl;
-            /*if(rouge>255)
+            U = 0.492*(qBlue(pixel)-tmp);
+            V = 0.877*(qRed(pixel)-tmp);
+            Yfin = Y+1.13983*V;
+            Ufin = Y-0.39465*U-0.58060*V;
+            Vfin = Y+2.03211*U;
+            if(Ufin > 255)
             {
-                rouge = 255;
+                Ufin = 255;
             }
-            else if(rouge < 0)
+            else if(Ufin < 0)
             {
-                rouge = 0;
+                Ufin = 0;
             }
-            if(vert>255)
+            if(Vfin > 255)
             {
-                vert = 255;
+                Vfin = 255;
             }
-            else if(vert < 0)
+            else if(Vfin < 0)
             {
-                vert = 0;
+                Vfin = 0;
             }
-            if(bleu>255)
-            {
-                bleu = 255;
-            }
-            else if(bleu < 0)
-            {
-                bleu = 0;
-            }*/
-            img->setPixel(i,j,qRgba(Y+1.13983*V,Y-0.39465*U-0.58060*V,Y+2.03211*U,qAlpha(pixel)));
+            img->setPixel(i,j,qRgba(Yfin,Ufin,Vfin,qAlpha(pixel)));
         }
     }
-}
-
-void HistoYUV::etalement(Couple c)
-{
-
 }
 
 void HistoYUV::egalisation()
 {
 
+}
+
+int *HistoYUV::getY()
+{
+    return composantes[0];
 }

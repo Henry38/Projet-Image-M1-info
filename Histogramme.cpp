@@ -129,14 +129,18 @@ QImage *Histogramme::getImg()
 
 void Histogramme::setImg(QImage * image)
 {
-    delete img;
-    img = new QImage();
     *img = (image->copy(0,0,image->width(),image->height()));
 }
 
 int *Histogramme::getRouge()
 {
     return composantes[0];
+}
+
+void Histogramme::reset(QImage *img)
+{
+    setImg(img);
+    compterPixel();
 }
 
 

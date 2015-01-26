@@ -26,7 +26,10 @@ public:
 
     int *getRouge();
 
+    void reset(QImage *img);
+
 protected:
+
     QImage *img;
 
     bool gris;
