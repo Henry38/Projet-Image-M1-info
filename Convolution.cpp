@@ -374,7 +374,6 @@ void Convolution::convolutionGradient(QImage* image,Matrix* noyau){
                 valAbs1 = qAbs(somme1);
                 valAbs2 = qAbs(somme2);
 
-                int a = sqrt((somme1*somme1+somme2*somme2));
                 imageCopie.setPixel(x, y,qRgb(somme1+somme2,somme1+somme2,somme1+somme2));
             }
         }

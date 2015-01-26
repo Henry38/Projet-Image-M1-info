@@ -14,6 +14,7 @@
 #include <QShortcut>
 #include <QRectF>
 #include "Calcul.h"
+
 using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
@@ -330,52 +331,51 @@ bool myWindow::grabCut()
 {
     actionRogner->setEnabled(false);
     ui->graphicsView->cacherSelect();
+
     if(ui->graphicsView->getPret()){
 
-    /*Tab temp à ne pas modifier tt que sur mme image*/
-    Mat bgdModel = *(new Mat());
-    Mat fgdModel= *(new Mat());
-    /*nb d'iter de l'algo avt de rvoyer le res*/
-    int iterCount =1;
-    const string name= filename.toStdString();
-    /*image*/
-   // Mat  im( img->height(), img->width(), CV_8UC3, const_cast<uchar*>(img->bits()), img->bytesPerLine() );
-   // im = true ? im.clone() : im;
-    //Mat im( img->height(), img->width(), CV_8UC4, const_cast<uchar*>(img->bits()), img->bytesPerLine() );
+        /*Tab temp à ne pas modifier tt que sur mme image*/
+        Mat bgdModel = *(new Mat());
+        Mat fgdModel= *(new Mat());
+        /*nb d'iter de l'algo avt de rvoyer le res*/
+        int iterCount =1;
+        /*sauvegarde une copie de l'image*/
+        QString extension = "copie.jpg";
+        QString nom = QString::fromStdString(filename.toStdString()) + extension;
+        save(nom);
+        const string name  = nom.toStdString();
+        /*ouvre la copie*/
+        Mat im = cv::imread(name,1);
+        /*supprimer copie*/
+        QFile::remove(nom);
 
-    //im= true ? im.clone() : im;
+        /*masque*/
+        Mat mask;
+        mask.create( im.size(), CV_8UC1);
+        /*ROI : region of interest*/
+        QPoint HG = ui->graphicsView->getHG();
+        QPoint BD = ui->graphicsView->getBD();
+        Calcul::recadrer(img,&HG,&BD);
 
-    //Mat im = QImageToCvMat( *img, true );
-    Mat im = cv::imread(name,1);
-    /*masque*/
-    Mat mask;
-    mask.create( im.size(), CV_8UC1);
-    /*ROI : region of interest*/
+        /*Si selection dépasse de l'image*/
+        Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+        ui->graphicsView->cacherSelect();
+        ui->graphicsView->setPret(false);
 
-       QPoint HG = ui->graphicsView->getHG();
-       QPoint BD = ui->graphicsView->getBD();
-       Calcul::recadrer(img,&HG,&BD);
-       /*Si selection dépasse de l'image*/
-
-       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
-       ui->graphicsView->cacherSelect();
-       ui->graphicsView->setPret(false);
         /*rect : selection*/
         cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+
         /*fait le decoupage*/
         compare(mask,GC_PR_FGD,mask,CMP_EQ);
 
-
+        /*affichage*/
         Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
         im.copyTo(fgd,mask);
-        //im.copyTo(fgdModel,mask);
 
+        /*MatToQImage*/
         QImage image( fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB888 );
-       //  QImage image( fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB32 );
         image = image.rgbSwapped();
         img = new QImage(image);
-        cv::imshow("Resultat",fgd);
-        //img = image;
         repeindre();
         return true;
 
@@ -621,42 +621,3 @@ bool myWindow::coller(){
     /*remplacer avec copie là où pointeur de souris*/
     return true;
 }
-
-inline cv::Mat myWindow::QImageToCvMat( const QImage &inImage, bool inCloneImageData)
-  {
-     switch ( inImage.format() )
-     {
-        // 8-bit, 4 channel
-        case QImage::Format_RGB32:
-        {
-           cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC4, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
-
-           return (inCloneImageData ? mat.clone() : mat);
-        }
-
-        // 8-bit, 3 channel
-        case QImage::Format_RGB888:
-        {
-           if ( !inCloneImageData )
-              qWarning() << "ASM::QImageToCvMat() - Conversion requires cloning since we use a temporary QImage";
-
-           QImage   swapped = inImage.rgbSwapped();
-
-           return cv::Mat( swapped.height(), swapped.width(), CV_8UC3, const_cast<uchar*>(swapped.bits()), swapped.bytesPerLine() ).clone();
-        }
-
-        // 8-bit, 1 channel
-        case QImage::Format_Indexed8:
-        {
-           cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC1, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
-
-           return (inCloneImageData ? mat.clone() : mat);
-        }
-
-        default:
-           qWarning() << "ASM::QImageToCvMat() - QImage format not handled in switch:" << inImage.format();
-           break;
-     }
-
-     return cv::Mat();
-  }

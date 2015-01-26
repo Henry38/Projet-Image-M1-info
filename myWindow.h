@@ -47,8 +47,6 @@ public:
     bool save(QString url);
     void initMenu();
     void initBarreOutils();
-    bool estDansImage();
-    inline cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = true );
 
 public slots:
     // Slot du menu

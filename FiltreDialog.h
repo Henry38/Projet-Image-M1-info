@@ -23,9 +23,10 @@ class FiltreDialog : public AbstractDialog {
 public:
     FiltreDialog(QImage*);
     ~FiltreDialog();
-
 public slots:
     void changerMatricePerso(int);
+    void cacherMatrice();
+    void changerMatrice();
 
 private:
     QLabel *text;

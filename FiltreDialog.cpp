@@ -17,37 +17,44 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     spinBox->setMaximum(valMax); //a definir
     QSpinBox::connect(spinBox,SIGNAL(valueChanged(int)),this,SLOT(changerMatricePerso(int)));
 
-    QValidator *validator = new QIntValidator(-999, 999, this);
+    QDoubleValidator *validator = new QDoubleValidator(-99.99,99.99,2,this);
+    validator->setNotation(QDoubleValidator::StandardNotation);
 
     matP =  new QLineEdit**[valMax];
     for(int i=0;i<valMax;i++){
         matP[i] = new QLineEdit*[valMax];
        for(int j=0;j<valMax;j++){
          matP[i][j] = new QLineEdit(this);
+         matP[i][j]->setText("0");
          matP[i][j]->setValidator(validator);
          matP[i][j]->setFixedWidth(30);
          matP[i][j]->move(450+31*j,50+31*i);
         }
     }
     dimMatP = valMax;
+    cacherMatrice();
 
     gridLayout = new QGridLayout(this);
 
     moyenneur = new QRadioButton(this);
     moyenneur->setText("moyenneur");
     moyenneur->move(291,80);
+    QRadioButton::connect(moyenneur,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
     gaussien = new QRadioButton(this);
     gaussien->setText("gaussien");
     gaussien->move(291,110);
+    QRadioButton::connect(gaussien,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
     median = new QRadioButton(this);
     median->setText("median");
     median->move(291,140);
+    QRadioButton::connect(median,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
     personnalise = new QRadioButton(this);
     personnalise->setText("perso");
     personnalise->move(291,170);
+    QRadioButton::connect(personnalise,SIGNAL(clicked()),this,SLOT(changerMatrice()));
 
    // QPushButton *ok = new QPushButton();
 
@@ -55,6 +62,7 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     gradient = new QRadioButton(this);
     gradient->setText("gradient");
     gradient->move(291,200);
+    QRadioButton::connect(gradient,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 /*
 
     sobel = new QRadioButton(this);
@@ -156,6 +164,9 @@ void FiltreDialog::changerMatricePerso(int b){
                         matP[i][j]->setVisible(false);
                     }
                 }else{
+                    for(int j=0;j<spinBox->value();j++){
+                        matP[i][j]->setVisible(true);
+                    }
                     for(int j=spinBox->value();j<dimMatP;j++){
                         matP[i][j]->setVisible(false);
                     }
@@ -168,6 +179,9 @@ void FiltreDialog::changerMatricePerso(int b){
                         matP[i][j]->setVisible(true);
                     }
                 }else{
+                    for(int j=0;j<dimMatP;j++){
+                        matP[i][j]->setVisible(true);
+                    }
                     for(int j=dimMatP;j<spinBox->value();j++){
                         matP[i][j]->setVisible(true);
                     }
@@ -176,5 +190,21 @@ void FiltreDialog::changerMatricePerso(int b){
         }
         dimMatP = spinBox->value();
     }
-    repaint();
+}
+
+
+void FiltreDialog::cacherMatrice(){
+    for(int i=0;i < valMax;i++){
+        for(int j=0;j<valMax;j++){
+            matP[i][j]->setVisible(false);
+        }
+    }
+}
+
+void FiltreDialog::changerMatrice(){
+    for(int i=0;i < spinBox->value();i++){
+        for(int j=0;j<spinBox->value();j++){
+            matP[i][j]->setVisible(true);
+        }
+    }
 }
