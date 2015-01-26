@@ -5,15 +5,15 @@
 #include "FiltreDialog.h"
 #include "HistoDialog.h"
 #include <QPixmap>
-
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
+/*
+#include <highgui.h>
+#include <cv.h>
+*/
 #include <QKeyEvent>
 #include <QShortCut>
 #include <QRectF>
 #include "Calcul.h"
-using namespace cv;
+//using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
@@ -105,7 +105,6 @@ bool myWindow::open(QString url)
             img->convertToFormat(QImage::Format_RGB32);
         }
 
-        pileAnnuler->empty();
         repeindre();
         return true;
     }
@@ -380,7 +379,7 @@ bool myWindow::grabCut()
 //    int iterCount =1;
 //    const string name= filename.toStdString();
 //    /*image*/
-//    Mat im = cv::imread(name,1);
+//    Mat im = imread(name,1);
 //    /*masque*/
 //    Mat mask;
 //    mask.create( im.size(), CV_8UC1);
@@ -405,12 +404,12 @@ bool myWindow::grabCut()
 //        //im.copyTo(fgdModel,mask);
 
 //        cv::imshow("test5",fgd);
-//        img = image;
+//        //img = image;
 //        repeindre();
         return true;
 
 //   }else{
-//       return false;
+     //  return false;
 //   }
 }
 

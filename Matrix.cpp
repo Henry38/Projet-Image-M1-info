@@ -153,11 +153,6 @@ void Matrix::agrandir(int n){
 
 }
 
-void Matrix::remplirMedian(){
-    Matrix* noyau = new Matrix(2,1);
-
-}
-
 bool Matrix::estPaire(){
     return (getSize()%2 == 0);
 }
