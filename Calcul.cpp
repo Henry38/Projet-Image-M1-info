@@ -479,11 +479,6 @@ void Calcul::lessImportantVerticalPath(QImage *imgEnergie, QVector<int> *vect) {
         }
     }
 
-<<<<<<< HEAD
-    float min = table[0][height-1];
-    int indexMin = 0;
-    int indexMin2;
-=======
     for (int y=height-1; y>=0; y--) {
         vect->append(indexMin);
         indexMin += indice[indexMin][y];
@@ -508,7 +503,6 @@ void Calcul::lessImportantHorizontalPath(QImage *imgEnergie, QVector<int> *vect)
     }
 
     // Remplissage de la table et des indices
->>>>>>> 7e4b557155767012a5317f4d581451e651b1db5b
     for (int x=1; x<width; x++) {
         for (int y=0; y<height; y++) {
             pixel = imgEnergie->pixel(x, y);
