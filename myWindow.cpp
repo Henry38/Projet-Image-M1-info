@@ -10,7 +10,7 @@
 #include <opencv/highgui.h>
 
 #include <QKeyEvent>
-#include <QShortCut>
+#include <QShortcut>
 #include <QRectF>
 #include "Calcul.h"
 using namespace cv;

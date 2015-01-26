@@ -6,7 +6,7 @@
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
 
-    myWindow fen("../Projet-Image-M1-info/ressources/castle_orig_power.png");
+    myWindow fen("../Projet-Image-M1-info/ressources/Montagne.jpg");
     //myWindow fen;
     fen.show();
 
