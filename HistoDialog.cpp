@@ -2,7 +2,7 @@
 #include <qpoint.h>
 #include "couple.h"
 
-HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),histoYUV(img), histoRGB(img), conteneurHisto(this), choixCouleur(this), choixOperation(this)
+HistoDialog::HistoDialog(QImage *img) : AbstractDialog(),  choixCouleur(this), choixOperation(this),conteneurHisto(this), histoRGB(img),histoYUV(img)
 {
     histoRGB.afficheHisto();
     histoRGB.afficherLignes();
@@ -145,6 +145,8 @@ void HistoDialog::egalisation()
         if(histoYUV.gray())
         {
             histoYUV.egalisation();
+            histoRGB.egalisation();
+            histoYUV.setImg(histoRGB.getImg());
         }
     }
     h->afficheHisto();
