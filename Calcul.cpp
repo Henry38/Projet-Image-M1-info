@@ -630,61 +630,40 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
     return imgArrivee;
 }
 
-QImage* Calcul::zoneDeDensite(QImage *imgDepart) {
-    QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
-    QRgb pixel, tmp;
+QImage* Calcul::normeDuGradient(QImage *imgDepart) {
+    QImage *imgArrivee = imageEnNiveauDeGris(imgDepart);
+    Matrix *noyau1 = new Matrix(3,0);
+    Convolution c;
+    noyau1->insert_element(0,0,-1);
+    noyau1->insert_element(0,1,0);
+    noyau1->insert_element(0,2,1);
+    noyau1->insert_element(1,0,-2);
+    noyau1->insert_element(1,1,0);
+    noyau1->insert_element(1,2,2);
+    noyau1->insert_element(2,0,-1);
+    noyau1->insert_element(2,1,0);
+    noyau1->insert_element(2,2,1);
+    c.setNoyau(noyau1);
+    c.convolution(imgArrivee);
 
-    int somme;
-    int min = 765;
-    int max = 0;
-    //std::cout << qAbs(-1) << std::endl;
+    Matrix* noyau2 = noyau1->copie();
+    noyau2->insert_element(0,0,-1);
+    noyau2->insert_element(0,1,-2);
+    noyau2->insert_element(0,2,-1);
+    noyau2->insert_element(1,0,0);
+    noyau2->insert_element(1,1,0);
+    noyau2->insert_element(1,2,0);
+    noyau2->insert_element(2,0,1);
+    noyau2->insert_element(2,1,2);
+    noyau2->insert_element(2,2,1);
 
-    Matrix *m = new Matrix(imgDepart->width(), imgDepart->height());
-    /*m->insert_element(0,0,1);
-    m->insert_element(0,1,2);
-    m->insert_element(0,2,1);
-    m->insert_element(1,0,0);
-    m->insert_element(1,1,0);
-    m->insert_element(1,2,0);
-    m->insert_element(2,0,-1);
-    m->insert_element(2,1,-2);
-    m->insert_element(2,2,-1);*/
-
-    for (int x=0; x<imgArrivee->width(); x++) {
-        for (int y=0; y<imgArrivee->height(); y++) {
-            pixel = imgDepart->pixel(x, y);
-
-            somme = 0;
-            for (int i=x-1; i<=x+1; i++) {
-                for (int j=x-1; j<=x+1; j++) {
-                    if (i >= 0 && i < imgArrivee->width() && j >= 0 && j < imgArrivee->height()) {
-                        tmp = imgDepart->pixel(i, j);
-                        somme += qAbs(qRed(pixel) - qRed(tmp));
-                        somme += qAbs(qGreen(pixel) - qGreen(tmp));
-                        somme += qAbs(qBlue(pixel) - qBlue(tmp));
-                    }
-                }
-            }
-            if (min > somme) {
-                min = somme;
-            }
-            if (max < somme) {
-                max = somme;
-            }
-            m->insert_element(x, y, somme);
-            //imgArrivee->setPixel(x, y, qRgba(somme, somme, somme, 255));
-            //std::cout << qRed(imgArrivee->pixel(x, y)) << std::endl;
-        }
-    }
-
-    int res;
-    for (int x=0; x<imgArrivee->width(); x++) {
-        for (int y=0; y<imgArrivee->height(); y++) {
-            res = (int) ((((float) (m->get_element(x, y) - min)) / ((float) (max - min))) * 255.0);
-
-            imgArrivee->setPixel(x, y, qRgba(res, res, res, 255));
-        }
-    }
+    QImage *imgArrivee2 = imageEnNiveauDeGris(imgDepart);
+    c.setNoyau(noyau2);
+    c.convolution(imgArrivee2);
+    //c.convolutionGradient(imgArrivee,noyau2);
+    c.sommeImage(imgArrivee,imgArrivee2);
+    delete noyau1;
+    delete noyau2;
 
     return imgArrivee;
 }

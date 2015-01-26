@@ -14,7 +14,7 @@ public:
     static QImage* redimensionnementEnHauteur(QImage*, int);
     static QImage* redimensionnementIntellEnLargeur(QImage*, int);
     static QImage* redimensionnementIntellEnHauteur(QImage*, int);
-    static QImage* zoneDeDensite(QImage*);
+    static QImage* normeDuGradient(QImage*);
     static QVector<float> getYUV(QRgb);
     static float niveauDeGris(QRgb);
     static void recadrer(QImage*,QPoint*,QPoint*);
