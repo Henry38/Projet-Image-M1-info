@@ -8,6 +8,7 @@
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
 
 #include <QKeyEvent>
 #include <QShortcut>
@@ -41,16 +42,6 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-}
-
-bool myWindow::redimensionnementIteractif(QRect rect) {
-    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
-    delete img;
-    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
-    delete tmp;
-    repeindre();
-
-    return true;
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -195,6 +186,8 @@ void myWindow::initBarreOutils()
     QObject::connect(ui->actionRedimensionIntell,SIGNAL(triggered()),this,SLOT(redimensionIntellMode()));
 
     QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnLargeur(QRect)), this, SLOT(redimensionnementIntellEnLargeurIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnHauteur(QRect)), this, SLOT(redimensionnementIntellEnHauteurIteractif(QRect)));
 
 //    actionAnnuler = new QAction("&Annuler",this);
 //    actionAnnuler->setShortcut(QKeySequence("Ctrl+Z"));
@@ -264,23 +257,11 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-    QRgb pixel;
-    int i, j;
-    float tmp;
-    int h = img->height();
-    int w = img->width();
-    for(i = 0; i < w; i++)
-    {
-        for(j = 0; j < h; j++)
-        {
-            pixel = img->pixel(i, j);
-            tmp = Calcul::getYUV(pixel).at(0);
-            //tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
-            pixel = qRgba(tmp, tmp, tmp, qAlpha(pixel));
-            img->setPixel(i, j, pixel);
-        }
-    }
+    QImage *tmp = Calcul::imageEnNiveauDeGris(img);
+    delete img;
+    img = tmp;
     repeindre();
+
     return true;
 }
 
@@ -332,86 +313,75 @@ bool myWindow::filtre()
 
 bool myWindow::contours()
 {
-    Convolution c;
-   c.redimensionnerMatrix(3,0);
-
-   Matrix *noyau = new Matrix(3,0);
-   noyau->insert_element(0,0,0);
-    noyau->insert_element(0,1,-1);
-    noyau->insert_element(0,2,0);
-   noyau->insert_element(1,0,-1);
-   noyau->insert_element(1,1,5);
-   noyau->insert_element(1,2,-1);
-    noyau->insert_element(2,0,0);
-   noyau->insert_element(2,1,-1);
-    noyau->insert_element(2,2,0);
-    c.setNoyau(noyau);
-/*
-    c.modifierCaseMatrix(0,1,1);
-    c.modifierCaseMatrix(2,1,1);
-    c.modifierCaseMatrix(1,0,1);
-    c.modifierCaseMatrix(2,2,1);
-    c.modifierCaseMatrix(1,1,-4);*/
-    c.convolution(img);
+    QImage *tmp = Calcul::contour(img);
+    delete img;
+    img = tmp;
     repeindre();
+
     return true;
 }
 
 bool myWindow::redimIntell()
 {
-    QImage *tmp = Calcul::chemin(img);
-    //delete img;
-    //img = tmp;
-    repeindre();
-
     return true;
 }
 
 bool myWindow::grabCut()
 {
-//    actionRogner->setEnabled(false);
-//    ui->graphicsView->cacherSelect();
-//    if(ui->graphicsView->getPret()){
+    actionRogner->setEnabled(false);
+    ui->graphicsView->cacherSelect();
+    if(ui->graphicsView->getPret()){
 
-//    /*Tab temp à ne pas modifier tt que sur mme image*/
-//    Mat bgdModel = *(new Mat());
-//    Mat fgdModel= *(new Mat());
-//    /*nb d'iter de l'algo avt de rvoyer le res*/
-//    int iterCount =1;
-//    const string name= filename.toStdString();
-//    /*image*/
-//    Mat im = cv::imread(name,1);
-//    /*masque*/
-//    Mat mask;
-//    mask.create( im.size(), CV_8UC1);
-//    /*ROI : region of interest*/
+    /*Tab temp à ne pas modifier tt que sur mme image*/
+    Mat bgdModel = *(new Mat());
+    Mat fgdModel= *(new Mat());
+    /*nb d'iter de l'algo avt de rvoyer le res*/
+    int iterCount =1;
+    const string name= filename.toStdString();
+    /*image*/
+   // Mat  im( img->height(), img->width(), CV_8UC3, const_cast<uchar*>(img->bits()), img->bytesPerLine() );
+   // im = true ? im.clone() : im;
+    //Mat im( img->height(), img->width(), CV_8UC4, const_cast<uchar*>(img->bits()), img->bytesPerLine() );
 
-//       QPoint HG = ui->graphicsView->getHG();
-//       QPoint BD = ui->graphicsView->getBD();
-//       Calcul::recadrer(img,&HG,&BD);
-//       /*Si selection dépasse de l'image*/
+    //im= true ? im.clone() : im;
 
-//       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
-//       ui->graphicsView->cacherSelect();
-//       ui->graphicsView->setPret(false);
-//        /*rect : selection*/
-//        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
-//        /*fait le decoupage*/
-//        compare(mask,GC_PR_FGD,mask,CMP_EQ);
+    //Mat im = QImageToCvMat( *img, true );
+    Mat im = cv::imread(name,1);
+    /*masque*/
+    Mat mask;
+    mask.create( im.size(), CV_8UC1);
+    /*ROI : region of interest*/
+
+       QPoint HG = ui->graphicsView->getHG();
+       QPoint BD = ui->graphicsView->getBD();
+       Calcul::recadrer(img,&HG,&BD);
+       /*Si selection dépasse de l'image*/
+
+       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+       ui->graphicsView->cacherSelect();
+       ui->graphicsView->setPret(false);
+        /*rect : selection*/
+        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+        /*fait le decoupage*/
+        compare(mask,GC_PR_FGD,mask,CMP_EQ);
 
 
-//        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
-//        im.copyTo(fgd,mask);
-//        //im.copyTo(fgdModel,mask);
+        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+        im.copyTo(fgd,mask);
+        //im.copyTo(fgdModel,mask);
 
-//        cv::imshow("test5",fgd);
-//        img = image;
-//        repeindre();
+        QImage image( fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB888 );
+       //  QImage image( fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB32 );
+        image = image.rgbSwapped();
+        img = new QImage(image);
+        cv::imshow("Resultat",fgd);
+        //img = image;
+        repeindre();
         return true;
 
-//   }else{
-//       return false;
-//   }
+   }else{
+       return false;
+   }
 }
 
 /* rogne la selection de l'image*/
@@ -437,6 +407,35 @@ bool myWindow::rogner()
     }else{
         return false;
     }
+}
+
+/*redimensionne l'image a la taille du rectangle*/
+bool myWindow::redimensionnementIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
+    delete img;
+    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    delete tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
+    delete img;
+    img = tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.height());
+    delete img;
+    img = tmp;
+    repeindre();
+
+    return true;
 }
 
 bool myWindow::selection()
@@ -622,3 +621,42 @@ bool myWindow::coller(){
     /*remplacer avec copie là où pointeur de souris*/
     return true;
 }
+
+inline cv::Mat myWindow::QImageToCvMat( const QImage &inImage, bool inCloneImageData)
+  {
+     switch ( inImage.format() )
+     {
+        // 8-bit, 4 channel
+        case QImage::Format_RGB32:
+        {
+           cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC4, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
+
+           return (inCloneImageData ? mat.clone() : mat);
+        }
+
+        // 8-bit, 3 channel
+        case QImage::Format_RGB888:
+        {
+           if ( !inCloneImageData )
+              qWarning() << "ASM::QImageToCvMat() - Conversion requires cloning since we use a temporary QImage";
+
+           QImage   swapped = inImage.rgbSwapped();
+
+           return cv::Mat( swapped.height(), swapped.width(), CV_8UC3, const_cast<uchar*>(swapped.bits()), swapped.bytesPerLine() ).clone();
+        }
+
+        // 8-bit, 1 channel
+        case QImage::Format_Indexed8:
+        {
+           cv::Mat  mat( inImage.height(), inImage.width(), CV_8UC1, const_cast<uchar*>(inImage.bits()), inImage.bytesPerLine() );
+
+           return (inCloneImageData ? mat.clone() : mat);
+        }
+
+        default:
+           qWarning() << "ASM::QImageToCvMat() - QImage format not handled in switch:" << inImage.format();
+           break;
+     }
+
+     return cv::Mat();
+  }

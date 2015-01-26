@@ -45,4 +45,14 @@ FORMS += \
 
 RESOURCES = Images.qrc
 
+INCLUDEPATH += "usr\include\opencv"
+
+LIBS += -L"usr\lib" \
+ -lopencv_core \
+ -lopencv_highgui \
+ -lopencv_imgproc \
+ -lopencv_features2d \
+ -lopencv_calib3d \
+ -lopencv_objdetect \
+ -lopencv_ml
 

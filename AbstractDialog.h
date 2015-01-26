@@ -16,17 +16,17 @@ class AbstractDialog : public QDialog {
     Q_OBJECT
 
 public:
+    // Methodes
     AbstractDialog();
     ~AbstractDialog();
     void display(QImage*);
-
     QPoint getOKAnnuler();
     QScrollArea *getScrollArea();
-    //QScrollArea* getViewer();
 
 private:
+    // Attributs
     QLabel *label;
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);  // inutile ?
 
 
 public slots:

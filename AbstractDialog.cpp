@@ -28,6 +28,7 @@ AbstractDialog::~AbstractDialog() {
     delete label;
 }
 
+/*affiche la QImage dans le QScrollArea*/
 void AbstractDialog::display(QImage *img) {
     label->setPixmap(QPixmap::fromImage(*img));
 }
@@ -35,14 +36,12 @@ void AbstractDialog::display(QImage *img) {
 void AbstractDialog::resizeEvent(QResizeEvent *event)
 {
     ui->buttonBox->move(width()-ui->buttonBox->width()-distBordDroit,height()-ui->buttonBox->height()-distBordBas);
-
 }
 
 //retourne la taille des boutons OK et annuler
 QPoint AbstractDialog::getOKAnnuler()
 {
     return QPoint(ui->buttonBox->width(), ui->buttonBox->height());
-
 }
 
 QScrollArea *AbstractDialog::getScrollArea()

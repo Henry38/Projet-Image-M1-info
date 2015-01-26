@@ -141,15 +141,15 @@ void HistoDialog::egalisation()
     }
     else
     {
-        h = &histoRGB;
-        if(histoRGB.gray())
+        h = &histoYUV;
+        if(histoYUV.gray())
         {
-            histoRGB.egalisation();
+            histoYUV.egalisation();
         }
     }
     h->afficheHisto();
     h->afficherLignes();
-    conteneurHisto.setPixmap(QPixmap::fromImage(histoRGB));
+    conteneurHisto.setPixmap(QPixmap::fromImage(*h));
 }
 
 void HistoDialog::etalement()
