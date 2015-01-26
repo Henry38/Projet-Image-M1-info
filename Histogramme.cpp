@@ -104,6 +104,24 @@ void Histogramme::afficherLigne(int pixels[256], Qt::GlobalColor c)
     paint.end();
 }
 
+Couple Histogramme::getDelimitation(int nbPixel[])
+{
+    Couple c;
+    int i = 0;
+    while(nbPixel[i] == 0)
+    {
+        i++;
+    }
+    c.deb = i;
+    i = 255;
+    while(nbPixel[i] == 0)
+    {
+        i--;
+    }
+    c.fin = i;
+    return c;
+}
+
 QImage *Histogramme::getImg()
 {
     return img;
@@ -111,7 +129,18 @@ QImage *Histogramme::getImg()
 
 void Histogramme::setImg(QImage * image)
 {
-    delete img;
-    img = new QImage();
     *img = (image->copy(0,0,image->width(),image->height()));
 }
+
+int *Histogramme::getRouge()
+{
+    return composantes[0];
+}
+
+void Histogramme::reset(QImage *img)
+{
+    setImg(img);
+    compterPixel();
+}
+
+

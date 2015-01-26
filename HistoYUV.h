@@ -2,6 +2,7 @@
 #define HISTOYUV_H
 
 #include "Histogramme.h"
+#include "Couple.h"
 
 class HistoYUV : public Histogramme
 {
@@ -10,7 +11,11 @@ public:
 
     void compterPixel();
     void afficherLignes();
-    void etalement(int v0, int v1, int vMin = 0, int vMax = 255);
+    void etalement(Couple c);
+    void etalement();
+    void egalisation();
+
+    int *getY();
 };
 
 #endif // HISTOYUV_H

@@ -3,6 +3,7 @@
 
 #include "Histogramme.h"
 #include <QImage>
+#include "Couple.h"
 
 class HistoRGB : public Histogramme
 {
@@ -12,7 +13,11 @@ public:
 
     void compterPixel();
     void afficherLignes();
-    void etalement(int v0, int v1, int vMin = 0, int vMax = 255);
+    void etalement(Couple c);
+    void etalement();
+    void egalisation();
+
+    void initDelimitation(Couple c);
 
 };
 

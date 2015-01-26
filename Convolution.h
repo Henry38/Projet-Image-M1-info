@@ -24,6 +24,8 @@ public:
     int getMedianeFromTab(int* tab,int taille);
     int getMediane(int deb,int fin,int taille,QImage*);
     int* trierTableau(int*,int);
+    void convolutionGradient(QImage* image,Matrix* noyau);
+    void sommeImage(QImage* im1,QImage* im2);
 
 
 private:
