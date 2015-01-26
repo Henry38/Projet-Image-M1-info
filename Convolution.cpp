@@ -65,7 +65,9 @@ void Convolution::convolution(QImage *image)
                             sommeR += qRed(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeG += qGreen(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
-                            nbPixel += m.get_element(i+decalage,j+decalage);
+                            if (m.get_element(i+decalage,j+decalage) > 0) {
+                                nbPixel += m.get_element(i+decalage,j+decalage);
+                            }
                         }
                     }
                 }
@@ -99,14 +101,16 @@ void Convolution::convolution(QImage *image)
                             sommeR += qRed(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeG += qGreen(pixel)*m.get_element(i+decalage,j+decalage);
                             sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
-                            nbPixel += m.get_element(i+decalage,j+decalage);
+                            if (m.get_element(i+decalage,j+decalage) > 0) {
+                                nbPixel += m.get_element(i+decalage,j+decalage);
+                            }
                         }
                     }
                 }
                 if (nbPixel != 0) {
-                    sommeR/=nbPixel;
-                    sommeG/=nbPixel;
-                    sommeB/=nbPixel;
+                    sommeR/=nbPixel/2;
+                    sommeG/=nbPixel/2;
+                    sommeB/=nbPixel/2;
                 }
                 ajusterCouleur(&sommeR);
                 ajusterCouleur(&sommeG);
@@ -284,4 +288,107 @@ int* Convolution::trierTableau(int* tab,int taille){
     }
     return tab;
 
+}
+
+/*Somme des coefficient de 2 images de meme dimension*/
+void Convolution::convolutionGradient(QImage* image,Matrix* noyau){
+    int somme1;
+    int somme2;
+    int nbPixel1;
+    int nbPixel2;
+    int valAbs1;
+    int valAbs2;
+    QRgb pixel;
+    QImage imageCopie(*image);
+    retournerMatrix();
+    if(m.estPaire()){
+        int decalage = m.getSize()/2;
+        for(int x = 0; x < image->width(); x++)
+        {
+            for(int y = 0; y < image->height(); y++)
+            {
+                somme1= 0;
+                somme2 = 0;
+                nbPixel1 = 0;
+                nbPixel2 = 0;
+                for(int i = -decalage; i <= decalage-1; i++)
+                {
+                    for(int j = -decalage; j <= decalage-1; j++)
+                    {
+                        if (x+j >= 0 && x+j < image->width() && y+i >= 0 && y+i < image->height()) {
+                            pixel = image->pixel(x+j,y+i);
+                            somme1 += qRed(pixel)*m.get_element(i+decalage,j+decalage);
+                            somme2 += qRed(pixel)*noyau->get_element(i+decalage,j+decalage);
+
+                            if (m.get_element(i+decalage,j+decalage) > 0) {
+                                nbPixel1 += m.get_element(i+decalage,j+decalage);
+                            }
+                            if (noyau->get_element(i+decalage,j+decalage) > 0) {
+                                nbPixel2 += noyau->get_element(i+decalage,j+decalage);
+                            }
+
+                        }
+                    }
+                }
+                if (nbPixel1 != 0) {
+                    somme1/=nbPixel1;
+                }
+                if (nbPixel2 != 0) {
+                    somme2/=nbPixel2;
+                }
+                valAbs1 = qAbs(somme1);
+                valAbs2 = qAbs(somme2);
+                imageCopie.setPixel(x, y, qRgb(valAbs1+valAbs2,valAbs1+valAbs2,valAbs1+valAbs2));
+            }
+        }
+    }else{
+        int decalage = m.getSize()/2;
+        for(int x = 0; x < image->width(); x++)
+        {
+            for(int y = 0; y < image->height(); y++)
+            {
+                somme1 = 0;
+                somme2 = 0;
+                nbPixel1 = 0;
+                nbPixel2 = 0;
+                for(int i = -decalage; i <= decalage; i++)
+                {
+                    for(int j = -decalage; j <= decalage; j++)
+                    {
+                        if (x+j >= 0 && x+j < image->width() && y+i >= 0 && y+i < image->height()) {
+                            pixel = image->pixel(x+j,y+i);
+                            somme1 += qRed(pixel)*m.get_element(i+decalage,j+decalage);
+                            somme2 += qRed(pixel)*noyau->get_element(i+decalage,j+decalage);
+                            nbPixel1 += m.get_element(i+decalage,j+decalage);
+                            nbPixel2 += noyau->get_element(i+decalage,j+decalage);
+                        }
+                    }
+                }
+                if (nbPixel1 != 0) {
+                    somme1/=nbPixel1;
+                }
+                if (nbPixel2 != 0) {
+                    somme2/=nbPixel2;
+                }
+                valAbs1 = qAbs(somme1);
+                valAbs2 = qAbs(somme2);
+
+                imageCopie.setPixel(x, y,qRgb(somme1+somme2,somme1+somme2,somme1+somme2));
+            }
+        }
+    }
+
+    image->swap(imageCopie);
+    retournerMatrix();
+
+
+}
+
+void Convolution::sommeImage(QImage* im1,QImage* im2){
+        for(int x=0;x<im1->width();x++){
+            for(int y=0;y<im1->height();y++){
+
+                im1->setPixel(x,y,im1->pixel(x,y)+im2->pixel(x,y));
+            }
+        }
 }

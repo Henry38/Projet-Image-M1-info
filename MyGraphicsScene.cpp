@@ -1,11 +1,5 @@
-#include "MyGraphicsScene.h"
 
-#include <QWidget>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsRectItem>
-#include <QPoint>
-#include <iostream>
+#include "MyGraphicsScene.h"
 
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {
@@ -91,7 +85,7 @@ void MyGraphicsScene::updateVisibleTool() {
     // Mode redimension
     if (isModeRedimension()) {
         rectTool->setVisible(true);
-        rectTool->setRect(item->x(), item->y(), item->pixmap().width()-1, item->pixmap().height()-1);
+        rectTool->setRect(item->x(), item->y(), item->pixmap().width(), item->pixmap().height());
         int x = item->x() + item->pixmap().width();
         int y = item->y() + item->pixmap().height();
         dragTool->setVisible(true);
@@ -100,7 +94,7 @@ void MyGraphicsScene::updateVisibleTool() {
     // Mode redimension intelligent
     if (isModeRedimensionIntell()) {
         rectTool->setVisible(true);
-        rectTool->setRect(item->x(), item->y(), item->pixmap().width()-1, item->pixmap().height()-1);
+        rectTool->setRect(item->x(), item->y(), item->pixmap().width(), item->pixmap().height());
         int x = item->x() + item->pixmap().width();
         int y = item->y() + item->pixmap().height();
         dragXTool->setVisible(true);
@@ -121,6 +115,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     } else if (tmp == dragXTool) {
         offset = mouseEvent->scenePos() - dragXTool->pos();
         grabXTool = true;
+        //Calcul::sortImportantPath(item->pixmap().toImage());
     } else if (tmp == dragYTool) {
         offset = mouseEvent->scenePos() - dragYTool->pos();
         grabYTool = true;
@@ -133,29 +128,35 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
     if (grabTool) {
         QPointF point = mouseEvent->scenePos() - offset;
-        if (point.x() < item->x()) {
-            point.setX(item->x());
+        if (point.x() < item->x()+1) {
+            point.setX(item->x()+1);
         }
-        if (point.y() < item->y()) {
-            point.setY(item->y());
+        if (point.y() < item->y()+1) {
+            point.setY(item->y()+1);
         }
         dragTool->setPos(point);
-        rectTool->setRect(item->x(), item->y(), dragTool->x()-1, dragTool->y()-1);
+        rectTool->setRect(item->x(), item->y(), dragTool->x(), dragTool->y());
     } else if (grabXTool) {
         int x = mouseEvent->scenePos().x() - offset.x();
-        if (x < item->x()) {
-            x = item->x();
+        if (x < item->x()+1) {
+            x = item->x()+1;
+        }
+        if (x > item->x() + item->pixmap().width()) {
+            x = item->x() + item->pixmap().width();
         }
         dragXTool->setX(x);
-        rectTool->setRect(item->x(), item->y(), dragXTool->x()-1, dragYTool->y()-1);
+        rectTool->setRect(item->x(), item->y(), dragXTool->x(), dragYTool->y());
         dragYTool->setX(rectTool->rect().width()/2);
     } else if (grabYTool) {
         int y = mouseEvent->scenePos().y() - offset.y();
-        if (y < item->y()) {
-            y = item->y();
+        if (y < item->y()+1) {
+            y = item->y()+1;
+        }
+        if (y > item->y() + item->pixmap().height()) {
+            y = item->y() + item->pixmap().height();
         }
         dragYTool->setY(y);
-        rectTool->setRect(item->x(), item->y(), dragXTool->x()-1, dragYTool->y()-1);
+        rectTool->setRect(item->x(), item->y(), dragXTool->x(), dragYTool->y());
         dragXTool->setY(rectTool->rect().height()/2);
     }
 }

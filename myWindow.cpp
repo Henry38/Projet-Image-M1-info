@@ -1,24 +1,15 @@
+
 #include "myWindow.h"
-#include "BlurDialog.h"
 #include "ui_myWindow.h"
+
 #include "Histogramme.h"
-#include "FiltreDialog.h"
 #include "HistoDialog.h"
-#include <QPixmap>
-/*
-#include <highgui.h>
-#include <cv.h>
-*/
-#include <QKeyEvent>
-#include <QShortCut>
-#include <QRectF>
-#include "Calcul.h"
-//using namespace cv;
+
+using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     img = new QImage();
 
     filename = "";
@@ -41,16 +32,6 @@ myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
     int yScreen = desktop.screenGeometry().height();
     resize(xScreen / 2, yScreen / 2);
     move((xScreen - width()) / 2, (yScreen - height()) / 2);
-}
-
-bool myWindow::redimensionnementIteractif(QRect rect) {
-    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
-    delete img;
-    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
-    delete tmp;
-    repeindre();
-
-    return true;
 }
 
 myWindow::myWindow(QString url) : myWindow()
@@ -152,7 +133,6 @@ void myWindow::initMenu()
     actionRedimensionner = new QAction("&Redimensionner",this);
     actionFiltre = new QAction("&Filtre",this);
     actionContours = new QAction("&Contours",this);
-    actionRedimIntell = new QAction("&RedimIntell",this);
     actionGrabCut = new QAction("&GrabCut",this);
     actionRogner = new QAction("&Rogner",this);
     menuEdition->addAction(actionHistogramme);
@@ -162,7 +142,6 @@ void myWindow::initMenu()
     menuEdition->addAction(actionRedimensionner);
     menuEdition->addAction(actionFiltre);
     menuEdition->addAction(actionContours);
-    menuEdition->addAction(actionRedimIntell);
     menuEdition->addAction(actionGrabCut);
     menuEdition->addAction(actionRogner);
 
@@ -181,7 +160,6 @@ void myWindow::initMenu()
     QObject::connect(actionRedimensionner,SIGNAL(triggered()),this,SLOT(redimensionner()));
     QObject::connect(actionFiltre,SIGNAL(triggered()),this,SLOT(filtre()));
     QObject::connect(actionContours,SIGNAL(triggered()),this,SLOT(contours()));
-    QObject::connect(actionRedimIntell,SIGNAL(triggered()),this,SLOT(redimIntell()));
     QObject::connect(actionGrabCut,SIGNAL(triggered()),this,SLOT(grabCut()));
     QObject::connect(actionRogner,SIGNAL(triggered()),this,SLOT(rogner()));
 }
@@ -194,6 +172,8 @@ void myWindow::initBarreOutils()
     QObject::connect(ui->actionRedimensionIntell,SIGNAL(triggered()),this,SLOT(redimensionIntellMode()));
 
     QObject::connect(scene, SIGNAL(redimensionnement(QRect)), this, SLOT(redimensionnementIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnLargeur(QRect)), this, SLOT(redimensionnementIntellEnLargeurIteractif(QRect)));
+    QObject::connect(scene, SIGNAL(redimensionnementIntellEnHauteur(QRect)), this, SLOT(redimensionnementIntellEnHauteurIteractif(QRect)));
 
 //    actionAnnuler = new QAction("&Annuler",this);
 //    actionAnnuler->setShortcut(QKeySequence("Ctrl+Z"));
@@ -263,23 +243,11 @@ bool myWindow::histo()
 /*passe l'image en niveau de gris*/
 bool myWindow::gris()
 {
-    QRgb pixel;
-    int i, j;
-    float tmp;
-    int h = img->height();
-    int w = img->width();
-    for(i = 0; i < w; i++)
-    {
-        for(j = 0; j < h; j++)
-        {
-            pixel = img->pixel(i, j);
-            tmp = Calcul::getYUV(pixel).at(0);
-            //tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
-            pixel = qRgba(tmp, tmp, tmp, qAlpha(pixel));
-            img->setPixel(i, j, pixel);
-        }
-    }
+    QImage *tmp = Calcul::imageEnNiveauDeGris(img);
+    delete img;
+    img = tmp;
     repeindre();
+
     return true;
 }
 
@@ -331,36 +299,9 @@ bool myWindow::filtre()
 
 bool myWindow::contours()
 {
-    Convolution c;
-   c.redimensionnerMatrix(3,0);
-
-   Matrix *noyau = new Matrix(3,0);
-   noyau->insert_element(0,0,0);
-    noyau->insert_element(0,1,-1);
-    noyau->insert_element(0,2,0);
-   noyau->insert_element(1,0,-1);
-   noyau->insert_element(1,1,5);
-   noyau->insert_element(1,2,-1);
-    noyau->insert_element(2,0,0);
-   noyau->insert_element(2,1,-1);
-    noyau->insert_element(2,2,0);
-    c.setNoyau(noyau);
-/*
-    c.modifierCaseMatrix(0,1,1);
-    c.modifierCaseMatrix(2,1,1);
-    c.modifierCaseMatrix(1,0,1);
-    c.modifierCaseMatrix(2,2,1);
-    c.modifierCaseMatrix(1,1,-4);*/
-    c.convolution(img);
-    repeindre();
-    return true;
-}
-
-bool myWindow::redimIntell()
-{
-    QImage *tmp = Calcul::chemin(img);
-    //delete img;
-    //img = tmp;
+    QImage *tmp = Calcul::contour(img);
+    delete img;
+    img = tmp;
     repeindre();
 
     return true;
@@ -368,49 +309,59 @@ bool myWindow::redimIntell()
 
 bool myWindow::grabCut()
 {
-//    actionRogner->setEnabled(false);
-//    ui->graphicsView->cacherSelect();
-//    if(ui->graphicsView->getPret()){
+    actionRogner->setEnabled(false);
+    ui->graphicsView->cacherSelect();
 
-//    /*Tab temp à ne pas modifier tt que sur mme image*/
-//    Mat bgdModel = *(new Mat());
-//    Mat fgdModel= *(new Mat());
-//    /*nb d'iter de l'algo avt de rvoyer le res*/
-//    int iterCount =1;
-//    const string name= filename.toStdString();
-//    /*image*/
-//    Mat im = imread(name,1);
-//    /*masque*/
-//    Mat mask;
-//    mask.create( im.size(), CV_8UC1);
-//    /*ROI : region of interest*/
+    if(ui->graphicsView->getPret()){
 
-//       QPoint HG = ui->graphicsView->getHG();
-//       QPoint BD = ui->graphicsView->getBD();
-//       Calcul::recadrer(img,&HG,&BD);
-//       /*Si selection dépasse de l'image*/
+        /*Tab temp à ne pas modifier tt que sur mme image*/
+        Mat bgdModel = *(new Mat());
+        Mat fgdModel= *(new Mat());
+        /*nb d'iter de l'algo avt de rvoyer le res*/
+        int iterCount =1;
+        /*sauvegarde une copie de l'image*/
+        QString extension = "copie.jpg";
+        QString nom = QString::fromStdString(filename.toStdString()) + extension;
+        save(nom);
+        const string name  = nom.toStdString();
+        /*ouvre la copie*/
+        Mat im = cv::imread(name,1);
+        /*supprimer copie*/
+        QFile::remove(nom);
 
-//       Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
-//       ui->graphicsView->cacherSelect();
-//       ui->graphicsView->setPret(false);
-//        /*rect : selection*/
-//        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
-//        /*fait le decoupage*/
-//        compare(mask,GC_PR_FGD,mask,CMP_EQ);
+        /*masque*/
+        Mat mask;
+        mask.create( im.size(), CV_8UC1);
+        /*ROI : region of interest*/
+        QPoint HG = ui->graphicsView->getHG();
+        QPoint BD = ui->graphicsView->getBD();
+        Calcul::recadrer(img,&HG,&BD);
 
+        /*Si selection dépasse de l'image*/
+        Rect rect(HG.x(),HG.y(),BD.x()-HG.x(),BD.y()-HG.y());
+        ui->graphicsView->cacherSelect();
+        ui->graphicsView->setPret(false);
 
-//        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
-//        im.copyTo(fgd,mask);
-//        //im.copyTo(fgdModel,mask);
+        /*rect : selection*/
+        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
 
-//        cv::imshow("test5",fgd);
-//        //img = image;
-//        repeindre();
+        /*fait le decoupage*/
+        compare(mask,GC_PR_FGD,mask,CMP_EQ);
+
+        /*affichage*/
+        Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+        im.copyTo(fgd,mask);
+
+        /*MatToQImage*/
+        QImage image( fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB888 );
+        image = image.rgbSwapped();
+        img = new QImage(image);
+        repeindre();
         return true;
 
-//   }else{
-     //  return false;
-//   }
+   }else{
+       return false;
+   }
 }
 
 /* rogne la selection de l'image*/
@@ -423,8 +374,10 @@ bool myWindow::rogner()
             QPoint BD = ui->graphicsView->getBD();
             /*Si selection dépasse de l'image*/
             Calcul::recadrer(img,&HG,&BD);
-            QRect rect(HG,BD);
-            *img = img->copy(rect);
+            //QRect rect(HG,BD);
+
+            img = Calcul::rognerImage(img,HG,BD);
+            //*img = img->copy(rect);
             ui->graphicsView->cacherSelect();
             ui->graphicsView->setPret(false);
             repeindre();
@@ -436,6 +389,35 @@ bool myWindow::rogner()
     }else{
         return false;
     }
+}
+
+/*redimensionne l'image a la taille du rectangle*/
+bool myWindow::redimensionnementIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
+    delete img;
+    img = Calcul::redimensionnementEnHauteur(tmp, rect.height());
+    delete tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
+    delete img;
+    img = tmp;
+    repeindre();
+
+    return true;
+}
+
+bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
+    QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.height());
+    delete img;
+    img = tmp;
+    repeindre();
+
+    return true;
 }
 
 bool myWindow::selection()

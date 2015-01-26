@@ -32,7 +32,8 @@ HEADERS += \
     HistoYUV.h \
     MyGraphicsScene.h \
     Calcul.h \
-    HistoDialog.h
+    HistoDialog.h \
+    Couple.h
 
 QT += widgets
 
@@ -44,5 +45,14 @@ FORMS += \
 
 RESOURCES = Images.qrc
 
-INCLUDEPATH += "C:\opencv\build\include\opencv"
-INCLUDEPATH += "C:\opencv\build\include\opencv2"
+INCLUDEPATH += "usr\include\opencv"
+
+LIBS += -L"usr\lib" \
+ -lopencv_core \
+ -lopencv_highgui \
+ -lopencv_imgproc \
+ -lopencv_features2d \
+ -lopencv_calib3d \
+ -lopencv_objdetect \
+ -lopencv_ml
+

@@ -1,6 +1,5 @@
 
 #include "ScaleDialog.h"
-#include "Calcul.h"
 
 ScaleDialog::ScaleDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
@@ -50,13 +49,15 @@ void ScaleDialog::updateViewer()
     ok_clicked = true;
 }
 
-void ScaleDialog::acceptDialog() {
+void ScaleDialog::acceptDialog()
+{
     if (!ok_clicked) {
         updateViewer();
     }
     imgSource->swap(*apercu);
 }
 
-void ScaleDialog::sizeChanged(int) {
+void ScaleDialog::sizeChanged(int)
+{
     ok_clicked = false;
 }

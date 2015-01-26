@@ -1,8 +1,6 @@
 #ifndef ABSTRACTDIALOG_H
 #define ABSTRACTDIALOG_H
 
-#include <QtGui>
-#include <QtCore>
 #include <QDialog>
 #include <QScrollArea>
 #include <QLabel>
@@ -16,18 +14,18 @@ class AbstractDialog : public QDialog {
     Q_OBJECT
 
 public:
+    // Methodes
     AbstractDialog();
     ~AbstractDialog();
     void display(QImage*);
-
     QPoint getOKAnnuler();
     QScrollArea *getScrollArea();
-    //QScrollArea* getViewer();
 
 private:
+    // Methodes
+    void resizeEvent(QResizeEvent *event);  // inutile ?
+    // Attributs
     QLabel *label;
-    void resizeEvent(QResizeEvent *event);
-
 
 public slots:
     virtual void updateViewer() = 0;

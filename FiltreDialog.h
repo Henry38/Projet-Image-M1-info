@@ -1,20 +1,18 @@
 #ifndef FILTREDIALOG_H
 #define FILTREDIALOG_H
-#include <QObject>
+
 #include <QImage>
 #include <QLabel>
 #include <QSpinBox>
 #include <QGridLayout>
 #include <QRadioButton>
 #include <QLineEdit>
-#include <QValidator>
-#include <QCheckBox>
-#include <iostream>
 
 #include "AbstractDialog.h"
+#include "Calcul.h"
 #include "Convolution.h"
-using namespace std;
 
+using namespace std;
 
 class FiltreDialog : public AbstractDialog {
 
@@ -23,9 +21,10 @@ class FiltreDialog : public AbstractDialog {
 public:
     FiltreDialog(QImage*);
     ~FiltreDialog();
-
 public slots:
     void changerMatricePerso(int);
+    void cacherMatrice();
+    void changerMatrice();
 
 private:
     QLabel *text;
@@ -37,9 +36,10 @@ private:
     QLineEdit*** matP;
     int valMax,dimMatP;
 
-
 public slots:
     void updateViewer();
     void acceptDialog();
+
 };
+
 #endif // FILTREDIALOG_H

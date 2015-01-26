@@ -1,14 +1,13 @@
 #ifndef FUSIONDIALOG_H
 #define FUSIONDIALOG_H
 
-#include <QFileDialog>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
 #include <QLabel>
+#include <QFileDialog>
 
 #include "AbstractDialog.h"
-
 
 class FusionDialog : public AbstractDialog {
 

@@ -39,13 +39,15 @@ void BlurDialog::updateViewer()
     ok_clicked = true;
 }
 
-void BlurDialog::acceptDialog() {
+void BlurDialog::acceptDialog()
+{
     if (!ok_clicked) {
         updateViewer();
     }
     imgSource->swap(*apercu);
 }
 
-void BlurDialog::spinBoxChanged(int) {
+void BlurDialog::spinBoxChanged(int)
+{
     ok_clicked = false;
 }

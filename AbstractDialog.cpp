@@ -2,9 +2,8 @@
 #include "AbstractDialog.h"
 #include "ui_AbstractDialog.h"
 
-#include <iostream>
-
-AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog) {
+AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog)
+{
     ui->setupUi(this);
 
     distBordGauche = ui->scrollArea->x();
@@ -23,28 +22,31 @@ AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog) {
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acceptDialog()));
 }
 
-AbstractDialog::~AbstractDialog() {
+AbstractDialog::~AbstractDialog()
+{
     delete ui;
     delete label;
 }
 
-void AbstractDialog::display(QImage *img) {
+/*affiche la QImage dans le QScrollArea*/
+void AbstractDialog::display(QImage *img)
+{
     label->setPixmap(QPixmap::fromImage(*img));
 }
 
-void AbstractDialog::resizeEvent(QResizeEvent *event)
+/*postionne les boutons OK en bas a droite de la fenetre*/
+void AbstractDialog::resizeEvent(QResizeEvent *)
 {
     ui->buttonBox->move(width()-ui->buttonBox->width()-distBordDroit,height()-ui->buttonBox->height()-distBordBas);
-
 }
 
-//retourne la taille des boutons OK et annuler
+/*retourne la taille des boutons OK et annuler*/
 QPoint AbstractDialog::getOKAnnuler()
 {
     return QPoint(ui->buttonBox->width(), ui->buttonBox->height());
-
 }
 
+/*retourne la QScrollArea*/
 QScrollArea *AbstractDialog::getScrollArea()
 {
     return ui->scrollArea;

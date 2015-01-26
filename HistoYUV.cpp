@@ -8,16 +8,10 @@ HistoYUV::HistoYUV(QImage *img) : Histogramme(img)
 void HistoYUV::afficherLignes()
 {
     compterPixel();
-    if(gris)
-    {
-        afficherLigne(composantes[0],Qt::gray);
-    }
-    else
-    {
-        afficherLigne(composantes[0],Qt::cyan);
-        afficherLigne(composantes[1],Qt::magenta);
-        afficherLigne(composantes[2],Qt::yellow);
-    }
+    afficherLigne(composantes[0],Qt::cyan);
+    afficherLigne(composantes[1],Qt::magenta);
+    afficherLigne(composantes[2],Qt::yellow);
+
 }
 
 void HistoYUV::compterPixel()
@@ -66,7 +60,51 @@ void HistoYUV::compterPixel()
     }
 }
 
-void HistoYUV::etalement(int v0, int v1, int vMin, int vMax)
+void HistoYUV::etalement(Couple cY)
+{
+    QRgb pixel;
+    float Y, U, V;
+    float Yfin, Ufin, Vfin;
+    float tmp;
+    for(int i = 0; i < img->width(); i++)
+    {
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
+            tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+            Y = 255*(tmp-cY.deb)/((double)(cY.fin-cY.deb));
+            U = 0.492*(qBlue(pixel)-tmp);
+            V = 0.877*(qRed(pixel)-tmp);
+            Yfin = Y+1.13983*V;
+            Ufin = Y-0.39465*U-0.58060*V;
+            Vfin = Y+2.03211*U;
+            if(Ufin > 255)
+            {
+                Ufin = 255;
+            }
+            else if(Ufin < 0)
+            {
+                Ufin = 0;
+            }
+            if(Vfin > 255)
+            {
+                Vfin = 255;
+            }
+            else if(Vfin < 0)
+            {
+                Vfin = 0;
+            }
+            img->setPixel(i,j,qRgba(Yfin,Ufin,Vfin,qAlpha(pixel)));
+        }
+    }
+}
+
+void HistoYUV::egalisation()
 {
 
+}
+
+int *HistoYUV::getY()
+{
+    return composantes[0];
 }
