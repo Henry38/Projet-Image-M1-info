@@ -375,8 +375,10 @@ bool myWindow::rogner()
             QPoint BD = ui->graphicsView->getBD();
             /*Si selection dépasse de l'image*/
             Calcul::recadrer(img,&HG,&BD);
-            QRect rect(HG,BD);
-            *img = img->copy(rect);
+            //QRect rect(HG,BD);
+
+            img = Calcul::rognerImage(img,HG,BD);
+            //*img = img->copy(rect);
             ui->graphicsView->cacherSelect();
             ui->graphicsView->setPret(false);
             repeindre();
