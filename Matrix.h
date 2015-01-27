@@ -20,7 +20,6 @@ public:
     int get_element(int, int);
     int getSize();
     void retourner();
-    void remplirMedian();
     bool estPaire();
     void setSize(int);
     void setTab(int**);

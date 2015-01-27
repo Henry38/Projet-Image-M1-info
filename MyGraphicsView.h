@@ -32,13 +32,9 @@ public:
     void resetMode();
     void setModeSelection();
     void setModePipette();
-    void setModeRedimension();
-    void setModeRedimIntell();
     bool sansMode();
     bool modeSelection();
     bool modePipette();
-    bool modeRedimension();
-    bool modeRedimIntell();
     void cacherSelect();
     QImage* getImage();
     void setImage(QImage*);

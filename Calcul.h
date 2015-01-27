@@ -18,6 +18,7 @@ public:
     static QVector<float> getYUV(QRgb);
     static float niveauDeGris(QRgb);
     static void recadrer(QImage*,QPoint*,QPoint*);
+    static QImage* rognerImage(QImage* src, QPoint HG, QPoint BD);
 
 private:
     //Methodes

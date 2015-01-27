@@ -43,14 +43,6 @@ void MyGraphicsView::setModePipette(){
     mode = 2;
 }
 
-void MyGraphicsView::setModeRedimension(){
-
-}
-
-void MyGraphicsView::setModeRedimIntell(){
-
-}
-
 bool MyGraphicsView::sansMode(){
     return mode == 0;
 }
@@ -61,14 +53,6 @@ bool MyGraphicsView::modeSelection(){
 
 bool MyGraphicsView::modePipette(){
     return mode == 2;
-}
-
-bool MyGraphicsView::modeRedimension(){
-    return mode == 3;
-}
-
-bool MyGraphicsView::modeRedimIntell(){
-    return mode == 4;
 }
 
 void MyGraphicsView::cacherSelect(){
@@ -144,7 +128,9 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
+
 bool MyGraphicsView::estDansImage(QPoint* p){
   return p->x()>=0 && p->y()>=0 && p->x()< image->width() && p->y() < image->height();
 }
+
 

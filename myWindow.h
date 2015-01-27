@@ -44,8 +44,6 @@ public:
     bool save(QString url);
     void initMenu();
     void initBarreOutils();
-    bool estDansImage();
-    inline cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = true );
 
 public slots:
     // Slot du menu
@@ -76,6 +74,8 @@ public slots:
     bool copier();
     bool couper();
     bool coller();
+    void selectAvtPlan();
+    void selectArrPlan();
 
 private:
     // Attribut
@@ -109,6 +109,7 @@ private:
     MyGraphicsScene *scene;
     QString filename;
     QGraphicsPixmapItem *itemPixmap;
+    cv::Mat matAvantGrabCut;
 
 };
 

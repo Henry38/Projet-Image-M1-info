@@ -647,12 +647,12 @@ void Calcul::recadrer(QImage* img,QPoint* A,QPoint*B){
         A->setY(0);
     }
 
-    if(B->y()<0){
-        B->setY(0);
-    }
-
     if(B->x()<0){
         B->setX(0);
+    }
+
+    if(B->y()<0){
+        B->setY(0);
     }
 
     if(A->x() > img->width()){
@@ -660,9 +660,9 @@ void Calcul::recadrer(QImage* img,QPoint* A,QPoint*B){
        A->setX(img->width());
     }
 
-    if(A->y() > img->width()){
+    if(A->y() > img->height()){
       /*on recadre à la limite*/
-        A->setY(img->width());
+        A->setY(img->height());
     }
 
     if(B->x() > img->width()){
@@ -670,9 +670,34 @@ void Calcul::recadrer(QImage* img,QPoint* A,QPoint*B){
         B->setX(img->width());
     }
 
-    if(B->y() > img->width()){
+    if(B->y() > img->height()){
       /*on recadre à la limite*/
-        B->setY(img->width());
+        B->setY(img->height());
     }
 
+}
+
+QImage* Calcul::rognerImage(QImage* src, QPoint HG, QPoint BD){
+
+    QImage *dest = new QImage(BD.x()-HG.x(),BD.y()-HG.y(),src->format());
+
+    int ydest;
+    int ysrc;
+    int xdest = 0;
+    int xsrc = HG.x();
+
+    while(xsrc < BD.x())
+    {
+        ydest = 0;
+        ysrc = HG.y();
+        while(ysrc < BD.y())
+        {
+            dest->setPixel(xdest,ydest,src->pixel(xsrc,ysrc));
+            ydest++;
+            ysrc++;
+        }
+        xdest++;
+        xsrc++;
+    }
+    return dest;
 }
