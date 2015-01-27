@@ -4,6 +4,9 @@
 #include "Matrix.h"
 
 QImage* Calcul::contour(QImage *imgDepart) {
+
+    return normeDuGradient(imgDepart);
+
     QImage *imgArrivee = new QImage(*imgDepart);
 
     Convolution c;
@@ -298,14 +301,15 @@ void Calcul::lessImportantHorizontalPath(QImage *imgEnergie, QVector<int> *vect)
 #include <iostream>
 
 /*retourne l'ensemble des coordonnees x des pixels du chemin le moins informatif*/
-void Calcul::lessImportantsVerticalsPaths(QImage *imgEnergie, QVector<QVector<int>> *vect) {
+void Calcul::lessImportantsVerticalsPaths(QImage *imgEnergie, QVector<QVector<int>> *vect, int iteration) {
     int width = imgEnergie->width();
     int height = imgEnergie->height();
 
     float table[width][height];         // colonne ligne
     int indice[width][height];          // indice (-1, 0 ou 1) pour chaque pixel
-//    float min = std::numeric_limits<int>::max();
-//    int indexMin = -1;                  // index X du pixel de poids cumulatif minimal sur la derniere ligne
+    bool pixelUse[width][height];
+    float min = std::numeric_limits<int>::max();
+    int indexMin = -1;                  // index X du pixel de poids cumulatif minimal sur la derniere ligne
     QRgb pixel;
     float power;
 
@@ -314,48 +318,87 @@ void Calcul::lessImportantsVerticalsPaths(QImage *imgEnergie, QVector<QVector<in
         table[x][0] = niveauDeGris(imgEnergie->pixel(x, 0));
     }
 
-    // Remplissage de la table et des indices
-    for (int y=1; y<height; y++) {
-        for (int x=0; x<width; x++) {
-            pixel = imgEnergie->pixel(x, y);
-            power = niveauDeGris(pixel);
-            table[x][y] = std::numeric_limits<int>::max();
-            indice[x][y] = 0;
-            for (int k=-1; k<=1; k++) {
-                if (x+k >= 0 && x+k < width) {
-                    if (power + table[x+k][y-1] < table[x][y]) {
-                        table[x][y] = power + table[x+k][y-1];
-                        indice[x][y] = k;
-//                        if (y == height-1 && table[x][y] < min) {
-//                            min = table[x][y];
-//                            indexMin = x;
-//                        }
-                    }
+    int i = 0;
+    bool g, m, d;
+    while (i < iteration) {
+        i++;
+        // Remplissage de la table et des indices
+        for (int y=1; y<height; y++) {
+            for (int x=0; x<width; x++) {
+                pixel = imgEnergie->pixel(x, y);
+                power = niveauDeGris(pixel);
+                //table[x][y] = std::numeric_limits<int>::max();
+                //indice[x][y] = 0;
+
+//                valG = table[x-1][y-1];
+//                valM = table[x][y-1];
+//                valD = table[x+1][y-1];
+
+                g = (x-1 >= 0
+                    && !pixelUse[x-1][y-1]
+                    && ( !(pixelUse[x-1][y] && pixelUse[x][y-1]) )
+                    );
+                m = (!pixelUse[x][y-1]);
+                d = (x+1 < width
+                     && !pixelUse[x+1][y-1]
+                     && ( !(pixelUse[x+1][y] && pixelUse[x][y-1]) )
+                     );
+
+                if ((g && (table[x-1][y-1] < table[x+1][y-1] || !d))
+                      && (table[x-1][y-1] < table[x][y-1] || !m)) {
+                    table[x][y] = power + table[x-1][y];
+                    indice[x][y] = -1;
+
+                } else if ((m && (table[x][y-1] <= table[x+1][y-1] || !d))
+                      && (table[x][y-1] <= table[x-1][y-1] || !g)) {
+                    table[x][y] = power + table[x][y];
+                    indice[x][y] = 0;
+
+                } else if ((d && (table[x+1][y-1] <= table[x-1][y-1] || !g))
+                      && (table[x+1][y-1] < table[x][y-1] || !m)) {
+                    table[x][y] = power + table[x+1][y];
+                    indice[x][y] = 1;
                 }
             }
         }
-    }
 
-    float min;
-    bool use[width];
-    int index;
-
-    for (int i=0; i<width; i++) {
-        min = std::numeric_limits<int>::max();
         for (int x=0; x<width; x++) {
-            if (table[x][height-1] < min && !use[x]) {
+            if (table[x][height-1] < min && !pixelUse[x][height-1]) {
                 min = table[x][height-1];
-                index = x;
+                indexMin = x;
             }
         }
-        std::cout << index << std::endl;
-        use[index] = true;
+
+        pixelUse[indexMin][height-1] = true;
+
         vect->append(QVector<int>(0));
         for (int y=height-1; y>=0; y--) {
-            vect->last().append(index);
-            index += indice[index][y];
+            vect->last().append(indexMin);
+            pixelUse[indexMin][y] = true;
+            indexMin += indice[indexMin][y];
         }
     }
+
+//    float min;
+//    bool use[width];
+//    int index;
+
+//    for (int i=0; i<iteration; i++) {
+//        min = std::numeric_limits<int>::max();
+//        for (int x=0; x<width; x++) {
+//            if (table[x][height-1] < min && !pixelUse[x]) {
+//                min = table[x][height-1];
+//                index = x;
+//            }
+//        }
+//        //std::cout << index << std::endl;
+//        pixelUse[index] = true;
+//        vect->append(QVector<int>(0));
+//        for (int y=height-1; y>=0; y--) {
+//            vect->last().append(index);
+//            index += indice[index][y];
+//        }
+//    }
 }
 
 
@@ -408,13 +451,13 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
         //QVector<int> path;
         // Coordonnees X des pixels du chemin les moins importants au plus importants
         QVector<QVector<int>> *listPath = new QVector<QVector<int>>(0);
-        lessImportantsVerticalsPaths(imgEnergie, listPath);
+        lessImportantsVerticalsPaths(imgEnergie, listPath, 20);
 
-        std::cout << iteration << std::endl;
+        /*std::cout << iteration << std::endl;
         while (listPath->size() > iteration) {
             //iteration--;
             listPath->removeLast();
-        }
+        }*/
 
         for (QVector<int> p : *listPath) {
             std::cout << p.at(0) << std::endl;
