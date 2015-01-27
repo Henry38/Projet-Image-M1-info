@@ -74,6 +74,8 @@ public slots:
     bool copier();
     bool couper();
     bool coller();
+    void selectAvtPlan();
+    void selectArrPlan();
 
 private:
     // Attribut
@@ -107,6 +109,7 @@ private:
     MyGraphicsScene *scene;
     QString filename;
     QGraphicsPixmapItem *itemPixmap;
+    cv::Mat matAvantGrabCut;
 
 };
 
