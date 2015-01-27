@@ -24,6 +24,9 @@ private:
     static void lessImportantVerticalPath(QImage*, QVector<int>*);
     static void lessImportantHorizontalPath(QImage*, QVector<int>*);
 
+    static void lessImportantsVerticalsPaths(QImage *imgEnergie, QVector<QVector<int>> *vect);
+
+
 };
 
 #endif // CALCUL_H
