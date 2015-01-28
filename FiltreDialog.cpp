@@ -156,7 +156,7 @@ void FiltreDialog::acceptDialog()
     imgSource->swap(*apercu);
 }
 
-void FiltreDialog::changerMatricePerso(int b)
+void FiltreDialog::changerMatricePerso(int)
 {
     if(personnalise->isChecked()){
         if(spinBox->value()<dimMatP){
