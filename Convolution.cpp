@@ -441,16 +441,6 @@ int*** Convolution::convolution2(QImage *image)
                         sommeB += qBlue(pixel)*m.get_element(i+decalage,j+decalage);
                     }
                 }
-                if (nbPixel1 != 0) {
-                    somme1/=nbPixel1;
-                }
-                if (nbPixel2 != 0) {
-                    somme2/=nbPixel2;
-                }
-                valAbs1 = qAbs(somme1);
-                valAbs2 = qAbs(somme2);
-
-                imageCopie.setPixel(x, y,qRgb(somme1+somme2,somme1+somme2,somme1+somme2));
             }
             tab[y][x][0] = sommeR;
             tab[y][x][1] = sommeG;
