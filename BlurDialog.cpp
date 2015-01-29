@@ -11,8 +11,9 @@ BlurDialog::BlurDialog(QImage *img) : AbstractDialog() {
 
     spinBox = new QSpinBox(this);
     spinBox->move(80, 291);
-    spinBox->setMinimum(0);
+    spinBox->setMinimum(1);
     spinBox->setMaximum(99);
+    spinBox->setSingleStep(2);
 
     QObject::connect(spinBox, SIGNAL(valueChanged(int)), this, SLOT(spinBoxChanged(int)));
 
@@ -32,7 +33,7 @@ void BlurDialog::updateViewer()
     apercu = new QImage(*imgSource);
     //*apercu = apercu->copy(imgSource->rect());
     Convolution c;
-    c.redimensionnerMatrix(spinBox->value()*2 +1);
+    c.redimensionnerMatrix(spinBox->value());
     c.convolution(apercu);
 
     display(apercu);

@@ -5,7 +5,7 @@
 
 QImage* Calcul::contour(QImage *imgDepart) {
 
-    return normeDuGradient(imgDepart);
+    //return normeDuGradient(imgDepart);
 
     QImage *imgArrivee = new QImage(*imgDepart);
 
@@ -17,7 +17,7 @@ QImage* Calcul::contour(QImage *imgDepart) {
     c.modifierCaseMatrix(1,0,-1);
     c.modifierCaseMatrix(1,2,-1);
     c.modifierCaseMatrix(1,1, 5);
-    c.convolution(imgArrivee, 1);
+    c.convolution(imgArrivee, false);
 
     return imgArrivee;
 }
@@ -501,7 +501,7 @@ QImage* Calcul::normeDuGradient(QImage *imgDepart) {
     Gx->insert_element(2, 2, 1);
     c.setNoyau(Gx);
 
-    int*** tmpGx = c.convolution2(imgGris);
+    int*** tmpGx = c.convolutionToMatrix(imgGris);
 
     // Filtre 2 de Sobel
     Matrix *Gy = new Matrix(3,0);
@@ -516,7 +516,7 @@ QImage* Calcul::normeDuGradient(QImage *imgDepart) {
     Gy->insert_element(2, 2, 1);
     c.setNoyau(Gy);
 
-    int*** tmpGy = c.convolution2(imgGris);
+    int*** tmpGy = c.convolutionToMatrix(imgGris);
 
     int tmp;
     // Creation de l'image finale

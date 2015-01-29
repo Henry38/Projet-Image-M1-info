@@ -634,6 +634,10 @@ bool myWindow::annuler()
         scene->setSceneRect(0, 0, img->width(), img->height());
         scene->update();
 
+        if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
+            scene->updateVisibleTool();
+        }
+
         return true;
     }else{
 
@@ -657,6 +661,10 @@ bool myWindow::refaire()
         ui->graphicsView->setImage(img);
         scene->setSceneRect(0, 0, img->width(), img->height());
         scene->update();
+
+        if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
+            scene->updateVisibleTool();
+        }
 
         return true;
     }else{

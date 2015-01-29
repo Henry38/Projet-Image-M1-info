@@ -6,18 +6,17 @@
 
 class Convolution {
 
-
 public:
-    Convolution(int taille = 3, int init = 1);
+    Convolution();
     Convolution(Matrix);
     ~Convolution();
     void redimensionnerMatrix(int i, int val = 1);
     void remplirMatrix(int val);
     void modifierCaseMatrix(int i, int j, int val);
-    void convolution(QImage *image, int mode = 0);
+    void convolution(QImage *image, bool normalized = true);
     void retournerMatrix();
     Matrix* convolution(Matrix *mat);
-    int*** convolution2(QImage*);
+    int*** convolutionToMatrix(QImage*);
     void convolutionCascade(Matrix*,Matrix*,int);
     void convolutionMedian(QImage*,int);
     void setNoyau(Matrix*);
@@ -25,14 +24,10 @@ public:
     int getMedianeFromTab(int* tab,int taille);
     int getMediane(int deb,int fin,int taille,QImage*);
     int* trierTableau(int*,int);
-    void convolutionGradient(QImage* image,Matrix* noyau);
-    void sommeImage(QImage* im1,QImage* im2);
-
 
 private:
     void ajusterCouleur(int *couleur);
     Matrix m;
-    int sommeCoefficient;
 
 };
 
