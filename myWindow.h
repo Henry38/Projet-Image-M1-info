@@ -44,6 +44,9 @@ public:
     bool save(QString url);
     void initMenu();
     void initBarreOutils();
+    void degriserBoutons();
+    void griserBoutons();
+    void majAnnuler();
 
 public slots:
     // Slot du menu
@@ -91,7 +94,6 @@ private:
     QAction *actionRedimensionner;
     QAction *actionFiltre;
     QAction *actionContours;
-    QAction *actionGrabCut;
     QAction *actionRogner;
     QAction *actionPipette;
     QAction *actionSelection;
@@ -100,6 +102,9 @@ private:
     QAction *actionCopier;
     QAction *actionCouper;
     QAction *actionColler;
+    QAction *actionGrabCut;
+    QAction* actionAvantPlan;
+    QAction* actionArrierePlan;
     QStack<QImage*>* pileAnnuler;
     QStack<QImage*>* pileRefaire;
     QImage* copie;
