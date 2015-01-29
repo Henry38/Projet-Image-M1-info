@@ -134,20 +134,12 @@ void HistoDialog::egalisation()
     if(RGB)
     {
         h = &histoRGB;
-        if(histoRGB.gray())
-        {
-            histoRGB.egalisation();
-        }
+        histoRGB.egalisation();
     }
     else
     {
         h = &histoYUV;
-        if(histoYUV.gray())
-        {
-            histoYUV.egalisation();
-            histoRGB.egalisation();
-            histoYUV.setImg(histoRGB.getImg());
-        }
+        histoYUV.egalisation();
     }
     h->afficheHisto();
     h->afficherLignes();
