@@ -329,6 +329,8 @@ QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration
             listPath->removeLast();
         } else {
             listPath->last().insert(0, index);
+            pixelTmp[index][y] = true;
+            img[index][y] = 999;
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
                     pixelUse[x][y] = pixelTmp[x][y];
@@ -389,17 +391,24 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
             }
         }
 
+        delete listPath;
+
     // Redimensionnement positif
-    } else {
+    } else if (targetWidth > imgDepart->width()) {
 
         listPath = cheminsOptimaux(imgEnergie, iteration);
         imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
 
         /* A faire */
+
+        delete listPath;
+    } else {
+
+        imgArrivee = new QImage(*imgDepart);
+
     }
 
     delete imgEnergie;
-    delete listPath;
 
     return imgArrivee;
 }
@@ -447,16 +456,28 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
                     //imgArrivee->setPixel(x, y-decalage, qRgb(255, 0, 0));
                 }
             }
+
         }
 
+        delete listPath;
+
     // Redimensionnement positif
+    } else if (targetHeight > imgDepart->height()) {
+
+        std::cout << "hello" << std::endl;
+        listPath = cheminsOptimaux(imgEnergie, iteration);
+        imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
+
+        /* A faire */
+
+        delete listPath;
     } else {
 
+        imgArrivee = new QImage(*imgDepart);
 
     }
 
     delete imgEnergie;
-    delete listPath;
 
     return imgArrivee;
 }
