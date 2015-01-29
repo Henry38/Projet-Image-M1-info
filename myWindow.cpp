@@ -536,7 +536,6 @@ bool myWindow::grabCut()
 }
 
 /* rogne la selection de l'image*/
-
 bool myWindow::rogner()
 {
     if(ui->graphicsView->modeSelection()){
@@ -565,7 +564,6 @@ bool myWindow::rogner()
 }
 
 /*redimensionne l'image a la taille du rectangle*/
-
 bool myWindow::redimensionnementIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
     delete img;
@@ -576,6 +574,7 @@ bool myWindow::redimensionnementIteractif(QRect rect) {
     return true;
 }
 
+/*redimensionne intelligement l'image a la largeur du rectangle*/
 bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementIntellEnLargeur(img, rect.width());
     delete img;
@@ -585,6 +584,7 @@ bool myWindow::redimensionnementIntellEnLargeurIteractif(QRect rect) {
     return true;
 }
 
+/*redimensionne intelligement l'image a la hauteur du rectangle*/
 bool myWindow::redimensionnementIntellEnHauteurIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementIntellEnHauteur(img, rect.height());
     delete img;
