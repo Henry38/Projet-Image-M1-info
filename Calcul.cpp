@@ -396,12 +396,33 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
     // Redimensionnement positif
     } else if (targetWidth > imgDepart->width()) {
 
+        // Recepuration des chemins de plus faible poids
         listPath = cheminsOptimaux(imgEnergie, iteration);
-        imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
+        imgArrivee = new QImage(imgDepart->width() + listPath->size(), imgDepart->height(), imgDepart->format());
 
-        /* A faire */
+        QImage tmp(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+        tmp.fill(Qt::black);
+        for (QVector<int> path : *listPath)  {
+            for (int y = 0; y < imgDepart->height(); ++y) {
+                tmp.setPixel(path.at(y), y, qRgb(255, 255, 255));
+            }
+        }
+
+        for (int y = 0; y < imgDepart->height(); ++y) {
+            decalage = 0;
+            for (int x = 0; x < imgDepart->width(); ++x) {
+                if (qRed(tmp.pixel(x, y)) == 0) {
+                    imgArrivee->setPixel(x+decalage, y, imgDepart->pixel(x, y));
+                } else {
+                    imgArrivee->setPixel(x+decalage, y, imgDepart->pixel(x, y));
+                    imgArrivee->setPixel(x+decalage+1, y, imgDepart->pixel(x, y));
+                    decalage++;
+                }
+            }
+        }
 
         delete listPath;
+
     } else {
 
         imgArrivee = new QImage(*imgDepart);
@@ -456,7 +477,6 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
                     //imgArrivee->setPixel(x, y-decalage, qRgb(255, 0, 0));
                 }
             }
-
         }
 
         delete listPath;
@@ -464,13 +484,33 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
     // Redimensionnement positif
     } else if (targetHeight > imgDepart->height()) {
 
-        std::cout << "hello" << std::endl;
+        // Recepuration des chemins de plus faible poids
         listPath = cheminsOptimaux(imgEnergie, iteration);
-        imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
+        imgArrivee = new QImage(imgDepart->width(), imgDepart->height() + listPath->size(), imgDepart->format());
 
-        /* A faire */
+        QImage tmp(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+        tmp.fill(Qt::black);
+        for (QVector<int> path : *listPath)  {
+            for (int x = 0; x < imgDepart->width(); ++x) {
+                tmp.setPixel(x, path.at(x), qRgb(255, 255, 255));
+            }
+        }
+
+        for (int x = 0; x < imgDepart->width(); ++x) {
+            decalage = 0;
+            for (int y = 0; y < imgDepart->height(); ++y) {
+                if (qRed(tmp.pixel(x, y)) == 0) {
+                    imgArrivee->setPixel(x, y+decalage, imgDepart->pixel(x, y));
+                } else {
+                    imgArrivee->setPixel(x, y+decalage, imgDepart->pixel(x, y));
+                    imgArrivee->setPixel(x, y+decalage+1, imgDepart->pixel(x, y));
+                    decalage++;
+                }
+            }
+        }
 
         delete listPath;
+
     } else {
 
         imgArrivee = new QImage(*imgDepart);

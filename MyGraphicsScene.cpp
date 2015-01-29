@@ -220,9 +220,9 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 if (x < item->x()+1) {
                     x = item->x()+1;
                 }
-                if (x > item->x() + item->pixmap().width()) {
-                    x = item->x() + item->pixmap().width();
-                }
+//                if (x > item->x() + item->pixmap().width()) {
+//                    x = item->x() + item->pixmap().width();
+//                }
                 dragXTool->setX(x);
                 rectTool->setRect(item->x(), item->y(), dragXTool->x(), dragYTool->y());
                 dragYTool->setX(rectTool->rect().width()/2);
@@ -231,9 +231,9 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 if (y < item->y()+1) {
                     y = item->y()+1;
                 }
-                if (y > item->y() + item->pixmap().height()) {
-                    y = item->y() + item->pixmap().height();
-                }
+//                if (y > item->y() + item->pixmap().height()) {
+//                    y = item->y() + item->pixmap().height();
+//                }
                 dragYTool->setY(y);
                 rectTool->setRect(item->x(), item->y(), dragXTool->x(), dragYTool->y());
                 dragXTool->setY(rectTool->rect().height()/2);
