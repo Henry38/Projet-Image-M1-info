@@ -1,6 +1,7 @@
 
 #include "MyGraphicsScene.h"
 #include <QPainter>
+#include <QWidget>
 
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {
@@ -166,7 +167,6 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         } else if (tmp == dragXTool) {
             offset = mouseEvent->scenePos() - dragXTool->pos();
             grabXTool = true;
-            //Calcul::sortImportantPath(item->pixmap().toImage());
         } else if (tmp == dragYTool) {
             offset = mouseEvent->scenePos() - dragYTool->pos();
             grabYTool = true;

@@ -343,7 +343,7 @@ bool myWindow::grabCut()
         const string name  = nom.toStdString();
 
         /*ouvre la copie*/
-        Mat im = cv::imread(name,0);
+        Mat im = cv::imread(name,1);
         matAvantGrabCut = im;
 
         /*supprimer copie*/
