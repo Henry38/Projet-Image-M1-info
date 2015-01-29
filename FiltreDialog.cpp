@@ -37,30 +37,25 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     gridLayout = new QGridLayout(this);
 
     moyenneur = new QRadioButton("moyenneur",this);
-    //moyenneur->setText("moyenneur");
     moyenneur->move(291,80);
     QRadioButton::connect(moyenneur,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
-    gaussien = new QRadioButton(this);
-    gaussien->setText("gaussien");
+    gaussien = new QRadioButton("gaussien",this);
     gaussien->move(291,110);
     QRadioButton::connect(gaussien,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
-    median = new QRadioButton(this);
-    median->setText("median");
+    median = new QRadioButton("median",this);
     median->move(291,140);
     QRadioButton::connect(median,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
-    personnalise = new QRadioButton(this);
-    personnalise->setText("perso");
+    personnalise = new QRadioButton("perso",this);
     personnalise->move(291,170);
     QRadioButton::connect(personnalise,SIGNAL(clicked()),this,SLOT(changerMatrice()));
 
    // QPushButton *ok = new QPushButton();
 
 
-    gradient = new QRadioButton(this);
-    gradient->setText("gradient");
+    gradient = new QRadioButton("gradient",this);
     gradient->move(291,200);
     QRadioButton::connect(gradient,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 /*

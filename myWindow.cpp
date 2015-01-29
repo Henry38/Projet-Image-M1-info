@@ -51,10 +51,18 @@ myWindow::~myWindow()
 void myWindow::repeindre()
 {
     /*gestion annuler/refaire*/
-    QImage* image = new QImage(img->copy());
-    pileAnnuler->push(image);
-    delete pileRefaire;
-    pileRefaire = new QStack<QImage*>();
+    if(!pileRefaire->isEmpty()){
+        //pileAnnuler->push(pileRefaire->at(0));
+        QImage* image = new QImage(img->copy());
+        pileAnnuler->push(image);
+        delete pileRefaire;
+        pileRefaire = new QStack<QImage*>();
+    }else{
+        QImage* image = new QImage(img->copy());
+        pileAnnuler->push(image);
+    }
+
+
 
     itemPixmap->setPixmap(QPixmap::fromImage(*img));
 
@@ -92,6 +100,8 @@ bool myWindow::open(QString url)
 
         delete pileAnnuler;
         pileAnnuler = new QStack<QImage*>();
+        delete pileRefaire;
+        pileRefaire = new QStack<QImage*>();
 
         repeindre();
         return true;
@@ -612,13 +622,13 @@ bool myWindow::annuler()
 
         /*recuperer image ds pile annuler*/
 
-        QImage * image = pileAnnuler->pop()/*at(pileAnnuler->size()-2)*/;
+        QImage * image = pileAnnuler->pop();
         image = new QImage(image->copy());
         /*mettre cette image dans pile refaire*/
         pileRefaire->push(image);
 
         /*afficher l'image*/
-        img = pileAnnuler->at(pileAnnuler->size()-1);
+        img = new QImage(pileAnnuler->at(pileAnnuler->size()-1)->copy());
         itemPixmap->setPixmap(QPixmap::fromImage(*img));
         ui->graphicsView->setImage(img);
         scene->setSceneRect(0, 0, img->width(), img->height());
