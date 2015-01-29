@@ -1,6 +1,6 @@
 #include "MyGraphicsView.h"
-#include "myWindow.h"
 #include <sstream>
+#include "myWindow.h"
 
 
 MyGraphicsView::MyGraphicsView(QWidget *parent) :
@@ -95,14 +95,17 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
 {
     QGraphicsView::mousePressEvent(e);
 
-    if (modeSelection() && e->button() == Qt::LeftButton) {
+    if (modeSelection() && e->button() == Qt::LeftButton)
+    {
         rubberBand->hide();
         pret = false;
         HG = e->pos();
-        //cout << "Coordonnees : (" << HG.x() << "," << HG.y() << ")"<< endl;
+        myWindow *w = (myWindow*)this->window();
+        w->degriserBoutons();
         rubberBand->setGeometry(QRect(HG, QSize()));
         rubberBand->show();
-    } else if (modePipette() && e->button() == Qt::LeftButton) {
+    } else if (modePipette() && e->button() == Qt::LeftButton)
+    {
         /* recuperer position souris ; recuperer pixel qui correspond à l'image */
         QPoint *pix = new QPoint(mapToScene(e->pos()).toPoint().x(), mapToScene(e->pos()).toPoint().y());
         if(estDansImage(pix)){

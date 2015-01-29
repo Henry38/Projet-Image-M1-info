@@ -1,6 +1,7 @@
 
 #include "MyGraphicsScene.h"
 #include <QPainter>
+#include "myWindow.h"
 
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {

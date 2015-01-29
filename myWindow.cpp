@@ -50,15 +50,18 @@ myWindow::~myWindow()
 
 void myWindow::repeindre()
 {
+    /*gestion annuler/refaire*/
+    QImage* image = new QImage(img->copy());
+    pileAnnuler->push(image);
+    delete pileRefaire;
+    pileRefaire = new QStack<QImage*>();
+
     itemPixmap->setPixmap(QPixmap::fromImage(*img));
 
     ui->graphicsView->setImage(img);
     scene->setSceneRect(0, 0, img->width(), img->height());
     scene->update();
 
-    QImage* image = new QImage(img->copy(img->rect()));
-    pileAnnuler->push(image);
-    pileRefaire->empty();
     if (scene->isModeRedimension() || scene->isModeRedimensionIntell()) {
         scene->updateVisibleTool();
     }
@@ -85,6 +88,10 @@ bool myWindow::open(QString url)
         if(img->format() <= QImage::Format_Indexed8){
             img->convertToFormat(QImage::Format_RGB32);
         }
+
+
+        delete pileAnnuler;
+        pileAnnuler = new QStack<QImage*>();
 
         repeindre();
         return true;
@@ -119,6 +126,7 @@ void myWindow::initMenu()
     actionSauvegarder = new QAction("&Sauvegarder",this);
     actionSauvegarderSous = new QAction("&Sauvegarder sous...",this);
     actionQuitter = new QAction("&Quitter", this);
+
     menuFichier->addAction(actionOuvrir);
     menuFichier->addAction(actionSauvegarder);
     menuFichier->addAction(actionSauvegarderSous);
@@ -133,8 +141,8 @@ void myWindow::initMenu()
     actionRedimensionner = new QAction("&Redimensionner",this);
     actionFiltre = new QAction("&Filtre",this);
     actionContours = new QAction("&Contours",this);
-    actionGrabCut = new QAction("&GrabCut",this);
     actionRogner = new QAction("&Rogner",this);
+
     menuEdition->addAction(actionHistogramme);
     menuEdition->addAction(actionNiveauDeGris);
     menuEdition->addAction(actionFlouter);
@@ -142,15 +150,15 @@ void myWindow::initMenu()
     menuEdition->addAction(actionRedimensionner);
     menuEdition->addAction(actionFiltre);
     menuEdition->addAction(actionContours);
-    menuEdition->addAction(actionGrabCut);
     menuEdition->addAction(actionRogner);
 
 
 
     QMenu *menuGrabCut =  menuBar()->addMenu("&Grabcut");
 
-    QAction* actionAvantPlan = new QAction("&Select Avt Plan",this);
-    QAction* actionArrierePlan = new QAction("&Select Arr Plan",this);
+    actionGrabCut = new QAction("&GrabCut",this);
+    actionAvantPlan = new QAction("&Select Avt Plan",this);
+    actionArrierePlan = new QAction("&Select Arr Plan",this);
 
     menuGrabCut->addAction(actionAvantPlan);
     menuGrabCut->addAction(actionArrierePlan);
@@ -176,6 +184,12 @@ void myWindow::initMenu()
 
     QObject::connect(actionAvantPlan,SIGNAL(triggered()),this,SLOT(selectAvtPlan()));
     QObject::connect(actionArrierePlan,SIGNAL(triggered()),this,SLOT(selectArrPlan()));
+
+    /*On grise les boutons qu'il faut*/
+    actionRogner->setEnabled(false);
+    actionGrabCut->setEnabled(false);
+    actionAvantPlan->setEnabled(false);
+    actionArrierePlan->setEnabled(false);
 }
 
 void myWindow::initBarreOutils()
@@ -224,7 +238,6 @@ void myWindow::initBarreOutils()
     QObject::connect(raccourciColler, SIGNAL(activated()),this, SLOT(coller()));
     //QObject::connect(actionColler,SIGNAL(triggered()),this,SLOT(coller()));
 
-    actionRogner->setEnabled(false);
 }
 
 /* Sauvegarder */
@@ -327,7 +340,7 @@ bool myWindow::grabCut()
     ui->graphicsView->cacherSelect();
 
 
-    if(ui->graphicsView->getPret()){
+   if(ui->graphicsView->getPret()){
 
         /*Tab temp à ne pas modifier tt que sur mme image*/
         Mat bgdModel = *(new Mat());
@@ -343,15 +356,15 @@ bool myWindow::grabCut()
         const string name  = nom.toStdString();
 
         /*ouvre la copie*/
-        Mat im = cv::imread(name,0);
-        matAvantGrabCut = im;
+        Mat im = cv::imread(name,1);
+       // matAvantGrabCut = im;
 
         /*supprimer copie*/
-       // QFile::remove(nom);
+        QFile::remove(nom);
 
         /*masque*/
         Mat mask;
-        mask.create( im.size(), CV_8UC1);
+        mask.create(im.size(), CV_8UC1);
 
         /*ROI : region of interest*/
         QPoint HG = ui->graphicsView->getHG();
@@ -364,7 +377,7 @@ bool myWindow::grabCut()
         ui->graphicsView->setPret(false);
 
         /*rect : selection*/
-        cv::grabCut( im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
+        cv::grabCut(im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_RECT);
 
         /*fait le decoupage*/
         compare(mask,GC_PR_FGD,mask,CMP_EQ);
@@ -378,6 +391,8 @@ bool myWindow::grabCut()
         image = image.rgbSwapped();
         img = new QImage(image);
 
+
+        griserBoutons();
         repeindre();
         return true;
    }else{
@@ -425,12 +440,15 @@ bool myWindow::grabCut()
             /*appliquer mask au grabcut*/
 
             return true;
+        }else{
+            return false;
         }
-       return false;
    }
+    return false;
 }
 
 /* rogne la selection de l'image*/
+
 bool myWindow::rogner()
 {
     if(ui->graphicsView->modeSelection()){
@@ -445,6 +463,7 @@ bool myWindow::rogner()
             img = Calcul::rognerImage(img,HG,BD);
             //*img = img->copy(rect);
             ui->graphicsView->cacherSelect();
+            griserBoutons();
             ui->graphicsView->setPret(false);
             repeindre();
             return true;
@@ -458,6 +477,7 @@ bool myWindow::rogner()
 }
 
 /*redimensionne l'image a la taille du rectangle*/
+
 bool myWindow::redimensionnementIteractif(QRect rect) {
     QImage *tmp = Calcul::redimensionnementEnLargeur(img, rect.width());
     delete img;
@@ -490,11 +510,10 @@ bool myWindow::selection()
 {
     if (ui->actionSelection->isChecked()) {
         ui->graphicsView->setModeSelection();
-        actionRogner->setEnabled(true);
     } else {
         ui->graphicsView->resetMode();
         ui->graphicsView->cacherSelect();
-        actionRogner->setEnabled(false);
+        griserBoutons();
     }
 
     if(ui->actionPipette->isChecked()) {
@@ -524,7 +543,7 @@ bool myWindow::pipette()
     if(ui->actionSelection->isChecked()){
         ui->actionSelection->setChecked(false);
         ui->graphicsView->cacherSelect();
-        actionRogner->setEnabled(false);
+        griserBoutons();
     }
     if (ui->actionRedimensionner->isChecked()) {
         ui->actionRedimensionner->setChecked(false);
@@ -549,7 +568,7 @@ bool myWindow::redimensionMode()
     if(ui->actionSelection->isChecked()){
         ui->actionSelection->setChecked(false);
         ui->graphicsView->cacherSelect();
-        actionRogner->setEnabled(false);
+        griserBoutons();
     }
     if(ui->actionPipette->isChecked()){
         ui->actionPipette->setChecked(false);
@@ -574,7 +593,7 @@ bool myWindow::redimensionIntellMode()
     if(ui->actionSelection->isChecked()){
         ui->actionSelection->setChecked(false);
         ui->graphicsView->cacherSelect();
-        actionRogner->setEnabled(false);
+        griserBoutons();
     }
     if(ui->actionPipette->isChecked()){
         ui->actionPipette->setChecked(false);
@@ -587,18 +606,19 @@ bool myWindow::redimensionIntellMode()
     return true;
 }
 
-bool myWindow::annuler(){
-    cout<<"annuler"<<endl;
-    if(!pileAnnuler->isEmpty()){
+bool myWindow::annuler()
+{
+    if(pileAnnuler->size()>1){
+
         /*recuperer image ds pile annuler*/
 
-        QImage * image = pileAnnuler->pop();
-        image = new QImage(image->copy(image->rect()));
+        QImage * image = pileAnnuler->pop()/*at(pileAnnuler->size()-2)*/;
+        image = new QImage(image->copy());
         /*mettre cette image dans pile refaire*/
         pileRefaire->push(image);
 
         /*afficher l'image*/
-        img = image;
+        img = pileAnnuler->at(pileAnnuler->size()-1);
         itemPixmap->setPixmap(QPixmap::fromImage(*img));
         ui->graphicsView->setImage(img);
         scene->setSceneRect(0, 0, img->width(), img->height());
@@ -606,13 +626,14 @@ bool myWindow::annuler(){
 
         return true;
     }else{
-        cout<<"FAUX! "<<endl;
+
         return false;
     }
 }
 
-bool myWindow::refaire(){
-    cout<<"refaire"<<endl;
+
+bool myWindow::refaire()
+{
     if(!pileRefaire->isEmpty()){
         /*recuperer image ds pile refaire*/
         QImage * image =  pileRefaire->pop();
@@ -620,6 +641,7 @@ bool myWindow::refaire(){
         /*mettre cette image dans pile annuler*/
         pileAnnuler->push(image);
         /*afficher image*/
+
         img = image;
         itemPixmap->setPixmap(QPixmap::fromImage(*img));
         ui->graphicsView->setImage(img);
@@ -628,15 +650,15 @@ bool myWindow::refaire(){
 
         return true;
     }else{
-        cout<<"FAUX! "<<endl;
         return false;
     }
 
 
 }
 
-bool myWindow::copier(){
-    cout<<"copier"<<endl;
+
+bool myWindow::copier()
+{
 
 
     QPoint HG = ui->graphicsView->getHG();
@@ -648,8 +670,8 @@ bool myWindow::copier(){
     return true;
 }
 
-bool myWindow::couper(){
-    cout << "couper"<<endl;
+bool myWindow::couper()
+{
     QPoint HG = ui->graphicsView->getHG();
     QPoint BD = ui->graphicsView->getBD();
     /*Si selection dépasse de l'image*/
@@ -664,21 +686,42 @@ bool myWindow::couper(){
     return true;
 }
 
-bool myWindow::coller(){
-    cout <<"coller"<<endl;
+bool myWindow::coller()
+{
     /*remplacer avec copie là où pointeur de souris*/
     return true;
 }
 
 /* Selectionne partie de l'image qui fait partie de l'avant plan*/
+
 void myWindow::selectAvtPlan(){
     scene->viderAvantPlan();
     scene->enableSelectionAvantPlan();
 }
 
 /*Selectionne partie de l'image qui fait partie de l'arriere plan*/
+
 void myWindow::selectArrPlan(){
     scene->viderArrierePlan();
     scene->enableSelectionArrierePlan();
 }
 
+void myWindow::degriserBoutons(){
+
+    actionRogner->setEnabled(true);
+    actionGrabCut->setEnabled(true);
+}
+
+void myWindow::griserBoutons(){
+
+    actionRogner->setEnabled(false);
+    actionGrabCut->setEnabled(false);
+}
+
+void myWindow::majAnnuler(){
+
+    QImage* image = new QImage(img->copy());
+    pileAnnuler->push(image);
+    delete pileRefaire;
+    pileRefaire = new QStack<QImage*>();
+}

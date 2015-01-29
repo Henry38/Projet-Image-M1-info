@@ -36,8 +36,8 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
 
     gridLayout = new QGridLayout(this);
 
-    moyenneur = new QRadioButton(this);
-    moyenneur->setText("moyenneur");
+    moyenneur = new QRadioButton("moyenneur",this);
+    //moyenneur->setText("moyenneur");
     moyenneur->move(291,80);
     QRadioButton::connect(moyenneur,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
 
