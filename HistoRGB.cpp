@@ -81,6 +81,43 @@ void HistoRGB::etalement()
 
 void HistoRGB::egalisation()
 {
+    if(gris)
+    {
+        egalisationGris();
+    }
+    else
+    {
+        QRgb pixel;
+        float transformationRouge[256];
+        float transformationVert[256];
+        float transformationBleu[256];
+        float constante = 255.0/((float)(img->width()*img->height()));
+        int sommeRouge = 0;
+        int sommeVert = 0;
+        int sommeBleu = 0;
+        for(int i = 0; i < 256; i++)
+        {
+            sommeRouge+=composantes[0][i];
+            transformationRouge[i] = constante*sommeRouge;
+            sommeVert+=composantes[0][i];
+            transformationVert[i] = constante*sommeVert;
+            sommeBleu+=composantes[0][i];
+            transformationBleu[i] = constante*sommeBleu;
+        }
+        for(int i = 0; i < img->width(); i++)
+        {
+            for(int j = 0; j < img->height(); j++)
+            {
+                pixel = img->pixel(i,j);
+
+                img->setPixel(i,j,qRgba(transformationRouge[qRed(pixel)],transformationVert[qGreen(pixel)],transformationBleu[qBlue(pixel)],qAlpha(pixel)));
+            }
+        }
+    }
+}
+
+void HistoRGB::egalisationGris()
+{
     QRgb pixel;
     float transformation[256];
     float constante = 255.0/((float)(img->width()*img->height()));

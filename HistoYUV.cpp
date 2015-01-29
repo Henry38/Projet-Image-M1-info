@@ -101,7 +101,64 @@ void HistoYUV::etalement(Couple cY)
 
 void HistoYUV::egalisation()
 {
+    QRgb pixel;
+    float Y, U, V;
+    float Yfin, Ufin, Vfin;
+    float transformation[256];
+    float constante = 255.0/((float)(img->width()*img->height()));
+    int somme = 0;
+    int tmp;
+    for(int i = 0; i < 256; i++)
+    {
+        somme+=composantes[0][i];
+        transformation[i] = constante*somme;
+    }
+    for(int i = 0; i < img->width(); i++)
+    {
+        for(int j = 0; j < img->height(); j++)
+        {
+            pixel = img->pixel(i,j);
 
+
+            tmp = 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
+
+            Y = transformation[tmp];
+
+            U = 0.492*(qBlue(pixel)-tmp);
+            V = 0.877*(qRed(pixel)-tmp);
+
+            Yfin = Y+1.13983*V;
+            Ufin = Y-0.39465*U-0.58060*V;
+            Vfin = Y+2.03211*U;
+
+            if(Ufin > 255)
+            {
+                Ufin = 255;
+            }
+            else if(Ufin < 0)
+            {
+                Ufin = 0;
+            }
+            if(Vfin > 255)
+            {
+                Vfin = 255;
+            }
+            else if(Vfin < 0)
+            {
+                Vfin = 0;
+            }
+            if(Yfin > 255)
+            {
+                Yfin = 255;
+            }
+            else if(Yfin < 0)
+            {
+                Yfin = 0;
+            }
+
+            img->setPixel(i,j,qRgba(Yfin,Ufin,Vfin,qAlpha(pixel)));
+        }
+    }
 }
 
 int *HistoYUV::getY()

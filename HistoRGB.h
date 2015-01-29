@@ -16,6 +16,7 @@ public:
     void etalement(Couple c);
     void etalement();
     void egalisation();
+    void egalisationGris();
 
     void initDelimitation(Couple c);
 
