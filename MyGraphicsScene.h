@@ -23,9 +23,20 @@ public:
     void disableRedimension();
     void enableRedimensionIntell();
     void disableRedimensionIntell();
+    void enableSelectionAvantPlan();
+    void disableSelectionAvantPlan();
+    void enableSelectionArrierePlan();
+    void disableSelectionArrierePlan();
     bool isModeRedimension();
     bool isModeRedimensionIntell();
+    bool isModeSelectionAvantPlan();
+    bool isModeSelectionArrierePlan();
     void updateVisibleTool();
+    void viderAvantPlan();
+    void viderArrierePlan();
+    QList<QPoint> effacerDoublons(QList<QPoint>);
+    QList<QPoint> pointsAvant;
+    QList<QPoint> pointsArriere;
 
 private:
     // Attributs

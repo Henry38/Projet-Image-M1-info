@@ -14,9 +14,10 @@ public:
     void redimensionnerMatrix(int i, int val = 1);
     void remplirMatrix(int val);
     void modifierCaseMatrix(int i, int j, int val);
-    void convolution(QImage *image);
+    void convolution(QImage *image, int mode = 0);
     void retournerMatrix();
     Matrix* convolution(Matrix *mat);
+    int*** convolution2(QImage*);
     void convolutionCascade(Matrix*,Matrix*,int);
     void convolutionMedian(QImage*,int);
     void setNoyau(Matrix*);

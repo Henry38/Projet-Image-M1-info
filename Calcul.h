@@ -18,11 +18,15 @@ public:
     static QVector<float> getYUV(QRgb);
     static float niveauDeGris(QRgb);
     static void recadrer(QImage*,QPoint*,QPoint*);
+    static QImage* rognerImage(QImage* src, QPoint HG, QPoint BD);
 
 private:
     //Methodes
     static void lessImportantVerticalPath(QImage*, QVector<int>*);
     static void lessImportantHorizontalPath(QImage*, QVector<int>*);
+
+    static QVector<QVector<int>>* cheminsOptimaux(QImage*, int, bool);
+
 
 };
 
