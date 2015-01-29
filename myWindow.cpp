@@ -409,7 +409,7 @@ bool myWindow::grabCut()
         repeindre();
         return true;
    }else{
-        if(scene->isModeSelectionAvantPlan()){
+        if(scene->isModeSelectionAvantPlan() && !(scene->pointsAvant.isEmpty())){
 
             /*Supprime les doublons de la liste de Points*/
             scene->pointsAvant = scene->effacerDoublons(scene->pointsAvant);
@@ -469,7 +469,7 @@ bool myWindow::grabCut()
             repeindre();
             return true;
 
-        }else if(scene->isModeSelectionArrierePlan()){
+        }else if(scene->isModeSelectionArrierePlan() && !(scene->pointsArriere.isEmpty())){
             /*Supprime les doublons de la liste de Points*/
             scene->pointsArriere = scene->effacerDoublons(scene->pointsArriere);
 
