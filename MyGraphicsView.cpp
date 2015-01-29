@@ -120,6 +120,10 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *e)
         }
         delete pix;
     }
+    if(e->button() != Qt::LeftButton){
+        rubberBand->hide();
+        pret = false;
+    }
 }
 
 void MyGraphicsView::mouseMoveEvent(QMouseEvent *e)
