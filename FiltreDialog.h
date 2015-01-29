@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QRadioButton>
 #include <QLineEdit>
+#include <QCheckBox>
 
 #include "AbstractDialog.h"
 #include "Calcul.h"
@@ -29,12 +30,13 @@ public slots:
 private:
     QLabel *text;
     QGridLayout *gridLayout;
-    QRadioButton *moyenneur,*gaussien,*median,*personnalise,*gradient/*,*sobel,*robert*/;
+    QRadioButton *moyenneur,*gaussien,*median,*personnalise,*gradient;
     QSpinBox *spinBox;
     QImage *imgSource, *apercu;
     bool ok_clicked, matriceRemplie,modePerso;
     QLineEdit*** matP;
     int valMax,dimMatP;
+    QCheckBox *normalise;
 
 public slots:
     void updateViewer();

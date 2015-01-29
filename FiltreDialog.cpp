@@ -15,6 +15,7 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
     spinBox->move(330, 50);
     spinBox->setMinimum(3);
     spinBox->setMaximum(valMax); //a definir
+    spinBox->setSingleStep(2);
     QSpinBox::connect(spinBox,SIGNAL(valueChanged(int)),this,SLOT(changerMatricePerso(int)));
 
     QDoubleValidator *validator = new QDoubleValidator(-99.99,99.99,2,this);
@@ -50,25 +51,15 @@ FiltreDialog::FiltreDialog(QImage *img) : AbstractDialog() {
 
     personnalise = new QRadioButton("perso",this);
     personnalise->move(291,170);
+    normalise = new QCheckBox("normaliser",this);
+    normalise->move(450,330);
     QRadioButton::connect(personnalise,SIGNAL(clicked()),this,SLOT(changerMatrice()));
-
-   // QPushButton *ok = new QPushButton();
 
 
     gradient = new QRadioButton("gradient",this);
     gradient->move(291,200);
     QRadioButton::connect(gradient,SIGNAL(clicked()),this,SLOT(cacherMatrice()));
-/*
 
-    sobel = new QRadioButton(this);
-    sobel->setText("sobel");
-    sobel->move(291,230);
-
-
-    robert = new QRadioButton(this);
-    robert->setText("robert");
-    robert->move(291,260);
-*/
     modePerso = false;
     matriceRemplie = false;
     display(apercu);
@@ -126,7 +117,12 @@ void FiltreDialog::updateViewer()
 
         if(entreeValide){
             c.setNoyau(noyau);
-            c.convolution(apercu);
+            if(normalise->isChecked()){
+                c.convolution(apercu,true);
+            }else{
+                c.convolution(apercu,false);
+
+            }
             entreeValide = false;
         }else{
             cout<<"Il faut remplir toutes les cases !"<<endl;

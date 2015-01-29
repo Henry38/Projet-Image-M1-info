@@ -9,6 +9,7 @@ using namespace cv;
 
 myWindow::myWindow() : QMainWindow(0), ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
     img = new QImage();
 
@@ -51,13 +52,15 @@ myWindow::~myWindow()
 void myWindow::repeindre()
 {
     /*gestion annuler/refaire*/
-    if(!pileRefaire->isEmpty()){
+    if(!pileRefaire->isEmpty())
+    {
         //pileAnnuler->push(pileRefaire->at(0));
         QImage* image = new QImage(img->copy());
         pileAnnuler->push(image);
         delete pileRefaire;
         pileRefaire = new QStack<QImage*>();
-    }else{
+    }else
+    {
         QImage* image = new QImage(img->copy());
         pileAnnuler->push(image);
     }
@@ -198,8 +201,8 @@ void myWindow::initMenu()
     /*On grise les boutons qu'il faut*/
     actionRogner->setEnabled(false);
     actionGrabCut->setEnabled(false);
-    actionAvantPlan->setEnabled(false);
-    actionArrierePlan->setEnabled(false);
+//    actionAvantPlan->setEnabled(false);
+//    actionArrierePlan->setEnabled(false);
 }
 
 void myWindow::initBarreOutils()
@@ -356,7 +359,7 @@ bool myWindow::grabCut()
         Mat bgdModel = *(new Mat());
         Mat fgdModel= *(new Mat());
 
-        /*nb d'iter de l'algo avt de rvoyer le res*/
+        /*nb d'iter de l'algo avt de renvoyer le res*/
         int iterCount =1;
 
         /*sauvegarde une copie de l'image*/
@@ -407,48 +410,123 @@ bool myWindow::grabCut()
         return true;
    }else{
         if(scene->isModeSelectionAvantPlan()){
+
             /*Supprime les doublons de la liste de Points*/
             scene->pointsAvant = scene->effacerDoublons(scene->pointsAvant);
 
-            /* */
+
+            /*Tab temp à ne pas modifier tt que sur mme image*/
             Mat bgdModel = *(new Mat());
             Mat fgdModel= *(new Mat());
             Rect rect;
 
-            /*remplir mat avec listePoints*/
-            Mat mask;
-            mask.create( matAvantGrabCut.size(), CV_8UC1);
-            /*cree copie*/
+            /*nb d'iter de l'algo avt de renvoyer le res*/
+            int iterCount =1;
+
+            /*sauvegarde une copie de l'image*/
             QString extension = "copie.jpg";
             QString nom = QString::fromStdString(filename.toStdString()) + extension;
             save(nom);
             const string name  = nom.toStdString();
 
             /*ouvre la copie*/
-            Mat im = cv::imread(name,0);
-            /*supprime*/
+            Mat im = cv::imread(name,1);
+
+            /*supprimer copie*/
             QFile::remove(nom);
 
+            /*masque*/
+            Mat mask;
+            mask.create(im.rows,im.cols, CV_8UC1);
+            for(int i=0;i<mask.rows;i++)
+            {
+                for (int j = 0; j < mask.cols; j++)
+                {
+                    mask.at<uchar>(i,j) = GC_PR_FGD;
+                }
 
-//             for(int i=0;i<scene->pointsAvant.size();i++){
-//                 circle( mask, scene->pointsAvant.at(i), 2, Scalar(255,0,0), -1 );
-//             }
+            }
 
+            for(int i=0;i<scene->pointsAvant.size();i++){
+                mask.at<uchar>(scene->pointsAvant.at(i).y(),scene->pointsAvant.at(i).x()) = GC_BGD;
+            }
 
+            /*rect : selection*/
+            cv::grabCut(im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_MASK);
 
-            /*appliquer mask au grabcut*/
+            /*fait le decoupage*/
+            compare(mask,GC_PR_BGD,mask,CMP_EQ);
 
-          //  cv::grabCut( im, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK);
+            /*affichage*/
+            Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+            im.copyTo(fgd,mask);
 
+            /*MatToQImage*/
+            QImage image(fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB888 );
+            image = image.rgbSwapped();
+            img = new QImage(image);
+
+            repeindre();
             return true;
+
         }else if(scene->isModeSelectionArrierePlan()){
             /*Supprime les doublons de la liste de Points*/
             scene->pointsArriere = scene->effacerDoublons(scene->pointsArriere);
 
-            /*remplir mat avec listePoints*/
 
-            /*appliquer mask au grabcut*/
+            /*Tab temp à ne pas modifier tt que sur mme image*/
+            Mat bgdModel = *(new Mat());
+            Mat fgdModel= *(new Mat());
+            Rect rect;
 
+            /*nb d'iter de l'algo avt de renvoyer le res*/
+            int iterCount =1;
+
+            /*sauvegarde une copie de l'image*/
+            QString extension = "copie.jpg";
+            QString nom = QString::fromStdString(filename.toStdString()) + extension;
+            save(nom);
+            const string name  = nom.toStdString();
+
+            /*ouvre la copie*/
+            Mat im = cv::imread(name,1);
+
+            /*supprimer copie*/
+            QFile::remove(nom);
+
+            /*masque*/
+            Mat mask;
+            mask.create(im.rows,im.cols, CV_8UC1);
+            for(int i=0;i<mask.rows;i++)
+            {
+                for (int j = 0; j < mask.cols; j++)
+                {
+                    mask.at<uchar>(i,j) = GC_PR_BGD;
+                }
+
+            }
+
+            for(int i=0;i<scene->pointsArriere.size();i++){
+                mask.at<uchar>(scene->pointsArriere.at(i).y(),scene->pointsArriere.at(i).x()) = GC_FGD;
+            }
+
+            /*rect : selection*/
+            cv::grabCut(im, mask, rect, bgdModel, fgdModel, iterCount, GC_INIT_WITH_MASK);
+
+            /*fait le decoupage*/
+            compare(mask,GC_PR_BGD,mask,CMP_EQ);
+
+            /*affichage*/
+            Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+            im.copyTo(fgd,mask);
+
+
+            /*MatToQImage*/
+            QImage image(fgd.data, fgd.cols, fgd.rows, fgd.step, QImage::Format_RGB888 );
+            image = image.rgbSwapped();
+            img = new QImage(image);
+
+            repeindre();
             return true;
         }else{
             return false;
@@ -713,6 +791,7 @@ bool myWindow::coller()
 /* Selectionne partie de l'image qui fait partie de l'avant plan*/
 
 void myWindow::selectAvtPlan(){
+    actionGrabCut->setEnabled(true);
     scene->viderAvantPlan();
     scene->enableSelectionAvantPlan();
 }
@@ -720,6 +799,7 @@ void myWindow::selectAvtPlan(){
 /*Selectionne partie de l'image qui fait partie de l'arriere plan*/
 
 void myWindow::selectArrPlan(){
+    actionGrabCut->setEnabled(true);
     scene->viderArrierePlan();
     scene->enableSelectionArrierePlan();
 }
