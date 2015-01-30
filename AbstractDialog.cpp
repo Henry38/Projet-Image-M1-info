@@ -20,6 +20,8 @@ AbstractDialog::AbstractDialog() : QDialog(0), ui(new Ui::AbstractDialog)
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acceptDialog()));
+
+
 }
 
 AbstractDialog::~AbstractDialog()

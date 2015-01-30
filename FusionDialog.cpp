@@ -1,5 +1,6 @@
 
 #include "FusionDialog.h"
+#include "ui_AbstractDialog.h"
 
 FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
     imgSource = img;
@@ -27,6 +28,8 @@ FusionDialog::FusionDialog(QImage *img) : AbstractDialog() {
 
     QObject::connect(openButton, SIGNAL(clicked()), this, SLOT(openFilename()));
     QObject::connect(slider, SIGNAL(valueChanged(int)), this, SLOT(writeOpacity(int)));
+
+    ui->pushButton->setVisible(false);
 
     writeOpacity(slider->value());
     updateViewer();

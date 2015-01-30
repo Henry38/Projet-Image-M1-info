@@ -1,6 +1,7 @@
 
 #include "MyGraphicsScene.h"
 #include <QPainter>
+#include "myWindow.h"
 
 MyGraphicsScene::MyGraphicsScene(QWidget *parent) : QGraphicsScene(parent)
 {
@@ -149,12 +150,10 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
     if(isModeSelectionAvantPlan()){
             if(mouseEvent->button() == Qt::LeftButton){
-                //cout <<"clique gauche avant plan"<<endl;
 
             }
     }else if(isModeSelectionArrierePlan()){
-            if(mouseEvent->button() == Qt::RightButton){
-               //cout <<"clique droit arriere plan"<<endl;
+            if(mouseEvent->button() == Qt::LeftButton){
 
             }
     }else{
@@ -166,7 +165,6 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         } else if (tmp == dragXTool) {
             offset = mouseEvent->scenePos() - dragXTool->pos();
             grabXTool = true;
-            //Calcul::sortImportantPath(item->pixmap().toImage());
         } else if (tmp == dragYTool) {
             offset = mouseEvent->scenePos() - dragYTool->pos();
             grabYTool = true;
@@ -179,37 +177,32 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseMoveEvent(mouseEvent);
 
     if(isModeSelectionAvantPlan()){
-                //cout <<"clique gauche avant plan"<<endl;
                 /*colorie les points selectionnés*/
 
-                //a mettre ds un paintevent si on veut utiliser !!
-               // QPainter * paint = new QPainter();
-               // paint->drawRect(QRect(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()-1),QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()+1)));
+         /*ajouter point dans liste*/
+         pointsAvant.push_front(mouseEvent->scenePos().toPoint());
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x(),mouseEvent->scenePos().toPoint().y()-1));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()-1));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x(),mouseEvent->scenePos().toPoint().y()+1));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()+1));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()+1));
+         pointsAvant.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()-1));
 
-                /*ajouter point dans liste*/
-                pointsAvant.push_front(mouseEvent->pos().toPoint());
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x(),mouseEvent->pos().toPoint().y()-1));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()-1));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x(),mouseEvent->pos().toPoint().y()+1));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()+1));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()+1));
-                pointsAvant.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()-1));
-        }else if(isModeSelectionArrierePlan()){
-                //cout <<"clique droit arriere plan"<<endl;
+     }else if(isModeSelectionArrierePlan()){
 
-                pointsArriere.push_front(mouseEvent->pos().toPoint());
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x(),mouseEvent->pos().toPoint().y()-1));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()-1));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x(),mouseEvent->pos().toPoint().y()+1));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()+1));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()-1,mouseEvent->pos().toPoint().y()+1));
-                pointsArriere.push_front(QPoint(mouseEvent->pos().toPoint().x()+1,mouseEvent->pos().toPoint().y()-1));
+        pointsArriere.push_front(mouseEvent->scenePos().toPoint());
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x(),mouseEvent->scenePos().toPoint().y()-1));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()-1));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x(),mouseEvent->scenePos().toPoint().y()+1));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()+1));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()-1,mouseEvent->scenePos().toPoint().y()+1));
+        pointsArriere.push_front(QPoint(mouseEvent->scenePos().toPoint().x()+1,mouseEvent->scenePos().toPoint().y()-1));
 
-        }else{
+      }else{
             if (grabTool) {
                 QPointF point = mouseEvent->scenePos() - offset;
                 if (point.x() < item->x()+1) {
@@ -236,9 +229,9 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 if (y < item->y()+1) {
                     y = item->y()+1;
                 }
-                if (y > item->y() + item->pixmap().height()) {
-                    y = item->y() + item->pixmap().height();
-                }
+//                if (y > item->y() + item->pixmap().height()) {
+//                    y = item->y() + item->pixmap().height();
+//                }
                 dragYTool->setY(y);
                 rectTool->setRect(item->x(), item->y(), dragXTool->x(), dragYTool->y());
                 dragXTool->setY(rectTool->rect().height()/2);

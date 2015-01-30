@@ -22,10 +22,7 @@ public:
 
 private:
     //Methodes
-    static void lessImportantVerticalPath(QImage*, QVector<int>*);
-    static void lessImportantHorizontalPath(QImage*, QVector<int>*);
-
-    static QVector<QVector<int>>* cheminsOptimaux(QImage*, int, bool);
+    static QVector<QVector<int> >* cheminsOptimaux(QImage*, int);
 
 
 };
