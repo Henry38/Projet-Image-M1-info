@@ -3,6 +3,7 @@
 #include "Convolution.h"
 #include "Matrix.h"
 
+/*augmente les contraste de l'image*/
 QImage* Calcul::contour(QImage *imgDepart) {
 
     //return normeDuGradient(imgDepart);
@@ -22,6 +23,7 @@ QImage* Calcul::contour(QImage *imgDepart) {
     return imgArrivee;
 }
 
+/*retourne l'image en niveau de gris*/
 QImage* Calcul::imageEnNiveauDeGris(QImage *imgDepart) {
     QImage *imgArrivee = new QImage(imgDepart->width(), imgDepart->height(), imgDepart->format());
 
@@ -43,6 +45,7 @@ QImage* Calcul::imageEnNiveauDeGris(QImage *imgDepart) {
     return imgArrivee;
 }
 
+/*redimensionnement classique de l'image a la largeur indiquee*/
 QImage* Calcul::redimensionnementEnLargeur(QImage *imgDepart, int targetWidth) {
     QImage *imgArrivee = new QImage(targetWidth, imgDepart->height(), QImage::Format_ARGB32);
     for (int x=0; x<imgArrivee->width(); x++) {
@@ -125,6 +128,7 @@ QImage* Calcul::redimensionnementEnLargeur(QImage *imgDepart, int targetWidth) {
     return imgArrivee;
 }
 
+/*redimensionnement classique de l'image a la hauteur indiquee*/
 QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) {
     QImage *imgArrivee = new QImage(imgDepart->width(), targetHeight, QImage::Format_ARGB32);
     for (int x=0; x<imgArrivee->width(); x++) {
@@ -207,8 +211,8 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
     return imgArrivee;
 }
 
-/*retourne l'ensemble des coordonnees x des pixels du chemin le moins informatif*/
-QVector<QVector<int> >* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration) {
+/*retourne au plus les k chemins verticaux trouves sur l'image d'energie*/
+QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration) {
     int width = imgEnergie->width();
     int height = imgEnergie->height();
 
@@ -354,6 +358,7 @@ QVector<QVector<int> >* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteratio
     return listPath;
 }
 
+/*redimensionnement intelligent de l'image a la largeur indiquee*/
 QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWidth) {
     QImage *imgEnergie = normeDuGradient(imgDepart);
     QImage *imgArrivee;
@@ -396,12 +401,33 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
     // Redimensionnement positif
     } else if (targetWidth > imgDepart->width()) {
 
+        // Recepuration des chemins de plus faible poids
         listPath = cheminsOptimaux(imgEnergie, iteration);
-        imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
+        imgArrivee = new QImage(imgDepart->width() + listPath->size(), imgDepart->height(), imgDepart->format());
 
-        /* A faire */
+        QImage tmp(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+        tmp.fill(Qt::black);
+        for (QVector<int> path : *listPath)  {
+            for (int y = 0; y < imgDepart->height(); ++y) {
+                tmp.setPixel(path.at(y), y, qRgb(255, 255, 255));
+            }
+        }
+
+        for (int y = 0; y < imgDepart->height(); ++y) {
+            decalage = 0;
+            for (int x = 0; x < imgDepart->width(); ++x) {
+                if (qRed(tmp.pixel(x, y)) == 0) {
+                    imgArrivee->setPixel(x+decalage, y, imgDepart->pixel(x, y));
+                } else {
+                    imgArrivee->setPixel(x+decalage, y, imgDepart->pixel(x, y));
+                    imgArrivee->setPixel(x+decalage+1, y, imgDepart->pixel(x, y));
+                    decalage++;
+                }
+            }
+        }
 
         delete listPath;
+
     } else {
 
         imgArrivee = new QImage(*imgDepart);
@@ -413,6 +439,7 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
     return imgArrivee;
 }
 
+/*redimensionnement intelligent de l'image a la hauteur indiquee*/
 QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHeight) {
     QImage *imgArrivee;
 
@@ -456,7 +483,6 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
                     //imgArrivee->setPixel(x, y-decalage, qRgb(255, 0, 0));
                 }
             }
-
         }
 
         delete listPath;
@@ -464,13 +490,33 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
     // Redimensionnement positif
     } else if (targetHeight > imgDepart->height()) {
 
-        std::cout << "hello" << std::endl;
+        // Recepuration des chemins de plus faible poids
         listPath = cheminsOptimaux(imgEnergie, iteration);
-        imgArrivee = new QImage(imgDepart->width() - listPath->size(), imgDepart->height(), imgDepart->format());
+        imgArrivee = new QImage(imgDepart->width(), imgDepart->height() + listPath->size(), imgDepart->format());
 
-        /* A faire */
+        QImage tmp(imgDepart->width(), imgDepart->height(), QImage::Format_ARGB32);
+        tmp.fill(Qt::black);
+        for (QVector<int> path : *listPath)  {
+            for (int x = 0; x < imgDepart->width(); ++x) {
+                tmp.setPixel(x, path.at(x), qRgb(255, 255, 255));
+            }
+        }
+
+        for (int x = 0; x < imgDepart->width(); ++x) {
+            decalage = 0;
+            for (int y = 0; y < imgDepart->height(); ++y) {
+                if (qRed(tmp.pixel(x, y)) == 0) {
+                    imgArrivee->setPixel(x, y+decalage, imgDepart->pixel(x, y));
+                } else {
+                    imgArrivee->setPixel(x, y+decalage, imgDepart->pixel(x, y));
+                    imgArrivee->setPixel(x, y+decalage+1, imgDepart->pixel(x, y));
+                    decalage++;
+                }
+            }
+        }
 
         delete listPath;
+
     } else {
 
         imgArrivee = new QImage(*imgDepart);
@@ -482,6 +528,7 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
     return imgArrivee;
 }
 
+/*retourne l'image representant la norme du gradient de l'image*/
 QImage* Calcul::normeDuGradient(QImage *imgDepart) {
     QImage *imgGris = imageEnNiveauDeGris(imgDepart);
 
@@ -545,6 +592,7 @@ QVector<float> Calcul::getYUV(QRgb pixel) {
     return yuv;
 }
 
+/*retourne le niveau de gris du pixel*/
 float Calcul::niveauDeGris(QRgb pixel) {
     return 0.299*qRed(pixel) + 0.587*qGreen(pixel) + 0.114*qBlue(pixel);
 }
