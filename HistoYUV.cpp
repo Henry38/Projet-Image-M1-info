@@ -8,10 +8,16 @@ HistoYUV::HistoYUV(QImage *img) : Histogramme(img)
 void HistoYUV::afficherLignes()
 {
     compterPixel();
-    afficherLigne(composantes[0],Qt::cyan);
-    afficherLigne(composantes[1],Qt::magenta);
-    afficherLigne(composantes[2],Qt::yellow);
-
+    if(gris)
+    {
+        afficherLigne(composantes[0],Qt::gray);
+    }
+    else
+    {
+        afficherLigne(composantes[0],Qt::cyan);
+        afficherLigne(composantes[1],Qt::magenta);
+        afficherLigne(composantes[2],Qt::yellow);
+    }
 }
 
 void HistoYUV::compterPixel()

@@ -90,6 +90,14 @@ void Histogramme::afficherLigne(int pixels[256], Qt::GlobalColor c)
     float tmp;
     float espaceEntrePoint = (float)longueurAbscisse/(nbCouleur-1);
 
+    paint.setPen(Qt::black);
+    QRectF rect(0,0,50,20);
+    QRectF rect2(width()-55,height()-20,50,20);
+    std::string s = std::to_string(valeurMax);
+    char const *pchar = s.c_str();
+    paint.drawText(rect, Qt::AlignLeft,pchar);
+    paint.drawText(rect2, Qt::AlignRight,"255");
+    paint.setPen(c);
 
     tmp = (float)distanceBord+espaceEntrePoint;
     for(int i = 1; i < nbCouleur; i++)
