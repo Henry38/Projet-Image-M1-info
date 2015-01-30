@@ -22,7 +22,7 @@ public:
 
 private:
     //Methodes
-    static QVector<QVector<int>>* cheminsOptimaux(QImage*, int);
+    static QVector<QVector<int> >* cheminsOptimaux(QImage*, int);
 
 
 };

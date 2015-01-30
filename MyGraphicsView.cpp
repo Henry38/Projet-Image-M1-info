@@ -85,7 +85,6 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent * e)
     if(modeSelection()) {
        BD =  mapToScene(e->pos()).toPoint();
        HG = mapToScene(HG).toPoint();
-        //cout << "Coordonnées : (" << BD.x() << "," << BD.y() << ")"<< endl;
         pret = true;
 
     }

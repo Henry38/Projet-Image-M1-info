@@ -208,11 +208,11 @@ QImage* Calcul::redimensionnementEnHauteur(QImage *imgDepart, int targetHeight) 
 }
 
 /*retourne l'ensemble des coordonnees x des pixels du chemin le moins informatif*/
-QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration) {
+QVector<QVector<int> >* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration) {
     int width = imgEnergie->width();
     int height = imgEnergie->height();
 
-    QVector<QVector<int>> *listPath = new QVector<QVector<int>>(0);
+    QVector<QVector<int> > *listPath = new QVector<QVector<int> >(0);
 
     // Transforme imgEnergie en matrice d'entier
     int **img = new int*[width];
@@ -243,7 +243,7 @@ QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration
         pixelTmp[x] = new bool[height];
     }
 
-    int power;
+   int power;
     bool g, m, d;
     int index, x;
     float min;
@@ -255,7 +255,7 @@ QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration
         for (int y=1; y<height; y++) {
             for (int x=0; x<width; x++) {
                 power = img[x][y];
-                mSomme[x][y] = std::numeric_limits<int>::max();
+               // mSomme[x][y] = std::numeric_limits<int>::max();
                 for (int k=-1; k<=1; k++) {
                     if (x+k >= 0 && x+k < width) {
                         if (power + mSomme[x+k][y-1] < mSomme[x][y]) {
@@ -278,7 +278,7 @@ QVector<QVector<int>>* Calcul::cheminsOptimaux(QImage *imgEnergie, int iteration
         parcouru[index] = true;
         pixelTmp[index][height-1] = true;
 
-        listPath->append(QVector<int>(0));
+       listPath->append(QVector<int>(0));
         bool fail = false;
 
         int y = height-1;
@@ -360,7 +360,7 @@ QImage* Calcul::redimensionnementIntellEnLargeur(QImage *imgDepart, int targetWi
 
     int iteration = qAbs(targetWidth - imgDepart->width());
     // Coordonnees X des pixels du chemin les moins importants par ordre croissant
-    QVector<QVector<int>> *listPath;
+    QVector< QVector<int> > *listPath;
     int decalage;
 
     // Redimensionnement negatif
@@ -427,7 +427,7 @@ QImage* Calcul::redimensionnementIntellEnHauteur(QImage *imgDepart, int targetHe
 
     int iteration = qAbs(targetHeight - imgDepart->height());
     // Coordonnees X des pixels du chemin les moins importants par ordre croissant
-    QVector<QVector<int>> *listPath;
+    QVector< QVector<int> > *listPath;
     int decalage;
 
     // Redimensionnement negatif

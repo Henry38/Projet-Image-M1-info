@@ -216,40 +216,21 @@ void myWindow::initBarreOutils()
     QObject::connect(scene, SIGNAL(redimensionnementIntellEnLargeur(QRect)), this, SLOT(redimensionnementIntellEnLargeurIteractif(QRect)));
     QObject::connect(scene, SIGNAL(redimensionnementIntellEnHauteur(QRect)), this, SLOT(redimensionnementIntellEnHauteurIteractif(QRect)));
 
-//    actionAnnuler = new QAction("&Annuler",this);
-//    actionAnnuler->setShortcut(QKeySequence("Ctrl+Z"));
-//    actionAnnuler->setVisible(true);
     QShortcut *raccourciAnnuler= new QShortcut(QKeySequence("Ctrl+Z"),this);
-    QObject::connect(raccourciAnnuler, SIGNAL(activated()),this, SLOT(annuler()));/*
-    QObject::connect(actionAnnuler,SIGNAL(triggered()),this,SLOT(annuler()));
+    QObject::connect(raccourciAnnuler, SIGNAL(activated()),this, SLOT(annuler()));
 
-    actionRefaire = new QAction("&Refaire",this);
-    actionRefaire->setShortcut(QKeySequence("Ctrl+Y"));
-    actionRefaire->setVisible(true);*/
     QShortcut *raccourciRefaire= new QShortcut(QKeySequence("Ctrl+Y"),this);
     QObject::connect(raccourciRefaire, SIGNAL(activated()),this, SLOT(refaire()));
-  //  QObject::connect(actionRefaire,SIGNAL(triggered()),this,SLOT(refaire()));
 
-//    actionCopier = new QAction("&Copier",this);
-//    actionCopier->setShortcut(QKeySequence("Ctrl+C"));
-//    actionCopier->setVisible(true);
     QShortcut *raccourciCopier= new QShortcut(QKeySequence("Ctrl+C"),this);
-    QObject::connect(raccourciCopier, SIGNAL(activated()),this, SLOT(copier()));/*
-    QObject::connect(actionCopier,SIGNAL(triggered()),this,SLOT(copier()));
+    QObject::connect(raccourciCopier, SIGNAL(activated()),this, SLOT(copier()));
 
-    actionCouper = new QAction("&Couper",this);
-    actionCouper->setShortcut(QKeySequence("Ctrl+X"));
-    actionCouper->setVisible(true);*/
     QShortcut *raccourciCouper= new QShortcut(QKeySequence("Ctrl+X"),this);
     QObject::connect(raccourciCouper, SIGNAL(activated()),this, SLOT(couper()));
-    //QObject::connect(actionCouper,SIGNAL(triggered()),this,SLOT(couper()));
 
-//    actionColler = new QAction("&Coller",this);
-//    actionColler->setShortcut(QKeySequence("Ctrl+V"));
-//    actionColler->setVisible(true);
     QShortcut *raccourciColler= new QShortcut(QKeySequence("Ctrl+V"),this);
     QObject::connect(raccourciColler, SIGNAL(activated()),this, SLOT(coller()));
-    //QObject::connect(actionColler,SIGNAL(triggered()),this,SLOT(coller()));
+
 
 }
 
@@ -458,7 +439,7 @@ bool myWindow::grabCut()
             compare(mask,GC_PR_BGD,mask,CMP_EQ);
 
             /*affichage*/
-            Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255)));
+            Mat fgd = *(new Mat(im.size(),CV_8UC3,Scalar(255,255,255,0)));
             im.copyTo(fgd,mask);
 
             /*MatToQImage*/

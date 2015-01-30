@@ -150,12 +150,10 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
     if(isModeSelectionAvantPlan()){
             if(mouseEvent->button() == Qt::LeftButton){
-                //cout <<"clique gauche avant plan"<<endl;
 
             }
     }else if(isModeSelectionArrierePlan()){
-            if(mouseEvent->button() == Qt::RightButton){
-               //cout <<"clique droit arriere plan"<<endl;
+            if(mouseEvent->button() == Qt::LeftButton){
 
             }
     }else{
